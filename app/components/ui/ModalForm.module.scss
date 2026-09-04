@@ -1,0 +1,24 @@
+.form {
+    display: grid;
+    gap: 1rem;
+    min-width: min(90vw, 24rem);
+    padding: 1.5rem;
+    background: white;
+    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.25);
+
+    label {
+        display: grid;
+        gap: 0.25rem;
+    }
+
+    input:not([type="checkbox"]),
+    select {
+        padding: 0.4rem;
+    }
+}
+
+.formActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}

@@ -1,6 +1,7 @@
-import React from 'react'
+import React from "react"
 import styles from "../page.module.scss"
 import type { Exercise } from "../_types"
+import { capitalize } from "../../lib"
 
 
 type Props = {
@@ -9,9 +10,6 @@ type Props = {
 }
 
 export default function ExerciseTable({ exercises, setDeleteIndex }: Props) {
-    function capitalize(value: string) {
-        return value.charAt(0).toUpperCase() + value.slice(1);
-    }
     return (
         <table className={styles.exercises}>
             <thead>

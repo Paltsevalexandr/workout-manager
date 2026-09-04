@@ -6,6 +6,8 @@ import styles from "./page.module.scss"
 import type { Category, Exercise, MuscleGroup, Target } from "./_types"
 import ExerciseTable from "./_components/ExerciseTable"
 import ExerciseForm from "./_components/ExerciseForm"
+import Modal from "../components/ui/Modal"
+import ModalForm from "../components/ui/ModalForm"
 
 
 export default function Page() {
@@ -88,6 +90,15 @@ export default function Page() {
         setDeleteIndex(null);
     }
 
+    function handleCancelForm() {
+        setName("");
+        setCategory("strength");
+        setMuscleGroup("chest");
+        setTarget("reps");
+        setUseWeight(false);
+        setIsFormOpen(false);
+    }
+
     return (
         <Content title="Exercises">
             <section className={styles.page}>
@@ -108,36 +119,41 @@ export default function Page() {
                 </div>
             </section>
             {isFormOpen && (
-                <ExerciseForm
-                    name={name}
-                    category={category}
-                    muscleGroup={muscleGroup}
-                    target={target}
-                    useWeight={useWeight}
-                    onNameChange={setName}
-                    onCategoryChange={setCategory}
-                    onMuscleGroupChange={setMuscleGroup}
-                    onTargetChange={setTarget}
-                    onUseWeightChange={setUseWeight}
-                    onSubmit={handleSubmit}
-                    onCancel={() => setIsFormOpen(false)}
-                />
+                <Modal onClose={handleCancelForm}>
+                    <ModalForm
+                        submitText="Add exercise"
+                        onSubmit={handleSubmit}
+                        onCancel={handleCancelForm}
+                    >
+                        <ExerciseForm
+                            name={name}
+                            category={category}
+                            muscleGroup={muscleGroup}
+                            target={target}
+                            useWeight={useWeight}
+                            onNameChange={setName}
+                            onCategoryChange={setCategory}
+                            onMuscleGroupChange={setMuscleGroup}
+                            onTargetChange={setTarget}
+                            onUseWeightChange={setUseWeight}
+                        />
+                    </ModalForm>
+                </Modal>
             )}
             {deleteIndex !== null && (
-                <div className={styles.overlay}>
-                    <div className={styles.form}>
+                <Modal onClose={() => setDeleteIndex(null)}>
+                    <ModalForm
+                        submitText="Confirm"
+                        onSubmit={(event) => {
+                            event.preventDefault()
+                            handleDelete()
+                        }}
+                        onCancel={() => setDeleteIndex(null)}
+                    >
                         <h2>Delete exercise?</h2>
                         <p>Are you sure you want to delete "{exercises[deleteIndex].name}"?</p>
-                        <div className={styles.formActions}>
-                            <button type="button" onClick={() => setDeleteIndex(null)}>
-                                Cancel
-                            </button>
-                            <button type="button" onClick={handleDelete}>
-                                Confirm
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                    </ModalForm>
+                </Modal>
             )}
         </Content>
     )
