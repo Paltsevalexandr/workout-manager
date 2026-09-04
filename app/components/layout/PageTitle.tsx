@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 type Props = {
     title:string
@@ -6,8 +6,12 @@ type Props = {
 
 export default function PageTitle({title}: Props) {
     return (
-        <h1 className='page-title'>
-            {title}
-        </h1>
+        <section className="page-title-section">
+            <div className="section-content">
+                <h1 className='page-title'>
+                    {title}
+                </h1>
+            </div>
+        </section>
     )
 }
