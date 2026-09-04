@@ -3,6 +3,7 @@
 import { useState, type SubmitEvent } from "react"
 import Content from "../components/layout/Content"
 import styles from "./page.module.scss"
+import { categories, muscleGroups, targets } from "./_types"
 import type { Category, Exercise, MuscleGroup, Target } from "./_types"
 import ExerciseTable from "./_components/ExerciseTable"
 import ExerciseForm from "./_components/ExerciseForm"
@@ -72,9 +73,9 @@ export default function Page() {
             { name: name.trim(), category, muscleGroup, target, useWeight },
         ]);
         setName("");
-        setCategory("strength");
-        setMuscleGroup("chest");
-        setTarget("reps");
+        setCategory(categories[0]);
+        setMuscleGroup(muscleGroups[0]);
+        setTarget(targets[0]);
         setUseWeight(false);
         setIsFormOpen(false);
     }
@@ -106,6 +107,7 @@ export default function Page() {
                     <div className={styles.tableWrapper}>
                         <ExerciseTable
                             exercises={exercises}
+                            setExercises={setExercises}
                             setDeleteIndex={setDeleteIndex}
                         />
                         <button

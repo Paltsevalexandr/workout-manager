@@ -4,7 +4,8 @@ export type Category = typeof categories[number];
 export const muscleGroups = ["chest", "back", "legs", "shoulders", "arms", "core"] as const;
 export type MuscleGroup = typeof muscleGroups[number];
 
-export type Target = "reps" | "duration";
+export const targets = ["reps", "duration"] as const;
+export type Target = typeof targets[number];
 
 export type Exercise = {
     name: string;

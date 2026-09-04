@@ -1,6 +1,6 @@
 "use client"
 
-import { categories, muscleGroups } from "../_types"
+import { categories, muscleGroups, targets } from "../_types"
 import type { Category, MuscleGroup, Target } from "../_types"
 import CheckboxField from "../../components/forms/CheckboxField"
 import SelectField from "../../components/forms/SelectField"
@@ -38,6 +38,7 @@ export default function ExerciseForm({
                     label="Name"
                     value={name}
                     required
+                    autoFocus
                     onChange={onNameChange}
                 />
                 <SelectField
@@ -55,7 +56,7 @@ export default function ExerciseForm({
                 <SelectField
                     label="Target"
                     value={target}
-                    options={["reps", "duration"] as const}
+                    options={targets}
                     onChange={onTargetChange}
                 />
                 <CheckboxField

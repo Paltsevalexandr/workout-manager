@@ -10,11 +10,6 @@
         display: grid;
         gap: 0.25rem;
     }
-
-    input:not([type="checkbox"]),
-    select {
-        padding: 0.4rem;
-    }
 }
 
 .formActions {
