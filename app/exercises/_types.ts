@@ -8,6 +8,7 @@ export const targets = ["reps", "duration"] as const;
 export type Target = typeof targets[number];
 
 export type Exercise = {
+    id: number;
     name: string;
     category: Category;
     muscleGroup: MuscleGroup;

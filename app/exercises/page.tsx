@@ -15,6 +15,7 @@ export default function Page() {
     
     const [exercises, setExercises] = useState<Exercise[]>([
         {
+            id: 0,
             name: "Push-ups",
             category: "strength",
             muscleGroup: "chest",
@@ -22,6 +23,7 @@ export default function Page() {
             useWeight: false,
         },
         {
+            id: 1,
             name: "Barbell squat",
             category: "strength",
             muscleGroup: "legs",
@@ -29,6 +31,7 @@ export default function Page() {
             useWeight: true,
         },
         {
+            id: 2,
             name: "Running",
             category: "cardio",
             muscleGroup: "legs",
@@ -36,6 +39,7 @@ export default function Page() {
             useWeight: false,
         },
         {
+            id: 3,
             name: "Dumbbell row",
             category: "strength",
             muscleGroup: "back",
@@ -43,6 +47,7 @@ export default function Page() {
             useWeight: true,
         },
         {
+            id: 4,
             name: "Plank",
             category: "mobility",
             muscleGroup: "core",
@@ -50,6 +55,7 @@ export default function Page() {
             useWeight: false,
         },
         {
+            id: 5,
             name: "Lunges",
             category: "stretching",
             muscleGroup: "legs",
@@ -65,12 +71,31 @@ export default function Page() {
     const [useWeight, setUseWeight] = useState(false);
     const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
+    function generateID() {
+        let id = 0;
+        
+        if (exercises.length > 0) {
+            const sortedExercises = exercises.toSorted((a, b) => b.id - a.id);
+            id = sortedExercises[0].id + 1;
+        }
+        
+        // for (let i = 0; i < Infinity; i++) {
+        //     id = i;
+        //     let isIdOccupied: boolean = exercises.find(exercise => exercise.id == id) != null;
+        //     console.log(isIdOccupied, id);
+        //     if (!isIdOccupied) {
+        //         break;
+        //     }
+        // }
+        return id;
+    }
+
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
 
         setExercises((currentExercises) => [
             ...currentExercises,
-            { name: name.trim(), category, muscleGroup, target, useWeight },
+            { id: generateID(), name: name.trim(), category, muscleGroup, target, useWeight },
         ]);
         setName("");
         setCategory(categories[0]);
