@@ -5,6 +5,7 @@ import type { Exercise } from "../_types"
 import { capitalize } from "../../lib"
 import { categories, muscleGroups, targets } from "../_types"
 import type { Category, MuscleGroup, Target } from "../_types"
+import { ChevronsUpDown, Pencil, Save, Trash2, X } from "lucide-react"
 
 
 type Props = {
@@ -12,6 +13,23 @@ type Props = {
     setExercises: Dispatch<SetStateAction<Exercise[]>>,
     setDeleteIndex: (index: number) => void
 }
+type SortableColumn = "name" | "category" | "muscleGroup" | "target" | "useWeight";
+
+type Header = {
+    text: string,
+    key: SortableColumn | null
+}
+const headers: Header[] = [
+    { text: "Name", key: "name" },
+    { text: "Category", key: "category" },
+    { text: "Muscle group", key: "muscleGroup" },
+    { text: "Target", key: "target" },
+    { text: "Uses weight", key: "useWeight" },
+    { text: "Actions", key: null },
+    { text: "Delete", key: null },
+];
+
+type SortDirection = "asc" | "desc";
 
 export default function ExerciseTable({ exercises, setExercises, setDeleteIndex }: Props) {
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -21,6 +39,8 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
     const [editingTarget, setEditingTarget] = useState<Target>("reps");
     const [editingUseWeight, setEditingUseWeight] = useState(false);
     const editingInputRef = useRef<HTMLInputElement>(null);
+    const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
+    const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
     useEffect(() => {
         if (editingIndex !== null) {
@@ -73,6 +93,29 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
         setEditingUseWeight(false);
     }
 
+    function handleSort(column: SortableColumn | null) {
+        if (column == null) return;
+        const nextDirection = sortColumn === column && sortDirection === "asc"
+            ? "desc"
+            : "asc";
+
+        setSortColumn(column);
+        setSortDirection(nextDirection);
+        setExercises((currentExercises) =>
+            [...currentExercises].sort((firstExercise, secondExercise) => {
+                const firstValue = column === "useWeight"
+                    ? (firstExercise.useWeight ? "Yes" : "No")
+                    : firstExercise[column];
+                const secondValue = column === "useWeight"
+                    ? (secondExercise.useWeight ? "Yes" : "No")
+                    : secondExercise[column];
+                const comparison = String(firstValue).localeCompare(String(secondValue));
+
+                return nextDirection === "asc" ? comparison : -comparison;
+            })
+        );
+    }
+
     return (
         <table className={styles.exercises}>
             <colgroup>
@@ -86,13 +129,21 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
             </colgroup>
             <thead>
                 <tr>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Muscle group</th>
-                    <th>Target</th>
-                    <th>Uses weight</th>
-                    <th>Actions</th>
-                    <th>Delete</th>
+                    {headers.map((header) => (
+                        <th key={header.text}>
+                            <span>{header.text}</span>
+                            {header.key && (
+                                <button
+                                    className={styles.sortButton}
+                                    type="button"
+                                    aria-label={`Sort by ${header.text}`}
+                                    onClick={() => handleSort(header.key)}
+                                >
+                                    <ChevronsUpDown size={14} aria-hidden="true" />
+                                </button>
+                            )}
+                        </th>
+                    ))}
                 </tr>
             </thead>
             <tbody>
@@ -113,7 +164,7 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
                                     }}
                                 />
                             ) : (
-                                exercise.name
+                                exercise.name + " " + exercise.id
                             )}
                         </td>
                         <td>
@@ -180,9 +231,11 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
                                 {editingIndex === index ? (
                                     <>
                                         <button type="button" onClick={handleSave}>
+                                            <Save size={16} aria-hidden="true" />
                                             Save
                                         </button>
                                         <button type="button" onClick={handleCancel}>
+                                            <X size={16} aria-hidden="true" />
                                             Cancel
                                         </button>
                                     </>
@@ -191,6 +244,7 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
                                         type="button"
                                         onClick={() => handleEdit(index)}
                                     >
+                                        <Pencil size={16} aria-hidden="true" />
                                         Edit Exercise
                                     </button>
                                 )}
@@ -201,7 +255,7 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
                                 type="button"
                                 onClick={() => setDeleteIndex(index)}
                             >
-                                Delete
+                                <Trash2 size={16} aria-hidden="true" />
                             </button>
                         </td>
                     </tr>

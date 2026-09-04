@@ -1,4 +1,5 @@
 import type { ReactNode, SubmitEvent } from "react"
+import { X } from "lucide-react"
 import styles from "./ModalForm.module.scss"
 
 type Props = {
@@ -19,6 +20,7 @@ export default function ModalForm({
             {children}
             <div className={styles.formActions}>
                 <button type="button" onClick={onCancel}>
+                    <X size={16} aria-hidden="true" />
                     Cancel
                 </button>
                 <button type="submit">{submitText}</button>
