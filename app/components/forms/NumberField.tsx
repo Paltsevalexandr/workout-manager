@@ -1,13 +1,15 @@
+import React from 'react'
+
 type Props = {
     label: string;
     name: string;
-    value: string;
+    value: number;
     required?: boolean;
     autoFocus?: boolean;
-    onChange: (value: string) => void;
+    onChange: (value: number) => void;
 }
 
-export default function TextField({
+export default function NumberField({
     label,
     name,
     value,
@@ -19,12 +21,14 @@ export default function TextField({
         <label>
             {label}
             <input
+                type="number"
                 name={name}
                 required={required}
                 autoFocus={autoFocus}
                 value={value}
-                onChange={(event) => onChange(event.target.value)}
+                onChange={(event) => onChange(Number(event.target.value))}
             />
         </label>
     )
 }
+

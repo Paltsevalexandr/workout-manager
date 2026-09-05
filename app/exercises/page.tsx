@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, type SubmitEvent } from "react"
+import { useExercisesContext } from '@/app/providers';
 import Content from "../components/layout/Content"
 import styles from "./page.module.scss"
-import { categories, muscleGroups, targets } from "./_types"
-import type { Category, Exercise, MuscleGroup, Target } from "./_types"
+import { categories, muscleGroups, targets } from "../_types"
+import type { Category, Exercise, MuscleGroup, Target } from "../_types"
 import ExerciseTable from "./_components/ExerciseTable"
 import ExerciseForm from "./_components/ExerciseForm"
 import Modal from "../components/ui/Modal"
@@ -12,57 +13,8 @@ import ModalForm from "../components/ui/ModalForm"
 
 
 export default function Page() {
+    const { exercises, setExercises } = useExercisesContext();
     
-    const [exercises, setExercises] = useState<Exercise[]>([
-        {
-            id: 0,
-            name: "Push-ups",
-            category: "strength",
-            muscleGroup: "chest",
-            target: "reps",
-            useWeight: false,
-        },
-        {
-            id: 1,
-            name: "Barbell squat",
-            category: "strength",
-            muscleGroup: "legs",
-            target: "reps",
-            useWeight: true,
-        },
-        {
-            id: 2,
-            name: "Running",
-            category: "cardio",
-            muscleGroup: "legs",
-            target: "duration",
-            useWeight: false,
-        },
-        {
-            id: 3,
-            name: "Dumbbell row",
-            category: "strength",
-            muscleGroup: "back",
-            target: "reps",
-            useWeight: true,
-        },
-        {
-            id: 4,
-            name: "Plank",
-            category: "mobility",
-            muscleGroup: "core",
-            target: "duration",
-            useWeight: false,
-        },
-        {
-            id: 5,
-            name: "Lunges",
-            category: "stretching",
-            muscleGroup: "legs",
-            target: "reps",
-            useWeight: false,
-        },
-    ]);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [name, setName] = useState("");
     const [category, setCategory] = useState<Category>("strength");
@@ -136,7 +88,7 @@ export default function Page() {
                             setDeleteIndex={setDeleteIndex}
                         />
                         <button
-                            className={styles.addButton}
+                            className="addButton"
                             type="button"
                             onClick={() => setIsFormOpen(true)}
                         >
@@ -146,8 +98,10 @@ export default function Page() {
                 </div>
             </section>
             {isFormOpen && (
-                <Modal onClose={handleCancelForm}>
+                <Modal 
+                    onClose={handleCancelForm}>
                     <ModalForm
+                        modalName="New Exercise"
                         submitText="Add exercise"
                         onSubmit={handleSubmit}
                         onCancel={handleCancelForm}
@@ -168,8 +122,10 @@ export default function Page() {
                 </Modal>
             )}
             {deleteIndex !== null && (
-                <Modal onClose={() => setDeleteIndex(null)}>
+                <Modal 
+                    onClose={() => setDeleteIndex(null)}>
                     <ModalForm
+                        modalName="Delete Exercise?"
                         submitText="Confirm"
                         onSubmit={(event) => {
                             event.preventDefault()
@@ -177,7 +133,6 @@ export default function Page() {
                         }}
                         onCancel={() => setDeleteIndex(null)}
                     >
-                        <h2>Delete exercise?</h2>
                         <p>Are you sure you want to delete "{exercises[deleteIndex].name}"?</p>
                     </ModalForm>
                 </Modal>

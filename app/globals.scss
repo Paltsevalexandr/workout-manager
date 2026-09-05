@@ -91,6 +91,19 @@ button {
     }
 }
 
+.addButton {
+    margin-top: 1rem;
+    margin-left: auto;
+    width: 40px;
+    min-width: 40px;
+    font-size: 1.5rem;
+    border-radius: 50%;
+
+    span {
+        transform: translateY(-2px);
+    }
+}
+
 input:not([type="checkbox"]),
 select {
     padding: 0.4rem;

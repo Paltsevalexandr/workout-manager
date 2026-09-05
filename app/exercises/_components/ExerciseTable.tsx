@@ -1,10 +1,10 @@
 import React from "react"
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react"
 import styles from "../page.module.scss"
-import type { Exercise } from "../_types"
+import type { Exercise } from "../../_types"
 import { capitalize } from "../../lib"
-import { categories, muscleGroups, targets } from "../_types"
-import type { Category, MuscleGroup, Target } from "../_types"
+import { categories, muscleGroups, targets } from "../../_types"
+import type { Category, MuscleGroup, Target } from "../../_types"
 import { ChevronsUpDown, Pencil, Save, Trash2, X } from "lucide-react"
 
 
@@ -164,7 +164,7 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
                                     }}
                                 />
                             ) : (
-                                exercise.name + " " + exercise.id
+                                exercise.name
                             )}
                         </td>
                         <td>
