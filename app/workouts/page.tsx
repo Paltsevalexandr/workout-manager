@@ -8,9 +8,11 @@ import Modal from '../components/ui/Modal';
 import ModalForm from '../components/ui/ModalForm';
 import { Workout, WorkoutExercise, Exercise, days, Day } from '../_types';
 import SelectField from '../components/forms/SelectField';
-import { capitalize, dayNames, getDayName } from "../lib";
+import { capitalize, dayNames } from "../lib";
 import TextField from '../components/forms/TextField';
 import NumberField from '../components/forms/NumberField';
+import { generateID } from '../lib/data';
+import WorkoutsList from './_components/WorkoutsList';
 
 type Props = {}
 
@@ -25,22 +27,51 @@ export default function page({ }: Props) {
         rest: 30
     };
     
-    const [workouts, setWorkouts] = useState<Workout[]>([]);
+    const [workouts, setWorkouts] = useState<Workout[]>([
+        {
+            id: 0, name: 'Workout 1', day: 0, exercises: [
+                {
+                    exerciseId: 0,
+                    id: null,
+                    rest: 30,
+                    sets: 1,
+                    target: 1,
+                    weight:undefined
+                }
+            ]
+        },
+        {
+            id: 1, name: 'Workout 2', day: 0, exercises: [
+                {
+                    exerciseId: 0,
+                    id: null,
+                    rest: 30,
+                    sets: 1,
+                    target: 1,
+                    weight: undefined
+                }
+            ]
+        },
+        {
+            id: 2, name: 'Workout 3', day: 1, exercises: [
+                {
+                    exerciseId: 1,
+                    id: null,
+                    rest: 30,
+                    sets: 1,
+                    target: 1,
+                    weight: 30
+                }
+            ]
+        }
+    ]);
     
     const [workoutName, setWorkoutName] = useState<string>("");
     const [workoutDay, setWorkoutDay] = useState<Day>(days[0]);
     const [workoutExercises, setWorkoutExercises] = useState<WorkoutExercise[]>([{...workoutExerciseLayout}]);
     const [isFormOpen, setIsFormOpen] = useState(false);
     
-    function generateID() {
-        let id = 0;
-        
-        if (workouts.length > 0) {
-            const sortedWorkouts = workouts.toSorted((a, b) => b.id - a.id);
-            id = sortedWorkouts[0].id + 1;
-        }
-        return id;
-    }
+    
 
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -48,7 +79,7 @@ export default function page({ }: Props) {
         setWorkouts((currentWorkouts) => [
             ...currentWorkouts,
             {
-                id: generateID(),
+                id: generateID(workouts),
                 name: workoutName,
                 day: workoutDay,
                 exercises: workoutExercises
@@ -71,36 +102,19 @@ export default function page({ }: Props) {
         <Content title="Workouts">
             <section >
                 <div className="section-content">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Day</th>
-                                <th>Exercises</th>
-                                <th>Sets</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                workouts.map(workout => {
-                                    return (
-                                        <tr key={workout.id+"_workout"}>
-                                            <td>{workout.name}</td>
-                                            <td>{getDayName(workout.day)}</td>
-                                            <td>{workout.exercises.map((exercise) => exercise.exerciseId + ", ")}</td>
-                                        </tr>
-                                    )
-                                })
-                            }
-                        </tbody>
-                    </table>
-                    <button
-                        className="addButton"
-                        type="button"
-                        onClick={() => setIsFormOpen(true)}
-                    >
-                        <span>+</span>
-                    </button>
+                    <div className={styles.workoutsListWrap}>
+                        <WorkoutsList
+                            exercises={exercises}
+                            workouts={workouts} />
+                        <button
+                            className="addButton"
+                            type="button"
+                            onClick={() => setIsFormOpen(true)}
+                        >
+                            <span>+</span>
+                        </button>
+                    </div>
+                    
                     {isFormOpen && (
                         <Modal onClose={handleCancelForm}>
                             <ModalForm
@@ -183,7 +197,7 @@ export default function page({ }: Props) {
                                                                     useWeight
                                                                     ? <NumberField
                                                                         key={exercise.exerciseId + "_" + index + "_workout_exercise_weight"}
-                                                                        label="Additional Weight"
+                                                                        label="Additional Weight (kg)"
                                                                         name="workout-exercise-weight"
                                                                         value={workoutExercises[index].weight ?? 0}
                                                                         onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {

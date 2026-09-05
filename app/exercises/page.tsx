@@ -10,6 +10,7 @@ import ExerciseTable from "./_components/ExerciseTable"
 import ExerciseForm from "./_components/ExerciseForm"
 import Modal from "../components/ui/Modal"
 import ModalForm from "../components/ui/ModalForm"
+import { generateID } from "../lib/data";
 
 
 export default function Page() {
@@ -23,31 +24,12 @@ export default function Page() {
     const [useWeight, setUseWeight] = useState(false);
     const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
-    function generateID() {
-        let id = 0;
-        
-        if (exercises.length > 0) {
-            const sortedExercises = exercises.toSorted((a, b) => b.id - a.id);
-            id = sortedExercises[0].id + 1;
-        }
-        
-        // for (let i = 0; i < Infinity; i++) {
-        //     id = i;
-        //     let isIdOccupied: boolean = exercises.find(exercise => exercise.id == id) != null;
-        //     console.log(isIdOccupied, id);
-        //     if (!isIdOccupied) {
-        //         break;
-        //     }
-        // }
-        return id;
-    }
-
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
 
         setExercises((currentExercises) => [
             ...currentExercises,
-            { id: generateID(), name: name.trim(), category, muscleGroup, target, useWeight },
+            { id: generateID(currentExercises), name: name.trim(), category, muscleGroup, target, useWeight },
         ]);
         setName("");
         setCategory(categories[0]);
