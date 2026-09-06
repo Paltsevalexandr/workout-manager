@@ -1,3 +1,5 @@
+@import "../../variables.scss";
+
 .form {
     display: grid;
     gap: 1rem;
@@ -5,6 +7,7 @@
     padding: 1.5rem;
     background: white;
     box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.25);
+    border-radius: 6px;
 
     label {
         display: grid;

@@ -15,7 +15,7 @@ export type WorkoutExercise = {
     exerciseId: Exercise['id'];
     sets: number;
     target: number;
-    weight?: number;
+    weight: number;
     rest: number;
 };
 
@@ -32,5 +32,4 @@ export type Exercise = {
     category: Category;
     muscleGroup: MuscleGroup;
     target: Target;
-    useWeight: boolean;
 };

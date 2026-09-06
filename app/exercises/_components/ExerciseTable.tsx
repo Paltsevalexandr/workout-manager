@@ -13,7 +13,7 @@ type Props = {
     setExercises: Dispatch<SetStateAction<Exercise[]>>,
     setDeleteIndex: (index: number) => void
 }
-type SortableColumn = "name" | "category" | "muscleGroup" | "target" | "useWeight";
+type SortableColumn = "name" | "category" | "muscleGroup" | "target";
 
 type Header = {
     text: string,
@@ -24,7 +24,6 @@ const headers: Header[] = [
     { text: "Category", key: "category" },
     { text: "Muscle group", key: "muscleGroup" },
     { text: "Target", key: "target" },
-    { text: "Uses weight", key: "useWeight" },
     { text: "Actions", key: null },
     { text: "Delete", key: null },
 ];
@@ -37,7 +36,6 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
     const [editingCategory, setEditingCategory] = useState<Category>("strength");
     const [editingMuscleGroup, setEditingMuscleGroup] = useState<MuscleGroup>("chest");
     const [editingTarget, setEditingTarget] = useState<Target>("reps");
-    const [editingUseWeight, setEditingUseWeight] = useState(false);
     const editingInputRef = useRef<HTMLInputElement>(null);
     const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
@@ -54,7 +52,6 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
         setEditingCategory(exercises[index].category);
         setEditingMuscleGroup(exercises[index].muscleGroup);
         setEditingTarget(exercises[index].target);
-        setEditingUseWeight(exercises[index].useWeight);
     }
 
     function handleSave() {
@@ -71,7 +68,6 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
                         category: editingCategory,
                         muscleGroup: editingMuscleGroup,
                         target: editingTarget,
-                        useWeight: editingUseWeight,
                     }
                     : exercise
             )
@@ -81,7 +77,6 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
         setEditingCategory(categories[0]);
         setEditingMuscleGroup(muscleGroups[0]);
         setEditingTarget(targets[0]);
-        setEditingUseWeight(false);
     }
 
     function handleCancel() {
@@ -90,7 +85,6 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
         setEditingCategory(categories[0]);
         setEditingMuscleGroup(muscleGroups[0]);
         setEditingTarget(targets[0]);
-        setEditingUseWeight(false);
     }
 
     function handleSort(column: SortableColumn | null) {
@@ -103,12 +97,8 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
         setSortDirection(nextDirection);
         setExercises((currentExercises) =>
             [...currentExercises].sort((firstExercise, secondExercise) => {
-                const firstValue = column === "useWeight"
-                    ? (firstExercise.useWeight ? "Yes" : "No")
-                    : firstExercise[column];
-                const secondValue = column === "useWeight"
-                    ? (secondExercise.useWeight ? "Yes" : "No")
-                    : secondExercise[column];
+                const firstValue = firstExercise[column];
+                const secondValue = secondExercise[column];
                 const comparison = String(firstValue).localeCompare(String(secondValue));
 
                 return nextDirection === "asc" ? comparison : -comparison;
@@ -215,17 +205,6 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
                                 exercise.target
                             )}
                         </td>
-                        <td>
-                            {editingIndex === index ? (
-                                <input
-                                    type="checkbox"
-                                    checked={editingUseWeight}
-                                    onChange={(event) => setEditingUseWeight(event.target.checked)}
-                                />
-                            ) : (
-                                exercise.useWeight ? "Yes" : "No"
-                            )}
-                        </td>
                         <td className={styles.editCell}>
                             <div className={styles.actions}>
                                 {editingIndex === index ? (
@@ -255,7 +234,7 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
                                 type="button"
                                 onClick={() => setDeleteIndex(index)}
                             >
-                                <Trash2 size={16} aria-hidden="true" />
+                                <Trash2 size={16} />
                             </button>
                         </td>
                     </tr>

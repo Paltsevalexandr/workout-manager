@@ -4,15 +4,10 @@ import { useState, type SubmitEvent } from 'react'
 import { useExercisesContext } from '@/app/providers';
 import Content from '../components/layout/Content';
 import styles from './page.module.scss';
-import Modal from '../components/ui/Modal';
-import ModalForm from '../components/ui/ModalForm';
-import { Workout, WorkoutExercise, Exercise, days, Day } from '../_types';
-import SelectField from '../components/forms/SelectField';
-import { capitalize, dayNames } from "../lib";
-import TextField from '../components/forms/TextField';
-import NumberField from '../components/forms/NumberField';
+import { Workout, WorkoutExercise, days, Day } from '../_types';
 import { generateID } from '../lib/data';
 import WorkoutsList from './_components/WorkoutsList';
+import WorkoutForm from './_components/WorkoutForm';
 
 type Props = {}
 
@@ -23,10 +18,10 @@ export default function page({ }: Props) {
         exerciseId: exercises[0]?.id ?? -1,
         sets: 1,
         target: 1,
-        weight: undefined,
+        weight: 0,
         rest: 30
     };
-    
+
     const [workouts, setWorkouts] = useState<Workout[]>([
         {
             id: 0, name: 'Workout 1', day: 0, exercises: [
@@ -36,7 +31,7 @@ export default function page({ }: Props) {
                     rest: 30,
                     sets: 1,
                     target: 1,
-                    weight:undefined
+                    weight: 0
                 }
             ]
         },
@@ -48,7 +43,7 @@ export default function page({ }: Props) {
                     rest: 30,
                     sets: 1,
                     target: 1,
-                    weight: undefined
+                    weight: 0
                 }
             ]
         },
@@ -65,13 +60,13 @@ export default function page({ }: Props) {
             ]
         }
     ]);
-    
+
     const [workoutName, setWorkoutName] = useState<string>("");
     const [workoutDay, setWorkoutDay] = useState<Day>(days[0]);
-    const [workoutExercises, setWorkoutExercises] = useState<WorkoutExercise[]>([{...workoutExerciseLayout}]);
+    const [workoutExercises, setWorkoutExercises] = useState<WorkoutExercise[]>([{ ...workoutExerciseLayout }]);
     const [isFormOpen, setIsFormOpen] = useState(false);
-    
-    
+
+
 
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -86,14 +81,14 @@ export default function page({ }: Props) {
             }
         ]);
         setWorkoutDay(days[0]);
-        setWorkoutExercises([{...workoutExerciseLayout}]);
+        setWorkoutExercises([{ ...workoutExerciseLayout }]);
         setWorkoutName("");
         setIsFormOpen(false);
     }
 
     function handleCancelForm() {
         setWorkoutDay(days[0]);
-        setWorkoutExercises([{...workoutExerciseLayout}]);
+        setWorkoutExercises([{ ...workoutExerciseLayout }]);
         setWorkoutName("");
         setIsFormOpen(false);
     }
@@ -107,145 +102,27 @@ export default function page({ }: Props) {
                             exercises={exercises}
                             workouts={workouts} />
                         <button
-                            className="addButton"
                             type="button"
                             onClick={() => setIsFormOpen(true)}
                         >
-                            <span>+</span>
+                            <span>+</span>Add Workout
                         </button>
                     </div>
-                    
-                    {isFormOpen && (
-                        <Modal onClose={handleCancelForm}>
-                            <ModalForm
-                                modalName='New Workout'
-                                submitText="Add workout"
-                                onSubmit={handleSubmit}
-                                onCancel={handleCancelForm}
-                            >
-                                {
-                                    exercises.length
-                                        ? <>
-                                            <TextField
-                                                label="Workout Name"
-                                                name="workout-name"
-                                                value={workoutName}
-                                                required={true}
-                                                onChange={setWorkoutName}
-                                            />
-                                            <SelectField
-                                                label="Day"
-                                                name="day"
-                                                value={workoutDay}
-                                                options={days}
-                                                optionsNames={dayNames}
-                                                parseValue={(value) => Number(value) as Day}
-                                                onChange={setWorkoutDay}
-                                                />
-                                            <div className={styles.exercises}>
-                                                <h3>Exercises</h3>
-                                                {
-                                                    workoutExercises.map((exercise, index) => {
-                                                        let exerciseObj = exercises.find(ex => ex.id == exercise.exerciseId);
-                                                        let target = exerciseObj?.target;
-                                                        let useWeight = exerciseObj?.useWeight;
-                                                        return (
-                                                            <div key={exercise.exerciseId + "_" + index + "_workout_exercise_wrap"}>
-                                                                <SelectField
-                                                                    key={exercise.exerciseId + "_" + index + "_workout_exercise"}
-                                                                    label=""
-                                                                    name="workout-exercise[]"
-                                                                    value={workoutExercises[index].exerciseId}
-                                                                    options={exercises.map(exercise => exercise.id)}
-                                                                    optionsNames={exercises.map(exercise => exercise.name)}
-                                                                    parseValue={Number}
-                                                                    onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                                        return currentWorkoutExercises.map((exercise, i) => {
-                                                                            return index == i
-                                                                                ? { ...exercise, exerciseId: value }
-                                                                                : exercise;
-                                                                        });
-                                                                    })}
-                                                                />
-                                                                <NumberField
-                                                                    key={exercise.exerciseId + "_" + index + "_workout_exercise_target"}
-                                                                    label={target == null ? "Unknown" : capitalize(target)}
-                                                                    name="workout-exercise-target"
-                                                                    value={workoutExercises[index].target}
-                                                                    onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                                        return currentWorkoutExercises.map((exercise, i) => {
-                                                                            return index == i
-                                                                                ? { ...exercise, target: value }
-                                                                                : exercise;
-                                                                        });
-                                                                    })}
-                                                                />
-                                                                <NumberField
-                                                                    key={exercise.exerciseId + "_" + index + "_workout_exercise_sets"}
-                                                                    label="Sets"
-                                                                    name="workout-exercise-sets"
-                                                                    value={workoutExercises[index].sets}
-                                                                    onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                                        return currentWorkoutExercises.map((exercise, i) => {
-                                                                            return index == i
-                                                                                ? { ...exercise, sets: value }
-                                                                                : exercise;
-                                                                        });
-                                                                    })}
-                                                                />
-                                                                {
-                                                                    useWeight
-                                                                    ? <NumberField
-                                                                        key={exercise.exerciseId + "_" + index + "_workout_exercise_weight"}
-                                                                        label="Additional Weight (kg)"
-                                                                        name="workout-exercise-weight"
-                                                                        value={workoutExercises[index].weight ?? 0}
-                                                                        onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                                            return currentWorkoutExercises.map((exercise, i) => {
-                                                                                return index == i
-                                                                                    ? { ...exercise, weight: value }
-                                                                                    : exercise;
-                                                                            });
-                                                                        })}
-                                                                    />
-                                                                    : null
-                                                                }
-                                                                {
-                                                                    workoutExercises[index].sets > 1
-                                                                    ? <NumberField
-                                                                        key={exercise.exerciseId + "_" + index + "_workout_exercise_rest"}
-                                                                        label="Rest"
-                                                                        name="workout-exercise-rest"
-                                                                        value={workoutExercises[index].rest}
-                                                                        onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                                            return currentWorkoutExercises.map((exercise, i) => {
-                                                                                return index == i
-                                                                                    ? { ...exercise, rest: value }
-                                                                                    : exercise;
-                                                                            });
-                                                                        })}
-                                                                        />
-                                                                    : null
-                                                                }
-                                                            </div>
-                                                        )
-                                                    })
-                                                }
-                                                <button
-                                                    className="addButton"
-                                                    type="button"
-                                                    onClick={() => setWorkoutExercises([...workoutExercises, {...workoutExerciseLayout}])}
-                                                >
-                                                    <span>+</span>
-                                                </button>
-                                            </div>
-                                            
-                                        </>
-                                    : <p>Add some exercises to create workout</p>
-                                }
-                            </ModalForm>
-                        </Modal>
-                    )}
+
+                    {
+                        isFormOpen &&
+                        <WorkoutForm
+                            exercises={exercises}
+                            workoutName={workoutName}
+                            handleCancelForm={handleCancelForm}
+                            handleSubmit={handleSubmit}
+                            setWorkoutName={setWorkoutName}
+                            workoutExercises={workoutExercises}
+                            workoutDay={workoutDay}
+                            setWorkoutDay={setWorkoutDay}
+                            setWorkoutExercises={setWorkoutExercises}
+                        />
+                    }
                 </div>
             </section>
         </Content>

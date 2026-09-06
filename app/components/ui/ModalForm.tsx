@@ -1,9 +1,9 @@
 import type { ReactNode, SubmitEvent } from "react"
-import { X } from "lucide-react"
 import styles from "./ModalForm.module.scss"
 
 type Props = {
     children: ReactNode;
+    className?: string;
     modalName: string;
     submitText: string;
     onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
@@ -12,17 +12,18 @@ type Props = {
 
 export default function ModalForm({
     children,
+    className,
     modalName,
     submitText,
     onSubmit,
     onCancel,
 }: Props) {
     return (
-        <form className={styles.form} onSubmit={onSubmit}>
+        <form className={`${styles.form} ${className}`} onSubmit={onSubmit}>
             <h2>{ modalName }</h2>
             {children}
             <div className={styles.formActions}>
-                <button type="button" onClick={onCancel}>
+                <button type="button" className="button-secondary" onClick={onCancel}>
                     Cancel
                 </button>
                 <button type="submit">{submitText}</button>

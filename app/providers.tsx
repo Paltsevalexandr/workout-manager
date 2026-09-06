@@ -18,7 +18,6 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             category: "strength",
             muscleGroup: "chest",
             target: "reps",
-            useWeight: false,
         },
         {
             id: 1,
@@ -26,7 +25,6 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             category: "strength",
             muscleGroup: "legs",
             target: "reps",
-            useWeight: true,
         },
         {
             id: 2,
@@ -34,7 +32,6 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             category: "cardio",
             muscleGroup: "legs",
             target: "duration",
-            useWeight: false,
         },
         {
             id: 3,
@@ -42,7 +39,6 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             category: "strength",
             muscleGroup: "back",
             target: "reps",
-            useWeight: true,
         },
         {
             id: 4,
@@ -50,7 +46,6 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             category: "mobility",
             muscleGroup: "core",
             target: "duration",
-            useWeight: false,
         },
         {
             id: 5,
@@ -58,7 +53,6 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             category: "stretching",
             muscleGroup: "legs",
             target: "reps",
-            useWeight: false,
         },
     ]);
 

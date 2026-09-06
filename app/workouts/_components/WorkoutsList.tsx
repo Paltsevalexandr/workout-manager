@@ -59,9 +59,9 @@ export default function WorkoutsList({ workouts, exercises }: Props) {
                                                                 <p>{getExerciseText(workoutExercise, exercise)}</p>
                                                                 <p>{`Rest: ${workoutExercise.rest} sec`}</p>
                                                                 {
-                                                                    exercise.useWeight && workoutExercise.weight !== undefined
-                                                                        ? <p>Weight: {workoutExercise.weight} kg</p>
-                                                                        : null
+                                                                    workoutExercise.weight
+                                                                    ? <p>Weight: {workoutExercise.weight} kg</p>
+                                                                    : null
                                                                 }
                                                             </>
                                                             : null

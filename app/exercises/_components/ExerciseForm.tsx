@@ -11,12 +11,10 @@ type Props = {
     category: Category;
     muscleGroup: MuscleGroup;
     target: Target;
-    useWeight: boolean;
     onNameChange: (name: string) => void;
     onCategoryChange: (category: Category) => void;
     onMuscleGroupChange: (muscleGroup: MuscleGroup) => void;
     onTargetChange: (target: Target) => void;
-    onUseWeightChange: (useWeight: boolean) => void;
 }
 
 export default function ExerciseForm({
@@ -24,12 +22,10 @@ export default function ExerciseForm({
     category,
     muscleGroup,
     target,
-    useWeight,
     onNameChange,
     onCategoryChange,
     onMuscleGroupChange,
     onTargetChange,
-    onUseWeightChange,
 }: Props) {
     return (
         <>
@@ -61,12 +57,6 @@ export default function ExerciseForm({
                     value={target}
                     options={targets}
                     onChange={onTargetChange}
-                />
-                <CheckboxField
-                    label="Uses weight"
-                    name="uses-weight"
-                    checked={useWeight}
-                    onChange={onUseWeightChange}
                 />
         </>
     )

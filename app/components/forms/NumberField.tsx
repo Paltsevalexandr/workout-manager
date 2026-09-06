@@ -6,6 +6,7 @@ type Props = {
     value: number;
     required?: boolean;
     autoFocus?: boolean;
+    className?: string;
     onChange: (value: number) => void;
 }
 
@@ -15,12 +16,14 @@ export default function NumberField({
     value,
     required = false,
     autoFocus = false,
+    className = "",
     onChange,
 }: Props) {
     return (
         <label>
             {label}
             <input
+                className={className}
                 type="number"
                 name={name}
                 required={required}

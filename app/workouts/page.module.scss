@@ -1,13 +1,50 @@
-.exercises {
-    padding: 0.5rem;
-    border: 1px solid rgba(0,0,0,0.4);
+@import "../variables.scss";
+
+// new workout form
+.newWorkout {
+    color: $primaryColor;
+
+    &ExercisesWrap {
+        border: $border;
+        border-radius: 5px;
+    }
+    &Exercises {
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        overflow-y: auto;
+    }
+    &ExercisesHeader {
+        padding: 10px;
+        border-bottom: $border;
+        color: $secondaryColor;
+    }
+    &ExercisesHeader,
+    &Exercise {
+        display: grid;
+        grid-template-columns: minmax(0,1fr) 5.55rem 5.55rem 5.55rem 5.55rem 4.25rem;
+        gap: 8px;
+    }
+    &DeleteExercise {
+        min-width: 36px;
+        width: 36px;
+        height: 36px;
+        background-color: $red;
+        border: $border;
+        border-radius: 5px;
+    }
 }
+
+
+// workout cards
 .workoutsListWrap {
     width: 100%;
     max-width: 950px;
     overflow-x: auto;
 }
 .workoutsList {
+    margin-bottom: 1rem;
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;

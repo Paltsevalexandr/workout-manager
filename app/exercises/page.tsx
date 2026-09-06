@@ -21,7 +21,6 @@ export default function Page() {
     const [category, setCategory] = useState<Category>("strength");
     const [muscleGroup, setMuscleGroup] = useState<MuscleGroup>("chest");
     const [target, setTarget] = useState<Target>("reps");
-    const [useWeight, setUseWeight] = useState(false);
     const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
@@ -29,13 +28,12 @@ export default function Page() {
 
         setExercises((currentExercises) => [
             ...currentExercises,
-            { id: generateID(currentExercises), name: name.trim(), category, muscleGroup, target, useWeight },
+            { id: generateID(currentExercises), name: name.trim(), category, muscleGroup, target },
         ]);
         setName("");
         setCategory(categories[0]);
         setMuscleGroup(muscleGroups[0]);
         setTarget(targets[0]);
-        setUseWeight(false);
         setIsFormOpen(false);
     }
 
@@ -55,7 +53,6 @@ export default function Page() {
         setCategory("strength");
         setMuscleGroup("chest");
         setTarget("reps");
-        setUseWeight(false);
         setIsFormOpen(false);
     }
 
@@ -93,12 +90,10 @@ export default function Page() {
                             category={category}
                             muscleGroup={muscleGroup}
                             target={target}
-                            useWeight={useWeight}
                             onNameChange={setName}
                             onCategoryChange={setCategory}
                             onMuscleGroupChange={setMuscleGroup}
                             onTargetChange={setTarget}
-                            onUseWeightChange={setUseWeight}
                         />
                     </ModalForm>
                 </Modal>
