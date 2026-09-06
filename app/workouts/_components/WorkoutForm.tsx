@@ -11,14 +11,12 @@ import styles from "../page.module.scss";
 
 type Props = {
     workoutName: string,
-    workoutDay: number,
     exercises: Exercise[],
-    workoutExercises: WorkoutExercise[],
+    workoutExercises: Exercise["id"][],
     handleCancelForm: () => void,
     handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void,
     setWorkoutName: (name: string) => void,
-    setWorkoutDay: (day: Day) => void,
-    setWorkoutExercises: Dispatch<SetStateAction<WorkoutExercise[]>>,
+    setWorkoutExercises: Dispatch<SetStateAction<Exercise["id"][]>>,
 
 }
 
@@ -26,11 +24,9 @@ export default function WorkoutForm({
     exercises,
     workoutExercises,
     workoutName,
-    workoutDay,
     handleCancelForm,
     handleSubmit,
     setWorkoutName,
-    setWorkoutDay,
     setWorkoutExercises,
 
 }: Props) {
@@ -61,48 +57,37 @@ export default function WorkoutForm({
                                 required={true}
                                 onChange={setWorkoutName}
                             />
-                            <SelectField
-                                label="Day"
-                                name="day"
-                                value={workoutDay}
-                                options={days}
-                                optionsNames={dayNames}
-                                parseValue={(value) => Number(value) as Day}
-                                onChange={setWorkoutDay}
-                            />
                             <div className={styles.newWorkoutExercisesWrap}>
                                 <div className={styles.newWorkoutExercisesHeader}>
                                     <div>Exercise</div>
-                                    <div>Reps/Dur.</div>
+                                    {/* <div>Reps/Dur.</div>
                                     <div>Sets</div>
                                     <div>Weight (kg)</div>
-                                    <div>Rest (sec)</div>
+                                    <div>Rest (sec)</div> */}
                                     <div>Delete</div>
                                 </div>
                                 <div className={styles.newWorkoutExercises}>
                                     {
-                                        workoutExercises.map((exercise, index) => {
+                                        workoutExercises.map((exerciseId, index) => {
                                             return (
                                                 <div className={styles.newWorkoutExercise}
-                                                    key={exercise.exerciseId + "_" + index + "_workout_exercise_wrap"}>
+                                                    key={exerciseId + "_" + index + "_workout_exercise_wrap"}>
                                                     <SelectField
-                                                        key={exercise.exerciseId + "_" + index + "_workout_exercise"}
+                                                        key={exerciseId + "_" + index + "_workout_exercise"}
                                                         label=""
                                                         name="workout-exercise[]"
-                                                        value={workoutExercises[index].exerciseId}
+                                                        value={workoutExercises[index]}
                                                         options={exercises.map(exercise => exercise.id)}
                                                         optionsNames={exercises.map(exercise => exercise.name)}
                                                         parseValue={Number}
                                                         onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                            return currentWorkoutExercises.map((exercise, i) => {
-                                                                return index == i
-                                                                    ? { ...exercise, exerciseId: value }
-                                                                    : exercise;
+                                                            return currentWorkoutExercises.map((exerciseId, i) => {
+                                                                return index == i ? value : exerciseId;
                                                             });
                                                         })}
                                                     />
-                                                    <NumberField
-                                                        key={exercise.exerciseId + "_" + index + "_workout_exercise_target"}
+                                                    {/* <NumberField
+                                                        key={exerciseId + "_" + index + "_workout_exercise_target"}
                                                         label=""
                                                         name="workout-exercise-target"
                                                         value={workoutExercises[index].target}
@@ -152,7 +137,7 @@ export default function WorkoutForm({
                                                                     : exercise;
                                                             });
                                                         })}
-                                                    />
+                                                    /> */}
                                                     <div>
                                                         <button type="button" className={styles.newWorkoutDeleteExercise}>
                                                             <Trash2 size={16} />
@@ -168,7 +153,7 @@ export default function WorkoutForm({
                                 className="button-secondary"
                                 type="button"
                                 disabled={exercises.length == 0}
-                                onClick={() => setWorkoutExercises([...workoutExercises, { ...workoutExerciseLayout }])}
+                                onClick={() => setWorkoutExercises([...workoutExercises, 0])}
                             >
                                 <span><Plus size={16} /></span> Add Exercise
                             </button>

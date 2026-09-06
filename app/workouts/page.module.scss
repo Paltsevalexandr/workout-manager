@@ -23,10 +23,11 @@
     &ExercisesHeader,
     &Exercise {
         display: grid;
-        grid-template-columns: minmax(0,1fr) 5.55rem 5.55rem 5.55rem 5.55rem 4.25rem;
+        grid-template-columns: minmax(6rem, 1fr) 4.25rem;
         gap: 8px;
     }
     &DeleteExercise {
+        margin-left: auto;
         min-width: 36px;
         width: 36px;
         height: 36px;

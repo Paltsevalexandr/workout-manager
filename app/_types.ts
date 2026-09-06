@@ -10,6 +10,14 @@ export type Target = typeof targets[number];
 export const days = [0, 1, 2, 3, 4, 5, 6];
 export type Day = typeof days[number];
 
+export type Exercise = {
+    id: number;
+    name: string;
+    category: Category;
+    muscleGroup: MuscleGroup;
+    target: Target;
+};
+
 export type WorkoutExercise = {
     id: number | null;
     exerciseId: Exercise['id'];
@@ -22,14 +30,11 @@ export type WorkoutExercise = {
 export type Workout = {
     id: number;
     name: string;
-    exercises: WorkoutExercise[];
-    day: Day;
-};
+    exercises: Exercise["id"][];
 
-export type Exercise = {
-    id: number;
-    name: string;
-    category: Category;
-    muscleGroup: MuscleGroup;
-    target: Target;
+    // tags: string[];
+    // exerciseIds: Exercise['id'][]; // просто ссылки, никаких sets/weight
+    // status: 'active' | 'archived';
+    // createdAt: string;
+    // archivedAt: string | null;
 };

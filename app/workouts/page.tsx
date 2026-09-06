@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, type SubmitEvent } from 'react'
+import { useEffect, useState, type SubmitEvent } from 'react'
 import { useExercisesContext } from '@/app/providers';
 import Content from '../components/layout/Content';
 import styles from './page.module.scss';
-import { Workout, WorkoutExercise, days, Day } from '../_types';
+import { Workout, WorkoutExercise, Exercise, days, Day } from '../_types';
 import { generateID } from '../lib/data';
 import WorkoutsList from './_components/WorkoutsList';
 import WorkoutForm from './_components/WorkoutForm';
@@ -24,47 +24,63 @@ export default function page({ }: Props) {
 
     const [workouts, setWorkouts] = useState<Workout[]>([
         {
-            id: 0, name: 'Workout 1', day: 0, exercises: [
-                {
-                    exerciseId: 0,
-                    id: null,
-                    rest: 30,
-                    sets: 1,
-                    target: 1,
-                    weight: 0
-                }
-            ]
+            id: 0, name: 'Workout 1', exercises: [4, 5, 6]
         },
         {
-            id: 1, name: 'Workout 2', day: 0, exercises: [
-                {
-                    exerciseId: 0,
-                    id: null,
-                    rest: 30,
-                    sets: 1,
-                    target: 1,
-                    weight: 0
-                }
-            ]
+            id: 1, name: 'Workout 2', exercises: [2, 4, 5]
         },
         {
-            id: 2, name: 'Workout 3', day: 1, exercises: [
-                {
-                    exerciseId: 1,
-                    id: null,
-                    rest: 30,
-                    sets: 1,
-                    target: 1,
-                    weight: 30
-                }
-            ]
+            id: 2, name: 'Workout 3', exercises: [0, 1, 3]
         }
-    ]);
+    ])
+    // const [workouts, setWorkouts] = useState<Workout[]>([
+    //     {
+    //         id: 0, name: 'Workout 1', day: 0, exercises: [
+    //             {
+    //                 exerciseId: 0,
+    //                 id: null,
+    //                 rest: 30,
+    //                 sets: 1,
+    //                 target: 1,
+    //                 weight: 0
+    //             }
+    //         ]
+    //     },
+    //     {
+    //         id: 1, name: 'Workout 2', day: 0, exercises: [
+    //             {
+    //                 exerciseId: 0,
+    //                 id: null,
+    //                 rest: 30,
+    //                 sets: 1,
+    //                 target: 1,
+    //                 weight: 0
+    //             }
+    //         ]
+    //     },
+    //     {
+    //         id: 2, name: 'Workout 3', day: 1, exercises: [
+    //             {
+    //                 exerciseId: 1,
+    //                 id: null,
+    //                 rest: 30,
+    //                 sets: 1,
+    //                 target: 1,
+    //                 weight: 30
+    //             }
+    //         ]
+    //     }
+    // ]);
 
     const [workoutName, setWorkoutName] = useState<string>("");
-    const [workoutDay, setWorkoutDay] = useState<Day>(days[0]);
-    const [workoutExercises, setWorkoutExercises] = useState<WorkoutExercise[]>([{ ...workoutExerciseLayout }]);
+    const [workoutExercises, setWorkoutExercises] = useState<Exercise["id"][]>([]);
     const [isFormOpen, setIsFormOpen] = useState(false);
+
+    useEffect(() => {
+        if (exercises.length) {
+            setWorkoutExercises([0]);
+        }
+    }, [])
 
 
 
@@ -76,19 +92,16 @@ export default function page({ }: Props) {
             {
                 id: generateID(workouts),
                 name: workoutName,
-                day: workoutDay,
                 exercises: workoutExercises
             }
         ]);
-        setWorkoutDay(days[0]);
-        setWorkoutExercises([{ ...workoutExerciseLayout }]);
+        setWorkoutExercises([0]);
         setWorkoutName("");
         setIsFormOpen(false);
     }
 
     function handleCancelForm() {
-        setWorkoutDay(days[0]);
-        setWorkoutExercises([{ ...workoutExerciseLayout }]);
+        setWorkoutExercises([0]);
         setWorkoutName("");
         setIsFormOpen(false);
     }
@@ -118,8 +131,6 @@ export default function page({ }: Props) {
                             handleSubmit={handleSubmit}
                             setWorkoutName={setWorkoutName}
                             workoutExercises={workoutExercises}
-                            workoutDay={workoutDay}
-                            setWorkoutDay={setWorkoutDay}
                             setWorkoutExercises={setWorkoutExercises}
                         />
                     }

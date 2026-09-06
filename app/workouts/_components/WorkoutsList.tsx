@@ -38,34 +38,17 @@ export default function WorkoutsList({ workouts, exercises }: Props) {
                                     key={"workout_name_" + index}>
                                     {workout.name}
                                 </h4>
-                                <h5 className={styles.workoutDay}
-                                    key={"workout_day_" + index}>
-                                    {getDayName(workout.day)}
-                                </h5>
                                 <ul key={"workout_exercises_" + index}>
                                     {
-                                        workout.exercises.map((workoutExercise, index) => {
+                                        workout.exercises.map((workoutExerciseID, index) => {
                                             let exercise = exercises.find(exercise => {
-                                                return exercise.id == workoutExercise.exerciseId
+                                                return exercise.id == workoutExerciseID
                                             });
 
                                             return (
                                                 <li key={"exercise_" + index}
                                                     className={styles.workoutExercise}>
                                                     <p>{exercise?.name ?? "Unknown"}</p>
-                                                    {
-                                                        exercise
-                                                            ? <>
-                                                                <p>{getExerciseText(workoutExercise, exercise)}</p>
-                                                                <p>{`Rest: ${workoutExercise.rest} sec`}</p>
-                                                                {
-                                                                    workoutExercise.weight
-                                                                    ? <p>Weight: {workoutExercise.weight} kg</p>
-                                                                    : null
-                                                                }
-                                                            </>
-                                                            : null
-                                                    }
                                                 </li>
                                             )
                                         })
