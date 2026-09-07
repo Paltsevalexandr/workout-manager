@@ -4,6 +4,7 @@ import "./globals.css";
 import "./globals.scss";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
+import { ExercisesProvider } from "./providers";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,17 +26,20 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-        <body className="min-h-full flex flex-col">
-            <Header />
-            {children}
-            <Footer />
-        </body>
-          
-    </html>
-  );
+
+    return (
+        <html
+            lang="en"
+            className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+        >
+            <body className="min-h-full flex flex-col">
+                <Header />
+                    <ExercisesProvider>
+                        {children}
+                    </ExercisesProvider>
+                <Footer />
+            </body>
+                
+        </html>
+    );
 }

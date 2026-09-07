@@ -7,9 +7,9 @@ import { usePathname } from "next/navigation"
 export default function Header() {
     const pathname = usePathname()
     const menuItems = [
-        { text: "Home", href: "/"},
+        { text: "Home", href: "/" },
+        { text: "Workouts", href: "/workouts" },
         { text: "Exercises", href: "/exercises" },
-        { text: "Menu item 2", href: "#" },
         { text: "Menu item 3", href: "#" },
         { text: "Menu item 4", href: "#" },
     ]
