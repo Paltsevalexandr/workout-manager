@@ -58,11 +58,12 @@ export default function WorkoutsList({
                                         {capitalize(workout.name)}
                                     </h4>
                                 </div>
-                                <ul key={"workout_exercises_" + index}>
+                                <ul key={"workout_exercises_" + index}
+                                    className={styles.workoutExercises}>
                                     {
-                                        workout.exercises.map((workoutExerciseID, index) => {
+                                        workout.exercises.map((workoutExerciseId, index) => {
                                             let exercise = exercises.find(exercise => {
-                                                return exercise.id == workoutExerciseID
+                                                return exercise.id == workoutExerciseId
                                             });
 
                                             return (

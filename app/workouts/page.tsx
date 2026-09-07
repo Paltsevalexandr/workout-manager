@@ -25,7 +25,7 @@ export default function page({ }: Props) {
 
     const [workouts, setWorkouts] = useState<Workout[]>([
         {
-            id: 0, name: 'Workout 1', exercises: [4, 5, 6]
+            id: 0, name: 'Workout 1', exercises: [4, 5, 2]
         },
         {
             id: 1, name: 'Workout 2', exercises: [2, 4, 5]

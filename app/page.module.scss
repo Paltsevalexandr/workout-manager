@@ -1,0 +1,26 @@
+@import "./variables";
+
+.workout {
+    padding: 0.5rem 0.5rem 1rem;
+    width: calc(25% - 12px);
+    border: solid 1px rgba(0,0,0,0.4);
+    border-radius: $borderRadiusSmall;
+
+    &List {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    &Name,
+    &Exercises {
+        padding-inline: 0.5rem;
+    }
+    &Name {
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: $border;
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+}
+
