@@ -4,16 +4,17 @@ import { useEffect, useState, type SubmitEvent } from 'react'
 import { useExercisesContext } from '@/app/providers';
 import Content from '../components/layout/Content';
 import styles from './page.module.scss';
-import { Workout, WorkoutExercise, Exercise, days, Day } from '../_types';
+import { Workout, PerformedExercise, Exercise, days, Day } from '../_types';
 import { generateID } from '../lib/data';
 import WorkoutsList from './_components/WorkoutsList';
 import WorkoutForm from './_components/WorkoutForm';
+import { Plus } from 'lucide-react';
 
 type Props = {}
 
 export default function page({ }: Props) {
     const { exercises } = useExercisesContext();
-    let workoutExerciseLayout = {
+    let performedExerciseLayout = {
         id: null,
         exerciseId: exercises[0]?.id ?? -1,
         sets: 1,
@@ -118,7 +119,7 @@ export default function page({ }: Props) {
                             type="button"
                             onClick={() => setIsFormOpen(true)}
                         >
-                            <span>+</span>Add Workout
+                            <span><Plus size={16} /></span>Add Workout
                         </button>
                     </div>
 

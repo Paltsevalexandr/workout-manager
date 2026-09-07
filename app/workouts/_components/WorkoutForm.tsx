@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import Modal from '../../components/ui/Modal';
 import ModalForm from '../../components/ui/ModalForm';
-import { days, Day, Exercise, WorkoutExercise } from '../../_types';
+import { days, Day, Exercise } from '../../_types';
 import SelectField from '../../components/forms/SelectField';
 import { capitalize, dayNames } from "../../lib";
 import TextField from '../../components/forms/TextField';
@@ -30,14 +30,13 @@ export default function WorkoutForm({
     setWorkoutExercises,
 
 }: Props) {
-    let workoutExerciseLayout = {
-        id: null,
-        exerciseId: exercises[0]?.id ?? -1,
-        sets: 1,
-        target: 1,
-        weight: 0,
-        rest: 30
-    };
+
+    function deleteExercise(index: number) {
+        setWorkoutExercises((currentExercises) => {
+            return currentExercises.filter((_, i) => i != index);
+        });
+    }
+
     return (
         <Modal onClose={handleCancelForm}>
             <ModalForm
@@ -138,11 +137,12 @@ export default function WorkoutForm({
                                                             });
                                                         })}
                                                     /> */}
-                                                    <div>
-                                                        <button type="button" className={styles.newWorkoutDeleteExercise}>
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    </div>
+                                                    <button type="button"
+                                                        key={"delete_ex_btn_" + index}
+                                                        onClick={() => deleteExercise(index)}
+                                                        className={styles.newWorkoutDeleteExercise}>
+                                                        <Trash2 size={16} key={"delete_ex_icon_" + index} />
+                                                    </button>
                                                 </div>
                                             )
                                         })

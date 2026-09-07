@@ -84,7 +84,7 @@ button {
     line-height: 1;
     color: white;
     background-color: rgb(17, 17, 17);
-    border-radius: 5px;
+    border-radius: $borderRadius;
     cursor: pointer;
 
     &::after {
@@ -118,7 +118,7 @@ button {
 input, select {
     height: 36px;
     border: $border;
-    border-radius: 5px;
+    border-radius: $borderRadius;
     color: $primaryColor;
     font-weight: 500;
 }

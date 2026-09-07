@@ -18,15 +18,6 @@ export type Exercise = {
     target: Target;
 };
 
-export type WorkoutExercise = {
-    id: number | null;
-    exerciseId: Exercise['id'];
-    sets: number;
-    target: number;
-    weight: number;
-    rest: number;
-};
-
 export type Workout = {
     id: number;
     name: string;
@@ -37,4 +28,20 @@ export type Workout = {
     // status: 'active' | 'archived';
     // createdAt: string;
     // archivedAt: string | null;
+};
+
+export type WorkoutSession = {
+    id: number;
+    templateId: Workout;
+    date: Date;
+    performedExercises: PerformedExercise[]
+}
+
+export type PerformedExercise = {
+    id: number | null;
+    exerciseId: Exercise['id'];
+    sets: number;
+    target: number;
+    weight: number;
+    rest: number;
 };
