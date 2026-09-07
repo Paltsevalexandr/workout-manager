@@ -73,9 +73,11 @@ export default function page({ }: Props) {
     //     }
     // ]);
 
+    const [workoutEditIndex, setWorkoutEditIndex] = useState<number | null>(null);
     const [workoutName, setWorkoutName] = useState<string>("");
     const [workoutExercises, setWorkoutExercises] = useState<Exercise["id"][]>([]);
-    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [isCreateWorkoutFormOpen, setIsCreateWorkoutFormOpen] = useState(false);
+    const [isEditWorkoutFormOpen, setIsEditWorkoutFormOpen] = useState(false);
 
     useEffect(() => {
         if (exercises.length) {
@@ -83,9 +85,7 @@ export default function page({ }: Props) {
         }
     }, [])
 
-
-
-    function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
+    function createWorkout(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         // TODO - send to server new workout and get the ID
         setWorkouts((currentWorkouts) => [
@@ -98,13 +98,42 @@ export default function page({ }: Props) {
         ]);
         setWorkoutExercises([0]);
         setWorkoutName("");
-        setIsFormOpen(false);
+        setIsCreateWorkoutFormOpen(false);
+    }
+
+    function editWorkout(event: SubmitEvent<HTMLFormElement>) {
+        event.preventDefault();
+        // TODO - send to server
+        setWorkouts((currentWorkouts) => {
+            return currentWorkouts.map((workout, index) => {
+                return workoutEditIndex == index
+                    ? {
+                        id: workout.id,
+                        name: workoutName,
+                        exercises: workoutExercises
+                    }
+                    : workout
+            })
+        });
+        setWorkoutEditIndex(null);
+        setWorkoutExercises([0]);
+        setWorkoutName("");
+        setIsCreateWorkoutFormOpen(false);
     }
 
     function handleCancelForm() {
         setWorkoutExercises([0]);
         setWorkoutName("");
-        setIsFormOpen(false);
+        setIsCreateWorkoutFormOpen(false);
+        setIsEditWorkoutFormOpen(false);
+        setWorkoutEditIndex(null);
+    }
+
+    function handleEdit(workoutIndex: number) {
+        setWorkoutEditIndex(workoutIndex);
+        setWorkoutName(workouts[workoutIndex].name);
+        setWorkoutExercises([...workouts[workoutIndex].exercises]);
+        setIsEditWorkoutFormOpen(true);
     }
 
     return (
@@ -114,27 +143,42 @@ export default function page({ }: Props) {
                     <div className={styles.workoutsListWrap}>
                         <WorkoutsList
                             exercises={exercises}
-                            workouts={workouts} />
+                            workouts={workouts}
+                            handleEdit={handleEdit}
+                            setIsEditWorkoutFormOpen={setIsEditWorkoutFormOpen} />
                         <button
                             type="button"
-                            onClick={() => setIsFormOpen(true)}
+                            onClick={() => setIsCreateWorkoutFormOpen(true)}
                         >
                             <span><Plus size={16} /></span>Add Workout
                         </button>
                     </div>
 
                     {
-                        isFormOpen &&
+                        isCreateWorkoutFormOpen &&
                         <WorkoutForm
                             exercises={exercises}
                             workoutName={workoutName}
                             handleCancelForm={handleCancelForm}
-                            handleSubmit={handleSubmit}
+                            handleSubmit={createWorkout}
                             setWorkoutName={setWorkoutName}
                             workoutExercises={workoutExercises}
                             setWorkoutExercises={setWorkoutExercises}
                         />
                     }
+                    {
+                        isEditWorkoutFormOpen &&
+                        <WorkoutForm
+                            workoutName={workoutName}
+                            exercises={exercises}
+                            handleCancelForm={handleCancelForm}
+                            handleSubmit={editWorkout}
+                            setWorkoutName={setWorkoutName}
+                            workoutExercises={workoutExercises}
+                            setWorkoutExercises={setWorkoutExercises}
+                        />
+                    }
+
                 </div>
             </section>
         </Content>

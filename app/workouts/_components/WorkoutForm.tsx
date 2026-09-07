@@ -1,11 +1,9 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import Modal from '../../components/ui/Modal';
 import ModalForm from '../../components/ui/ModalForm';
-import { days, Day, Exercise } from '../../_types';
+import { Exercise, Workout } from '../../_types';
 import SelectField from '../../components/forms/SelectField';
-import { capitalize, dayNames } from "../../lib";
 import TextField from '../../components/forms/TextField';
-import NumberField from '../../components/forms/NumberField';
 import { Trash2, Plus } from "lucide-react"
 import styles from "../page.module.scss";
 
@@ -17,7 +15,6 @@ type Props = {
     handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void,
     setWorkoutName: (name: string) => void,
     setWorkoutExercises: Dispatch<SetStateAction<Exercise["id"][]>>,
-
 }
 
 export default function WorkoutForm({

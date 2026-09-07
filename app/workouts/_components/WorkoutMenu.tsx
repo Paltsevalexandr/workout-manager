@@ -1,26 +1,28 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import styles from "../page.module.scss";
 import { EllipsisVertical } from 'lucide-react';
+import { Exercise } from '@/app/_types';
 
 type Props = {
     index: number;
     openWorkoutMenuIndex: number | null;
-    setOpenWorkoutMenuIndex: (index: number | null) => void
+    setOpenWorkoutMenuIndex: (index: number | null) => void;
+    handleEdit: (name: number) => void;
 }
 
 export default function WorkoutMenu({
-    index, openWorkoutMenuIndex, setOpenWorkoutMenuIndex
+    index,
+    openWorkoutMenuIndex,
+    setOpenWorkoutMenuIndex,
+    handleEdit
 }: Props) {
     const menuItems = [
-        { text: "Edit", handler: edit },
+        { text: "Edit", handler: () => handleEdit(index) },
         { text: "Archive", handler: archive }
     ];
     const isOpen = openWorkoutMenuIndex === index;
     const menuRef = useRef<HTMLDivElement>(null);
 
-    function edit() {
-        console.log('edit')
-    }
     function archive() {
         console.log('archive');
     }
@@ -35,7 +37,7 @@ export default function WorkoutMenu({
 
         function handleOutsideClick(e: MouseEvent) {
             if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-                setOpenWorkoutMenuIndex(-1);
+                setOpenWorkoutMenuIndex(null);
             }
         }
 

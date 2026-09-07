@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import { Workout, Exercise } from '@/app/_types';
 import { capitalize, getDayName } from "../../lib";
 import styles from "../page.module.scss";
@@ -6,10 +6,17 @@ import WorkoutMenu from './WorkoutMenu';
 
 type Props = {
     workouts: Workout[],
-    exercises: Exercise[]
+    exercises: Exercise[],
+    setIsEditWorkoutFormOpen: (value: boolean) => void,
+    handleEdit: (index: number) => void,
 }
 
-export default function WorkoutsList({ workouts, exercises }: Props) {
+export default function WorkoutsList({
+    workouts,
+    exercises,
+    setIsEditWorkoutFormOpen,
+    handleEdit
+}: Props) {
     const [openWorkoutMenuIndex, setOpenWorkoutMenuIndex] = useState<number | null>(null);
     // function getExerciseTargetLabel(workoutExercise: WorkoutExercise, exercise: Exercise) {
     //     return exercise.target == "reps"
@@ -42,7 +49,8 @@ export default function WorkoutsList({ workouts, exercises }: Props) {
                                     className={styles.workoutHeader}>
                                     <WorkoutMenu
                                         openWorkoutMenuIndex={ openWorkoutMenuIndex }
-                                        setOpenWorkoutMenuIndex={ setOpenWorkoutMenuIndex}
+                                        setOpenWorkoutMenuIndex={setOpenWorkoutMenuIndex}
+                                        handleEdit={handleEdit}
                                         index={index}
                                     />
                                     <h4 className={styles.workoutName}
