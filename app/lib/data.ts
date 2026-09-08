@@ -11,7 +11,7 @@ export function generateID<T extends { id: number | null }>(dataArr: T[]): numbe
     return maxId + 1;
 }
 
-export function getExerciseById(exercises: Exercise[], id: number) {
+export function getExerciseById(exercises: Exercise[], id: number): Exercise | undefined {
     return exercises.find(exercise => exercise.id == id);
 }
 
@@ -19,4 +19,14 @@ export function getLastSessionDate(templateId: number, sessions: WorkoutSession[
     const templateSessions = sessions.filter(s => s.workoutId === templateId);
     if (templateSessions.length === 0) return null;
     return Math.max(...templateSessions.map(s => s.date));
+}
+
+export function getLastSession(templateId: number, sessions: WorkoutSession[]): WorkoutSession | null {
+    const templateSessions = sessions.filter(s => s.workoutId === templateId);
+    return templateSessions.reduce((prev, current) => {
+        if (!prev || current.date > prev.date) {
+            return current;
+        }
+        return prev;
+    }, null as WorkoutSession | null);
 }

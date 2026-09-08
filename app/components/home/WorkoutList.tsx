@@ -26,7 +26,7 @@ export default function WorkoutsList({ }: Props) {
         let performedExercises: PerformedExercise[] = [];
         // temp code
         let allPerformedExercises: PerformedExercise[] = [];
-        workoutSessions.forEach(session => allPerformedExercises.push(...session.performedExercises))
+        workoutSessions.forEach(session => allPerformedExercises.push(...session.performedExercises));
         // temp code end
         workouts[index].exercises.forEach(exerciseId => {
             const exercise = exercises.find(exercise => exercise.id == exerciseId);
@@ -89,12 +89,6 @@ export default function WorkoutsList({ }: Props) {
         })
     }
 
-    function formatRelativeDate(timestamp: number): string {
-        const days = Math.floor((Date.now() - timestamp) / (1000 * 60 * 60 * 24));
-        if (days === 0) return "Today";
-        if (days === 1) return "Yesterday";
-        return `${days} days ago`;
-    }
     return (
         <>
             <ul className={styles.workoutList}>
@@ -125,7 +119,7 @@ export default function WorkoutsList({ }: Props) {
                     })
                 }
             </ul>
-            {
+            {/* {
                 workoutSessions.map((session, i) => {
                     return (
                         <div className={styles.test} key={"foo" + i}>
@@ -136,7 +130,7 @@ export default function WorkoutsList({ }: Props) {
                         </div>
                     )
                 })
-            }
+            } */}
             {
                 isModalFormOpen
                 &&
@@ -155,7 +149,7 @@ export default function WorkoutsList({ }: Props) {
                                 label="Workout Date"
                                 name="workout_session_date"
                                 value={getFormattedDate(workoutSession.date)}
-                                onChange={(date) => setWorkoutSession((prevSession) => {
+                                    onChange={(date) => setWorkoutSession((prevSession) => {
                                     if (!prevSession) {
                                         return null;
                                     }

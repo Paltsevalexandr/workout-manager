@@ -24,7 +24,11 @@ export default function DateField({
                 autoFocus={autoFocus}
                 value={value}
                 type="date"
-                onChange={(event) => onChange(Date.parse(event.target.value))}
+                onChange={(event) => {
+                    const [year, month, day] = event.target.value.split('-').map(Number);
+                    const localDate = new Date(year, month - 1, day);
+                    onChange(localDate.getTime());
+                }}
             />
         </label>
     )

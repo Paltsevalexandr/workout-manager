@@ -22,3 +22,25 @@ export function getFormattedDate(timestamp: number) {
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
 }
+
+export function formatRelativeDate(timestamp: number | null): string {
+    console.log(timestamp);
+    if (timestamp == null) {
+        return "Never done";
+    }
+    let text = "";
+    const days = Math.floor((Date.now() - timestamp) / (1000 * 60 * 60 * 24));
+    if (days === 0) {
+        text = "Today"
+    }
+    else if (days === 1) {
+        text = "Yesterday"
+    }
+    else {
+        text = `${days} days ago`;
+        if (days > 14) {
+            text = `2+ weeks ago`;
+        }
+    }
+    return "Last done: " + text;
+}
