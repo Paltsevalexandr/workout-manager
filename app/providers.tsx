@@ -72,7 +72,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
 export function WorkoutsProvider({ children }: { children: React.ReactNode }) {
     const [workouts, setWorkouts] = useState<Workout[]>([
         {
-            id: 0, name: 'Workout 1', exercises: [4, 5, 2]
+            id: 0, name: 'Workout 1', exercises: [4, 5, 2, 1, 3, 0]
         },
         {
             id: 1, name: 'Workout 2', exercises: [2, 4, 5]

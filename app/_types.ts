@@ -31,9 +31,9 @@ export type Workout = {
 };
 
 export type WorkoutSession = {
-    id: number;
-    templateId: Workout;
-    date: Date;
+    id: number | null;
+    workoutId: Workout["id"];
+    date: number;
     performedExercises: PerformedExercise[]
 }
 

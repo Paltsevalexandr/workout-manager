@@ -8,16 +8,18 @@ import { Trash2, Plus } from "lucide-react"
 import styles from "../page.module.scss";
 
 type Props = {
-    workoutName: string,
-    exercises: Exercise[],
-    workoutExercises: Exercise["id"][],
-    handleCancelForm: () => void,
-    handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void,
-    setWorkoutName: (name: string) => void,
-    setWorkoutExercises: Dispatch<SetStateAction<Exercise["id"][]>>,
+    isEditWorkout?: boolean;
+    workoutName: string;
+    exercises: Exercise[];
+    workoutExercises: Exercise["id"][];
+    handleCancelForm: () => void;
+    handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
+    setWorkoutName: (name: string) => void;
+    setWorkoutExercises: Dispatch<SetStateAction<Exercise["id"][]>>;
 }
 
 export default function WorkoutForm({
+    isEditWorkout,
     exercises,
     workoutExercises,
     workoutName,
@@ -38,8 +40,8 @@ export default function WorkoutForm({
         <Modal onClose={handleCancelForm}>
             <ModalForm
                 className={styles.newWorkout}
-                modalName='New Workout'
-                submitText="Add workout"
+                modalName={`${isEditWorkout ? "Edit" : "Create"} Workout`}
+                submitText={`${isEditWorkout ? "Edit" : "Add"} Workout`}
                 onSubmit={handleSubmit}
                 onCancel={handleCancelForm}
             >
@@ -82,58 +84,6 @@ export default function WorkoutForm({
                                                             });
                                                         })}
                                                     />
-                                                    {/* <NumberField
-                                                        key={exerciseId + "_" + index + "_workout_exercise_target"}
-                                                        label=""
-                                                        name="workout-exercise-target"
-                                                        value={workoutExercises[index].target}
-                                                        onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                            return currentWorkoutExercises.map((exercise, i) => {
-                                                                return index == i
-                                                                    ? { ...exercise, target: value }
-                                                                    : exercise;
-                                                            });
-                                                        })}
-                                                    />
-                                                    <NumberField
-                                                        key={exercise.exerciseId + "_" + index + "_workout_exercise_sets"}
-                                                        label=""
-                                                        name="workout-exercise-sets"
-                                                        value={workoutExercises[index].sets}
-                                                        onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                            return currentWorkoutExercises.map((exercise, i) => {
-                                                                return index == i
-                                                                    ? { ...exercise, sets: value }
-                                                                    : exercise;
-                                                            });
-                                                        })}
-                                                    />
-                                                    <NumberField
-                                                        key={exercise.exerciseId + "_" + index + "_workout_exercise_weight"}
-                                                        label=""
-                                                        name="workout-exercise-weight"
-                                                        value={workoutExercises[index].weight}
-                                                        onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                            return currentWorkoutExercises.map((exercise, i) => {
-                                                                return index == i
-                                                                    ? { ...exercise, weight: value }
-                                                                    : exercise;
-                                                            });
-                                                        })}
-                                                    />
-                                                    <NumberField
-                                                        key={exercise.exerciseId + "_" + index + "_workout_exercise_rest"}
-                                                        label=""
-                                                        name="workout-exercise-rest"
-                                                        value={workoutExercises[index].rest}
-                                                        onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                            return currentWorkoutExercises.map((exercise, i) => {
-                                                                return index == i
-                                                                    ? { ...exercise, rest: value }
-                                                                    : exercise;
-                                                            });
-                                                        })}
-                                                    /> */}
                                                     <button type="button"
                                                         key={"delete_ex_btn_" + index}
                                                         onClick={() => deleteExercise(index)}

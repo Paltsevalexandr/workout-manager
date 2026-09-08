@@ -1,14 +1,15 @@
-import WorkoutsList from "./components/home/WorkoutsList";
+import WorkoutsList from "./components/home/WorkoutList";
+import Content from "./components/layout/Content";
 
 export default function Home() {
     
     return (
-        <div className="">
+        <Content title="Workouts Tracking">
             <section>
                 <div className="section-content">
                     <WorkoutsList />
                 </div>
             </section>
-        </div>
+        </Content>
     );
 }
