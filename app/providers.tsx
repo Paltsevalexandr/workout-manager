@@ -75,7 +75,7 @@ export function WorkoutsProvider({ children }: { children: React.ReactNode }) {
             id: 1, name: 'Workout 1', exercises: [4, 5, 2, 1, 3, 6]
         },
         {
-            id: 2, name: 'Workout 2', exercises: [2, 4, 5]
+            id: 2, name: 'Workout 2', exercises: [2, 4, 5, 5]
         },
         {
             id: 3, name: 'Workout 3', exercises: [1, 2, 3]

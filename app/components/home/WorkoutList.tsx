@@ -23,10 +23,11 @@ export default function WorkoutsList({ }: Props) {
             performedExercises: [
                 { id: 1, exerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
                 { id: 2, exerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 3, exerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 }
+                { id: 3, exerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
+
 
             ],
-            workoutId: 1
+            workoutId: 3
         },
         {
             date: 1788894136955,
@@ -37,7 +38,7 @@ export default function WorkoutsList({ }: Props) {
                 { id: 6, exerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 }
 
             ],
-            workoutId: 2
+            workoutId: 5
         }
     ]);
 
@@ -142,20 +143,6 @@ export default function WorkoutsList({ }: Props) {
             <ul className={styles.workoutList}>
                 {
                     sortWorkouts(workouts).map((workout, index) => {
-                        let exercisesCompactText = "";
-                        for (let i = 0; i < workout.exercises.length; i++) {
-                            let exercise = workout.exercises[i];
-                            let exerciseData = exercises.find(ex => ex.id == exercise);
-                            if (exerciseData) {
-                                if (i > 0) {
-                                    exercisesCompactText += ", ";
-                                }
-                                exercisesCompactText += exerciseData.name;
-                            }
-                            if (exercisesCompactText.length > 30) {
-                                break;
-                            }
-                        }
                         return <WorkoutItem
                             key={`workout_item_${index}`}
                             workout={workout}

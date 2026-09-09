@@ -28,6 +28,9 @@
         margin-bottom: 1rem;
     }
     &Exercise {
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
         @include fontPrimary;
     }
     &Footer {
@@ -38,6 +41,15 @@
     &LastDate,
     &ExerciseRemaining {
         @include fontSecondary;
+    }
+    &ExerciseRemainingLink {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.125rem;
+
+        &:hover {
+            text-decoration: underline;
+        }
     }
     &LastDate {
         display: flex;
