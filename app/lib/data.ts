@@ -6,7 +6,7 @@ export function generateID<T extends { id: number | null }>(dataArr: T[]): numbe
             return item.id;
         }
         return max;
-    }, -1);
+    }, 0);
 
     return maxId + 1;
 }

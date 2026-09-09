@@ -44,8 +44,8 @@
         align-items: center;
         gap: 0.25rem;
     }
-    &LastDateExists {
-        color: darkgreen;
+    &LastDateRecent {
+        color: $green;
     }
     &LastDateLongAgo{
         color: $red;

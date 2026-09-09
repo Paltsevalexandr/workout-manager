@@ -6,7 +6,8 @@ export {
     formatRelativeDate,
     dayNames,
     getDayName,
-    getFormattedDate
+    getFormattedDate,
+    dateStringToDateObj,
 } from "./datetime";
 
 export {

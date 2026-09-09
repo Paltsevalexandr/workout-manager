@@ -23,8 +23,12 @@ export function getFormattedDate(timestamp: number) {
     return `${year}-${month}-${day}`;
 }
 
+export function dateStringToDateObj(datestr: string) {
+    const [year, month, day] = datestr.split('-').map(Number);
+    return new Date(year, month - 1, day);
+}
+
 export function formatRelativeDate(timestamp: number | null): string {
-    console.log(timestamp);
     if (timestamp == null) {
         return "Never done";
     }
