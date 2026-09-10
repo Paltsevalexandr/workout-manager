@@ -1,59 +1,87 @@
 @import "./variables";
 
-.workout {
-    padding: 0.5rem 0.5rem 1rem;
-    width: calc(25% - 12px);
-    @include column;
-    border: solid 1px rgba(0,0,0,0.4);
-    border-radius: $borderRadiusSmall;
+$columnPadding: 1rem;
+$titleFontSize: 1.5rem;
+$titleLineHeight: 1.1;
 
+@mixin sectionTitle {
+    margin-bottom: 1rem;
+    font-size: $titleFontSize;
+    line-height: $titleLineHeight;
+    font-weight: bold;
+    color: $primaryColor;
+}
+@mixin metadata {
+    display: flex;
+    align-items: center;
+    @include fontSecondary;
+    font-weight: 500;
+}
+
+.workoutColumns {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(250, 250, 250);
+    border: $border;
+    border-radius: $borderRadiusBig;
+}
+
+.sidebar {
+    padding: $columnPadding 0.5rem;
+    width: 32%;
+    border-right: $border;
+
+    &Title {
+        @include sectionTitle;
+    }
+
+    &ListWrap {
+        max-height: calc(100vh - $headerHeight - ($columnPadding * 2) - ($titleFontSize * $titleLineHeight));
+        overflow-y: auto;
+    }
     &List {
         display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
+        flex-direction: column;
+        gap: 4px;
+    }
+}
+
+.workout {
+    padding: 0.5rem 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: $border;
+    // border-color: $primaryBg;
+    border-radius: $borderRadius;
+    background-color: $primaryBg;
+
+    &.active {
+        background-color: $highlightBg;
+        // border: $border;
     }
 
-    &Name,
-    &Exercises {
-        padding-inline: 0.5rem;
-    }
     &Name {
-        margin-bottom: 0.5rem;
-        padding-bottom: 0.5rem;
-        border-bottom: $border;
-        font-size: 1.25rem;
-        line-height: 1;
-    }
-    &Exercises {
-        margin-bottom: 1rem;
-    }
-    &Exercise {
-        display: flex;
-        width: 100%;
-        justify-content: space-between;
         @include fontPrimary;
+        font-size: 1.125rem;
+        font-weight: bold;
     }
-    &Footer {
+    &Left {
+        @include column;
+        flex: 1;
+        gap: 0.25rem;
+        min-width: 0;
+    }
+    &Right {
         margin-top: auto;
-        padding-top: 1rem;
-        border-top: $border;
+        min-width: max-content;
+        flex-shrink: 0;
     }
-    &LastDate,
-    &ExerciseRemaining {
+    &ExercisesAmount {
         @include fontSecondary;
     }
-    &ExerciseRemainingLink {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.125rem;
-
-        &:hover {
-            text-decoration: underline;
-        }
-    }
     &LastDate {
-        display: flex;
-        align-items: center;
+        @include metadata;
         gap: 0.25rem;
     }
     &LastDateRecent {
@@ -62,6 +90,7 @@
     &LastDateLongAgo{
         color: $red;
     }
+    
     &Controls {
         margin-top: 0.5rem;
 
@@ -70,34 +99,45 @@
             font-size: 0.875rem;
         }
     }
-    &Tracking {
+}
+.details {
+    padding: $columnPadding;
+    padding-left: calc($columnPadding + 0.5rem);
+    width: 68%;
+    background-color: $highlightBg;
+    border-radius: 0 $borderRadiusBig $borderRadiusBig 0;
 
+    &Title{
+        @include sectionTitle;
     }
-
-    $formPadding: 0.75rem;
-    &Session {
-        padding: $formPadding 0;
+    
+    &MetaData {
+        margin-bottom: 1rem;
+        @include metadata;
+        gap: 0.375rem;
+        line-height: 1;
+    }
+    &Exercises {
         @include column;
-        gap: $formPadding;
-        border: $border;
-        border-radius: $borderRadius;
     }
-    &SessionHeader {
-        padding-bottom: $formPadding;
+    &Exercise {
+        padding: 0.5rem;
+        display: flex;
+        justify-content: space-between;
         border-bottom: $border;
-    }
-    &SessionHeader,
-    &SessionExercise {
-        padding-inline: $formPadding;
-        display: grid;
-        grid-template-columns: minmax(6rem, 1fr) 5rem 5rem 5rem 5rem;
-        gap: 8px;
+        
+
+        &:first-child {
+            border-top: $border;
+        }
+
+        &Name {
+            @include fontPrimary;
+            font-weight: 500;
+        }
+        &Volume {
+            @include fontSecondary;
+            font-size: 1rem;
+        }
     }
 }
-
-.test {
-    border: $border;
-    padding: 1rem;
-    margin: 1rem;
-}
-

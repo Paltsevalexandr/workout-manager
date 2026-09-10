@@ -58,10 +58,6 @@ export default function WorkoutForm({
                             <div className={styles.newWorkoutExercisesWrap}>
                                 <div className={styles.newWorkoutExercisesHeader}>
                                     <div>Exercise</div>
-                                    {/* <div>Reps/Dur.</div>
-                                    <div>Sets</div>
-                                    <div>Weight (kg)</div>
-                                    <div>Rest (sec)</div> */}
                                     <div>Delete</div>
                                 </div>
                                 <div className={styles.newWorkoutExercises}>

@@ -1,5 +1,6 @@
 export {
-    capitalize
+    capitalize,
+    getExercisesLabel,
 } from "./string"
 
 export {
@@ -16,4 +17,8 @@ export {
     generateID,
     getLastSession,
 } from "./data";
+
+export {
+    getStatusClass,
+} from "./components";
 

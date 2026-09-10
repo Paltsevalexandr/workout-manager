@@ -1,15 +1,16 @@
 $primaryColor: rgba(0, 0, 0, 0.85);
 $secondaryColor: rgba(0, 0, 0, 0.65);
-$primaryBg: white;
+$primaryBg: rgb(250, 250, 250);
+$highlightBg: rgb(255, 255, 255);
 
 $red: rgb(165, 0, 0);
 $green: darkgreen;
 
 $border: 1px solid rgba(0, 0, 0, 0.25);
-$borderRadiusBig: 6px;
-$borderRadius: 5px;
+$borderRadiusBig: 12px;
+$borderRadius: 8px;
 $borderRadiusSmall: 4px;
-
+$headerHeight: 48px;
 
 @mixin column {
     display: flex;

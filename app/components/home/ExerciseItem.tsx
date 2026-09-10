@@ -8,7 +8,7 @@ type Props = {
     lastSession: WorkoutSession | null;
 }
 
-export default function ExerciseItem({ exercises, exerciseId, lastSession}: Props) {
+export default function ExerciseItem({ exercises, exerciseId, lastSession }: Props) {
     let exerciseData = exercises.find(ex => ex.id == exerciseId);
     let performedExercise: PerformedExercise | undefined = undefined;
     if (!exerciseData) {
@@ -18,14 +18,14 @@ export default function ExerciseItem({ exercises, exerciseId, lastSession}: Prop
         performedExercise = lastSession.performedExercises.find(exercise => exerciseData.id == exercise.exerciseId);
     }
     return (
-        <li className={styles.workoutExercise}>
-            <span>
+        <li className={styles.detailsExercise}>
+            <span className={styles.detailsExerciseName}>
                 {exerciseData.name}
             </span>
-            <span>
+            <span className={styles.detailsExerciseVolume}>
                 {
                     performedExercise
-                        ? `${performedExercise.target}x${performedExercise.sets}`
+                        ? `${performedExercise.sets}\u00D7${performedExercise.target}`
                         : ""
                 }
             </span>

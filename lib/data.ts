@@ -1,4 +1,4 @@
-import { Exercise, WorkoutSession } from "../_types";
+import { Exercise, WorkoutSession } from "../app/_types";
 
 export function generateID<T extends { id: number | null }>(dataArr: T[]): number {
     const maxId = dataArr.reduce((max, item) => {

@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
 import { Workout, Exercise } from '@/app/_types';
-import { capitalize, getDayName } from "../../lib";
+import { capitalize, getDayName } from "../../../lib";
 import styles from "../page.module.scss";
 import WorkoutMenu from './WorkoutMenu';
 
@@ -35,7 +35,7 @@ export default function WorkoutsList({
     //     `;
     // }
 
-    
+
     return (
         workouts.length == 0
             ? <p>You don't have any workouts. Start adding your routines</p>
@@ -48,7 +48,7 @@ export default function WorkoutsList({
                                 <div key={"workout_header_" + index}
                                     className={styles.workoutHeader}>
                                     <WorkoutMenu
-                                        openWorkoutMenuIndex={ openWorkoutMenuIndex }
+                                        openWorkoutMenuIndex={openWorkoutMenuIndex}
                                         setOpenWorkoutMenuIndex={setOpenWorkoutMenuIndex}
                                         handleEdit={handleEdit}
                                         index={index}

@@ -1,4 +1,4 @@
-import { dateStringToDateObj, getFormattedDate } from "@/app/lib";
+import { dateStringToDateObj, getFormattedDate } from "@/lib";
 
 type Props = {
     label: string;

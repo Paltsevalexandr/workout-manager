@@ -4,6 +4,9 @@ section,
 footer {
   padding: 2rem 0;
 }
+section:first-child {
+    padding-top: 1rem;
+}
 
 body {
     color: $primaryColor;
@@ -28,6 +31,9 @@ footer {
   background-color: #e3e3e3;
 }
 
+header {
+    height: $headerHeight;
+}
 nav,
 .section-content {
   margin: 0 auto;
