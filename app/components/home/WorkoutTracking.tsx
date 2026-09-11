@@ -7,10 +7,9 @@ import React, {
 import styles from "../../page.module.scss";
 import { useExercisesContext } from '@/app/providers';
 import WorkoutsList from "./WorkoutList";
-import Content from "../layout/Content";
 import { PerformedExercise, Workout, WorkoutSession } from '@/app/_types';
 import WorkoutTrackingModal from './WorkoutTrackingModal';
-import { generateID } from '@/lib';
+import { generateID, getLastSession } from '@/lib';
 import WorkoutDetails from './WorkoutDetails';
 
 type Props = {}
@@ -56,21 +55,31 @@ export default function WorkoutTracking({ }: Props) {
         // temp code
         let allPerformedExercises: PerformedExercise[] = [];
         workoutSessions.forEach(session => allPerformedExercises.push(...session.performedExercises));
-        // temp code end
         let newPerformedExerciseId = generateID(allPerformedExercises);
-        workouts.find(workout => workout.id == workoutId)?.workoutExercises.forEach((workoutExercise, i) => {
-            // const exercise = exercises.find(exercise => exercise.id == workoutExercise.exerciseId);
-            // if (exercise) {
+        // temp code end
+        let latestSession = getLastSession(workoutId, workoutSessions);
+        let workout = workouts.find(workout => workout.id == workoutId);
+        workout?.workoutExercises.forEach((workoutExercise, i) => {
+            if (workoutExercise.id != null) {
                 // TODO - use prev session or planned session
-                performedExercises.push({
+                const latestPerformedExercise = latestSession?.performedExercises.find(
+                    (ex) => ex.workoutExerciseId === workoutExercise.id
+                );
+
+                const newPerformedExercise: PerformedExercise = {
                     id: newPerformedExerciseId + i,
                     workoutExerciseId: workoutExercise.id,
-                    sets: 1,
-                    target: 1,
-                    weight: 0,
-                    rest: 1
-                });
-            // }
+                    sets: latestPerformedExercise?.sets ?? 1,
+                    target: latestPerformedExercise?.target ?? 1,
+                    weight: latestPerformedExercise?.weight ?? 0,
+                    rest: latestPerformedExercise?.rest ?? 1,
+                };
+
+                performedExercises.push(newPerformedExercise);
+            }
+            else {
+                console.warn("workoutExercise id is null", workoutExercise);
+            }
         });
         setWorkoutSession({
             id: null,
@@ -118,7 +127,7 @@ export default function WorkoutTracking({ }: Props) {
             else {
                 return {
                     ...prevWorkoutSession,
-                    performedExercises: prevWorkoutSession.performedExercises.map((ex, i) => {
+                    performedExercises: prevWorkoutSession.performedExercises.map((ex) => {
                         if (ex.workoutExerciseId == workoutExerciseId) {
                             return {
                                 ...ex,
@@ -140,12 +149,12 @@ export default function WorkoutTracking({ }: Props) {
                         <WorkoutsList
                             selectedWorkout={selectedWorkout}
                             workoutSessions={workoutSessions}
-                            trackProgress={trackProgress}
                             setSelectedWorkout={setSelectedWorkout}
                         />
                         <WorkoutDetails
                             workout={selectedWorkout}
                             workoutSessions={workoutSessions}
+                            trackProgress={trackProgress}
                         />
                     </div>
 

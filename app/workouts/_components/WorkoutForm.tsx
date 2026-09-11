@@ -63,11 +63,12 @@ export default function WorkoutForm({
                                 <div className={styles.newWorkoutExercises}>
                                     {
                                         workoutExercises.map((workoutExercise, index) => {
+                                            let id = workoutExercise.id;
                                             return (
                                                 <div className={styles.newWorkoutExercise}
-                                                    key={index + "_workout_exercise_wrap"}>
+                                                    key={"workout_exercise_wrap_" + id}>
                                                     <SelectField
-                                                        key={index + "_workout_exercise"}
+                                                        key={"workout_exercise_" + id}
                                                         label=""
                                                         name="workout-exercise[]"
                                                         value={workoutExercises[index].exerciseId}
@@ -75,8 +76,8 @@ export default function WorkoutForm({
                                                         optionsNames={exercises.map(exercise => exercise.name)}
                                                         parseValue={Number}
                                                         onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                            return currentWorkoutExercises.map((workoutExercise, i) => {
-                                                                return index == i
+                                                            return currentWorkoutExercises.map((workoutExercise) => {
+                                                                return id == workoutExercise.id
                                                                     ? {
                                                                         ...workoutExercise,
                                                                         exerciseId: value
@@ -100,7 +101,6 @@ export default function WorkoutForm({
                             <button
                                 className="button-secondary"
                                 type="button"
-                                disabled={exercises.length == 0}
                                 onClick={
                                     () => setWorkoutExercises([
                                         ...workoutExercises,

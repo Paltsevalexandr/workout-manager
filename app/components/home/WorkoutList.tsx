@@ -11,14 +11,12 @@ import WorkoutItem from './WorkoutItem';
 type Props = {
     selectedWorkout: Workout | null;
     workoutSessions: WorkoutSession[];
-    trackProgress: (workoutId: number, workouts: Workout[]) => void;
     setSelectedWorkout: Dispatch<SetStateAction<Workout | null>>;
 }
 
 export default function WorkoutsList({
     workoutSessions,
     selectedWorkout,
-    trackProgress,
     setSelectedWorkout,
 }: Props) {
     const { exercises } = useExercisesContext();
@@ -63,24 +61,11 @@ export default function WorkoutsList({
                                 lastSessionDate={getLastSessionDate(workout.id, workoutSessions)}
                                 exercises={exercises}
                                 index={index}
-                                trackProgress={(workoutId: number) => trackProgress(workoutId, workouts)}
                             />
                         })
                     }
                 </ul>
             </div>
-            {/* {
-                workoutSessions.map((session, i) => {
-                    return (
-                        <div className={styles.test} key={"foo" + i}>
-                            <p key={"index" + i}>index {i}</p>
-                            <p key={"date" + i}>Date: {getFormattedDate(session.date)}</p>
-                            <p key={"bar" + i}>workoutId: {session.workoutId}</p>
-                            <p key={"foobar" + i}>Exercises: {session.performedExercises.length}</p>
-                        </div>
-                    )
-                })
-            } */}
         </div>
     )
 }

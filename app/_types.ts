@@ -44,7 +44,7 @@ export type WorkoutSession = {
 
 export type PerformedExercise = {
     id: number | null;
-    workoutExerciseId: WorkoutExercise['id'];
+    workoutExerciseId: number;
     sets: number;
     target: number;
     weight: number;

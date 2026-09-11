@@ -19,7 +19,7 @@ export default function ModalForm({
     onCancel,
 }: Props) {
     return (
-        <form className={`${styles.form} ${className}`} onSubmit={onSubmit}>
+        <form className={`${styles.form} ${className ?? ""}`} onSubmit={onSubmit}>
             <h2>{ modalName }</h2>
             {children}
             <div className={styles.formActions}>

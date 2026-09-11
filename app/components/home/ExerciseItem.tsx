@@ -10,12 +10,11 @@ type Props = {
 
 export default function ExerciseItem({ exercises, workoutExercise, lastSession }: Props) {
     let exerciseData = exercises.find(ex => ex.id == workoutExercise.exerciseId);
-    let performedExercise: PerformedExercise | undefined = undefined;
+    let performedExercise = lastSession?.performedExercises.find(
+        (exercise) => workoutExercise.id == exercise.workoutExerciseId
+    );
     if (!exerciseData) {
         return null;
-    }
-    if (lastSession?.performedExercises) {
-        performedExercise = lastSession.performedExercises.find(exercise => workoutExercise.id == exercise.workoutExerciseId);
     }
     return (
         <li className={styles.detailsExercise}>

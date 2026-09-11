@@ -11,7 +11,6 @@ type Props = {
     lastSessionDate: number | null,
     exercises: Exercise[];
     index: number;
-    trackProgress: (workoutId: number) => void;
     setSelectedWorkout: () => void;
 }
 
@@ -19,7 +18,6 @@ export default function WorkoutItem({
     selectedWorkout,
     workout,
     lastSessionDate,
-    trackProgress,
     setSelectedWorkout
 }: Props) {
     const lastRelativeDate: string = formatRelativeDate(lastSessionDate);
@@ -51,11 +49,11 @@ export default function WorkoutItem({
                 </p>
 
             </div>
-            {/* <div className={styles.workoutRight}>
+            <div className={styles.workoutRight}>
                 <p className={styles.workoutExercisesAmount}>
                     {getExercisesLabel(exercisesAmount)}
                 </p>
-            </div> */}
+            </div>
 
         </li>
     )

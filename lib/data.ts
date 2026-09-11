@@ -11,7 +11,7 @@ export function generateID<T extends { id: number | null }>(dataArr: T[]): numbe
     return maxId + 1;
 }
 
-export function getExerciseById(exercises: Exercise[], id: number): Exercise | undefined {
+export function getExerciseById(exercises: Exercise[], id: number | null | undefined): Exercise | undefined {
     return exercises.find(exercise => exercise.id == id);
 }
 

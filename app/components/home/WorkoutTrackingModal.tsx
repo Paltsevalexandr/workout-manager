@@ -28,7 +28,7 @@ export default function WorkoutTrackingModal({
     const { exercises } = useExercisesContext();
     const { workouts } = useWorkoutsContext();
 
-    function getWorkoutExerciseById(workouts: Workout[], workoutExerciseId: number): WorkoutExercise | undefined {
+    function getWorkoutExerciseById(workouts: Workout[], workoutExerciseId: number | null): WorkoutExercise | undefined {
         let workout = workouts.find(({ id }) => id == workoutSession?.workoutId);
         if (workout) {
             return workout.workoutExercises.find(({ id }) => id == workoutExerciseId);
@@ -58,8 +58,8 @@ export default function WorkoutTrackingModal({
                 }
                 {
                     workoutSession &&
-                    <div className={styles.workoutSession}>
-                        <div className={styles.workoutSessionHeader}>
+                    <div className={styles.workoutSessionFormExercises}>
+                        <div className={styles.workoutSessionFormExercisesHeader}>
                             <div>Exercise Name</div>
                             <div>Reps/Dur.</div>
                             <div>Sets</div>
@@ -68,14 +68,14 @@ export default function WorkoutTrackingModal({
                         </div>
                         {
                             workoutSession.performedExercises.map((performedExercise, index) => {
-                                let getWorkoutExercise = getWorkoutExerciseById(workouts, performedExercise.workoutExerciseId)
-                                let exercise = getExerciseById(exercises, performedExercise.workoutExerciseId);
+                                let workoutExercise = getWorkoutExerciseById(workouts, performedExercise.workoutExerciseId)
+                                let exercise = getExerciseById(exercises, workoutExercise?.exerciseId);
                                 if (!exercise) {
                                     return null;
                                 }
                                 return (
                                     <div key={`workout_session_exercise_${index}`}
-                                        className={styles.workoutSessionExercise}>
+                                        className={styles.workoutSessionFormExercisesItem}>
                                         <p key={`workout_session_exercise_${index}`}>
                                             {exercise.name}
                                         </p>

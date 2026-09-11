@@ -16,6 +16,10 @@ $headerHeight: 48px;
     display: flex;
     flex-direction: column;
 }
+@mixin flexSpaceBetween {
+    display: flex;
+    justify-content: space-between
+}
 @mixin fontPrimary {
     font-size: 1rem;
     color: $primaryColor;
