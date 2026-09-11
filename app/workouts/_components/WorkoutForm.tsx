@@ -1,25 +1,25 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import Modal from '../../components/ui/Modal';
 import ModalForm from '../../components/ui/ModalForm';
-import { Exercise, Workout } from '../../_types';
+import { Exercise, Workout, WorkoutExercise } from '../../_types';
 import SelectField from '../../components/forms/SelectField';
 import TextField from '../../components/forms/TextField';
 import { Trash2, Plus } from "lucide-react"
 import styles from "../page.module.scss";
 
 type Props = {
-    isEditWorkout?: boolean;
+    editWorkout?: Workout | null;
     workoutName: string;
     exercises: Exercise[];
-    workoutExercises: Exercise["id"][];
+    workoutExercises: WorkoutExercise[];
     handleCancelForm: () => void;
     handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
     setWorkoutName: (name: string) => void;
-    setWorkoutExercises: Dispatch<SetStateAction<Exercise["id"][]>>;
+    setWorkoutExercises: Dispatch<SetStateAction<WorkoutExercise[]>>;
 }
 
 export default function WorkoutForm({
-    isEditWorkout,
+    editWorkout,
     exercises,
     workoutExercises,
     workoutName,
@@ -40,8 +40,8 @@ export default function WorkoutForm({
         <Modal onClose={handleCancelForm}>
             <ModalForm
                 className={styles.newWorkout}
-                modalName={`${isEditWorkout ? "Edit" : "Create"} Workout`}
-                submitText={`${isEditWorkout ? "Edit" : "Add"} Workout`}
+                modalName={`${editWorkout ? "Edit" : "Create"} Workout`}
+                submitText={`${editWorkout ? "Edit" : "Add"} Workout`}
                 onSubmit={handleSubmit}
                 onCancel={handleCancelForm}
             >
@@ -62,21 +62,26 @@ export default function WorkoutForm({
                                 </div>
                                 <div className={styles.newWorkoutExercises}>
                                     {
-                                        workoutExercises.map((exerciseId, index) => {
+                                        workoutExercises.map((workoutExercise, index) => {
                                             return (
                                                 <div className={styles.newWorkoutExercise}
-                                                    key={exerciseId + "_" + index + "_workout_exercise_wrap"}>
+                                                    key={index + "_workout_exercise_wrap"}>
                                                     <SelectField
-                                                        key={exerciseId + "_" + index + "_workout_exercise"}
+                                                        key={index + "_workout_exercise"}
                                                         label=""
                                                         name="workout-exercise[]"
-                                                        value={workoutExercises[index]}
+                                                        value={workoutExercises[index].exerciseId}
                                                         options={exercises.map(exercise => exercise.id)}
                                                         optionsNames={exercises.map(exercise => exercise.name)}
                                                         parseValue={Number}
                                                         onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                            return currentWorkoutExercises.map((exerciseId, i) => {
-                                                                return index == i ? value : exerciseId;
+                                                            return currentWorkoutExercises.map((workoutExercise, i) => {
+                                                                return index == i
+                                                                    ? {
+                                                                        ...workoutExercise,
+                                                                        exerciseId: value
+                                                                    }
+                                                                    : workoutExercise;
                                                             });
                                                         })}
                                                     />
@@ -96,7 +101,16 @@ export default function WorkoutForm({
                                 className="button-secondary"
                                 type="button"
                                 disabled={exercises.length == 0}
-                                onClick={() => setWorkoutExercises([...workoutExercises, 0])}
+                                onClick={
+                                    () => setWorkoutExercises([
+                                        ...workoutExercises,
+                                        {
+                                            id: null,
+                                            workoutTemplateId: editWorkout?.id ?? null,
+                                            exerciseId: 0
+                                        }
+                                    ])
+                                }
                             >
                                 <span><Plus size={16} /></span> Add Exercise
                             </button>

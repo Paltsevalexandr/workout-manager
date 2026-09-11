@@ -4,9 +4,9 @@ import Modal from '../ui/Modal';
 import NumberField from '../forms/NumberField';
 import DateField from '../forms/DateField';
 import { getExerciseById, getFormattedDate } from '@/lib';
-import { PerformedExercise, WorkoutSession } from '@/app/_types';
+import { PerformedExercise, Workout, WorkoutExercise, WorkoutSession } from '@/app/_types';
 import styles from "../../page.module.scss";
-import { useExercisesContext } from '@/app/providers';
+import { useExercisesContext, useWorkoutsContext } from '@/app/providers';
 
 type Props = {
     isModalFormOpen: boolean;
@@ -14,7 +14,7 @@ type Props = {
     saveSession: (e: SubmitEvent<HTMLFormElement>) => void;
     cancelForm: () => void;
     setDate: (date: number) => void;
-    handlePerformedExerciseChange: (value: number, exerciseId: number, field: keyof PerformedExercise) => void;
+    handlePerformedExerciseChange: (value: number, workoutExerciseId: number, field: keyof PerformedExercise) => void;
 }
 
 export default function WorkoutTrackingModal({
@@ -26,6 +26,15 @@ export default function WorkoutTrackingModal({
     handlePerformedExerciseChange
 }: Props) {
     const { exercises } = useExercisesContext();
+    const { workouts } = useWorkoutsContext();
+
+    function getWorkoutExerciseById(workouts: Workout[], workoutExerciseId: number): WorkoutExercise | undefined {
+        let workout = workouts.find(({ id }) => id == workoutSession?.workoutId);
+        if (workout) {
+            return workout.workoutExercises.find(({ id }) => id == workoutExerciseId);
+        }
+        return undefined;
+    }
 
     return (isModalFormOpen
         && <Modal
@@ -59,7 +68,8 @@ export default function WorkoutTrackingModal({
                         </div>
                         {
                             workoutSession.performedExercises.map((performedExercise, index) => {
-                                let exercise = getExerciseById(exercises, performedExercise.exerciseId);
+                                let getWorkoutExercise = getWorkoutExerciseById(workouts, performedExercise.workoutExerciseId)
+                                let exercise = getExerciseById(exercises, performedExercise.workoutExerciseId);
                                 if (!exercise) {
                                     return null;
                                 }
@@ -74,28 +84,28 @@ export default function WorkoutTrackingModal({
                                             label=""
                                             name="workout-exercise-target"
                                             value={performedExercise.target}
-                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.exerciseId, "target")}
+                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.workoutExerciseId, "target")}
                                         />
                                         <NumberField
                                             key={`workout_session_exercise_sets_${index}`}
                                             label=""
                                             name="workout-exercise-sets"
                                             value={performedExercise.sets}
-                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.exerciseId, "sets")}
+                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.workoutExerciseId, "sets")}
                                         />
                                         <NumberField
                                             key={`workout_session_exercise_rest_${index}`}
                                             label=""
                                             name="workout-exercise-rest"
                                             value={performedExercise.rest}
-                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.exerciseId, "rest")}
+                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.workoutExerciseId, "rest")}
                                         />
                                         <NumberField
                                             key={`workout_session_exercise_weight_${index}`}
                                             label=""
                                             name="workout-exercise-weight"
                                             value={performedExercise.weight}
-                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.exerciseId, "weight")}
+                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.workoutExerciseId, "weight")}
                                         />
                                     </div>
                                 )

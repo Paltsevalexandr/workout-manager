@@ -31,7 +31,7 @@ export default function WorkoutDetails({
                     {lastRelativeDate}
                 </span>
                 <span>&bull;</span>
-                <span>{getExercisesLabel(workout.exercises.length)}</span>
+                <span>{getExercisesLabel(workout.workoutExercises.length)}</span>
             </p>
             <div className={styles.workoutDetailsContent}>
                 <ExerciseList

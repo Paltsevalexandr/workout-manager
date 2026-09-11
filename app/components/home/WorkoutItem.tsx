@@ -38,7 +38,7 @@ export default function WorkoutItem({
             lastSessionClass = styles.workoutLastDateRecent;
         }
     }
-    const exercisesAmount = workout.exercises.length;
+    const exercisesAmount = workout.workoutExercises.length;
     return (
         <li className={`${styles.workout} ${selectedWorkout?.id == workout.id ? styles.active : ""}`}
             onClick={() => setSelectedWorkout()}>

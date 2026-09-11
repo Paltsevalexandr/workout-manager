@@ -21,14 +21,19 @@ export type Exercise = {
 export type Workout = {
     id: number;
     name: string;
-    exercises: Exercise["id"][];
+    workoutExercises: WorkoutExercise[];
 
     // tags: string[];
-    // exerciseIds: Exercise['id'][]; // просто ссылки, никаких sets/weight
     // status: 'active' | 'archived';
     // createdAt: string;
     // archivedAt: string | null;
 };
+
+export type WorkoutExercise = {
+    id: number | null;
+    workoutTemplateId: Workout['id'] | null;
+    exerciseId: Exercise['id'];
+}
 
 export type WorkoutSession = {
     id: number | null;
@@ -39,7 +44,7 @@ export type WorkoutSession = {
 
 export type PerformedExercise = {
     id: number | null;
-    exerciseId: Exercise['id'];
+    workoutExerciseId: WorkoutExercise['id'];
     sets: number;
     target: number;
     weight: number;

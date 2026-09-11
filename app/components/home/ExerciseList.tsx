@@ -17,9 +17,9 @@ export default function ExerciseList({ workout, workoutSessions }: Props) {
     return (
         <ul className={styles.detailsExercises}>
             {
-                workout.exercises.map((exerciseId, i) => {
+                workout.workoutExercises.map((workoutExercise, i) => {
                     return <ExerciseItem key={`workout_exercise_${i}`}
-                        exerciseId={exerciseId}
+                        workoutExercise={workoutExercise}
                         exercises={exercises}
                         lastSession={lastSession}
                     />

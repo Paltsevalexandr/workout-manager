@@ -24,24 +24,28 @@ export default function WorkoutTracking({ }: Props) {
             date: 1788894136955,
             id: 1,
             performedExercises: [
-                { id: 1, exerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 2, exerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 3, exerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 1, workoutExerciseId: 0, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 2, workoutExerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 3, workoutExerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 4, workoutExerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 5, workoutExerciseId: 4, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 6, workoutExerciseId: 5, sets: 1, target: 1, weight: 0, rest: 1 },
 
 
             ],
-            workoutId: 3
+            workoutId: 1
         },
         {
             date: 1788894136955,
             id: 2,
             performedExercises: [
-                { id: 4, exerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 5, exerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 6, exerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 }
+                { id: 7, workoutExerciseId: 6, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 8, workoutExerciseId: 7, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 9, workoutExerciseId: 8, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 10, workoutExerciseId: 9, sets: 1, target: 1, weight: 0, rest: 1 }
 
             ],
-            workoutId: 5
+            workoutId: 2
         }
     ]);
     const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
@@ -54,19 +58,19 @@ export default function WorkoutTracking({ }: Props) {
         workoutSessions.forEach(session => allPerformedExercises.push(...session.performedExercises));
         // temp code end
         let newPerformedExerciseId = generateID(allPerformedExercises);
-        workouts.find(workout => workout.id == workoutId)?.exercises.forEach((exerciseId, i) => {
-            const exercise = exercises.find(exercise => exercise.id == exerciseId);
-            if (exercise) {
+        workouts.find(workout => workout.id == workoutId)?.workoutExercises.forEach((workoutExercise, i) => {
+            // const exercise = exercises.find(exercise => exercise.id == workoutExercise.exerciseId);
+            // if (exercise) {
                 // TODO - use prev session or planned session
                 performedExercises.push({
                     id: newPerformedExerciseId + i,
-                    exerciseId: exercise.id,
+                    workoutExerciseId: workoutExercise.id,
                     sets: 1,
                     target: 1,
                     weight: 0,
                     rest: 1
                 });
-            }
+            // }
         });
         setWorkoutSession({
             id: null,
@@ -106,7 +110,7 @@ export default function WorkoutTracking({ }: Props) {
         });
     }
 
-    function handlePerformedExerciseChange(value: number, exerciseId: number, field: keyof PerformedExercise) {
+    function handlePerformedExerciseChange(value: number, workoutExerciseId: number, field: keyof PerformedExercise) {
         setWorkoutSession(prevWorkoutSession => {
             if (!prevWorkoutSession) {
                 return prevWorkoutSession;
@@ -115,7 +119,7 @@ export default function WorkoutTracking({ }: Props) {
                 return {
                     ...prevWorkoutSession,
                     performedExercises: prevWorkoutSession.performedExercises.map((ex, i) => {
-                        if (ex.exerciseId == exerciseId) {
+                        if (ex.workoutExerciseId == workoutExerciseId) {
                             return {
                                 ...ex,
                                 [field]: value
