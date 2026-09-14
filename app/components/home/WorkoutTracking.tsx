@@ -5,19 +5,24 @@ import React, {
     type SubmitEvent
 } from 'react';
 import styles from "../../page.module.scss";
-import { useExercisesContext } from '@/app/providers';
+import { useExercisesContext, useWorkoutsContext } from '@/app/providers';
 import WorkoutsList from "./WorkoutList";
-import { PerformedExercise, Workout, WorkoutSession } from '@/app/_types';
+import { PerformedExercise, PlannedExercise, Workout, WorkoutPlan, WorkoutSession } from '@/_types';
 import WorkoutTrackingModal from './WorkoutTrackingModal';
-import { generateID, getLastSession } from '@/lib';
+import {
+    generateID, getLastSession, getLatestPerformedExercise,
+    getPlannedExercise, getPlannedSession, isWorkoutPlan, isWorkoutSession
+} from '@/lib';
 import WorkoutDetails from './WorkoutDetails';
 
 type Props = {}
+export type SourceOfSession = "none" | "prevSession" | "plan";
+export type ModalType = "none" | "session" | "plan";
 
 export default function WorkoutTracking({ }: Props) {
-    const { exercises } = useExercisesContext();
-    const [isModalFormOpen, setIsModalFormOpen] = useState<boolean>(false);
-    const [workoutSession, setWorkoutSession] = useState<WorkoutSession | null>(null);
+    const { workouts } = useWorkoutsContext();
+    const [modalType, setModalType] = useState<ModalType>("none");
+    const [performedSession, setPerformedSession] = useState<WorkoutSession | null>(null);
     const [workoutSessions, setWorkoutSessions] = useState<WorkoutSession[]>([
         {
             date: 1788894136955,
@@ -47,98 +52,239 @@ export default function WorkoutTracking({ }: Props) {
             workoutId: 2
         }
     ]);
+    const [plannedSession, setPlannedSession] = useState<WorkoutPlan | null>(null);
+    const [plannedSessions, setPlannedSessions] = useState<WorkoutPlan[]>([]);
     const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+    const [sessionFormSource, setSessionFormSource] = useState<SourceOfSession>("none");
 
-    function trackProgress(workoutId: number, workouts: Workout[]) {
-        setIsModalFormOpen(true);
-        let performedExercises: PerformedExercise[] = [];
+    function toggleSessionFormSource(source: SourceOfSession) {
+
+    }
+
+    function createNextSessionPlan(workoutId: number) {
+        const workout = getWorkout(workoutId, workouts);
+        if (!workout) {
+            return;
+        }
+        const lastSession = getLastSession(workoutId, workoutSessions);
+        // const currentPlannedSession = getPlannedSession(workoutId, plannedSessions);
+        const sessionSource = getDefaultSessionSource(lastSession);
+        setSessionFormSource(sessionSource);
         // temp code
+        let newPlannedExerciseId = generateID(getAllPlannedExercises());
+        // temp code end
+        const plannedExercises: PlannedExercise[] = createSessionExercises(
+            workout, lastSession, newPlannedExerciseId
+        ) as PlannedExercise[];
+
+        setPlannedSession({
+            id: null,
+            workoutId: workoutId,
+            date: Date.now(),
+            plannedExercises
+        });
+        setModalType("plan");
+    }
+    function createPerformedSession(workoutId: number) {
+        const workout = getWorkout(workoutId, workouts);
+        if (!workout) return;
+
+        // temp code
+        let newPerformedExerciseId = generateID(getAllPerformedExercises());
+        // temp code end
+
+        const lastSession = getLastSession(workoutId, workoutSessions);
+        const currentPlannedSession = getPlannedSession(workoutId, plannedSessions);
+        const sessionSource = getDefaultSessionSource(lastSession, currentPlannedSession);
+        setSessionFormSource(sessionSource);
+        let performedExercises: PerformedExercise[] = createSessionExercises(
+            workout, currentPlannedSession ?? lastSession, newPerformedExerciseId
+        )
+        setPerformedSession({
+            id: null,
+            workoutId: workoutId,
+            date: Date.now(),
+            performedExercises
+        });
+        setModalType("session");
+    }
+    function getAllPerformedExercises(): PerformedExercise[] {
         let allPerformedExercises: PerformedExercise[] = [];
         workoutSessions.forEach(session => allPerformedExercises.push(...session.performedExercises));
-        let newPerformedExerciseId = generateID(allPerformedExercises);
-        // temp code end
-        let latestSession = getLastSession(workoutId, workoutSessions);
-        let workout = workouts.find(workout => workout.id == workoutId);
-        workout?.workoutExercises.forEach((workoutExercise, i) => {
-            if (workoutExercise.id != null) {
-                // TODO - use prev session or planned session
-                const latestPerformedExercise = latestSession?.performedExercises.find(
-                    (ex) => ex.workoutExerciseId === workoutExercise.id
+        return allPerformedExercises;
+    }
+    function getAllPlannedExercises(): PlannedExercise[] {
+        let allPlannedExercises: PlannedExercise[] = [];
+        plannedSessions.forEach(session => allPlannedExercises.push(...session.plannedExercises));
+        return allPlannedExercises;
+    }
+    function getDefaultSessionSource(
+        lastSession: WorkoutSession | null, currentPlannedSession?: WorkoutPlan | null
+    ): SourceOfSession {
+        if (currentPlannedSession) {
+            return "plan";
+        }
+        else if (lastSession) {
+            return "prevSession";
+        }
+        else {
+            return "none";
+        }
+    }
+    function getWorkout(workoutId: number, workouts: Workout[]): Workout | null {
+        return workouts.find(workout => workout.id == workoutId) ?? null;
+    }
+    function createSessionExercises(
+        workout: Workout,
+        sourceSession: WorkoutSession | WorkoutPlan | null,
+        newSessionExerciseId: number
+    ): PerformedExercise[] | PlannedExercise[] {
+        let sessionExercises: PerformedExercise[] | PlannedExercise[] = [];
+        workout.workoutExercises.forEach((workoutExercise, i) => {
+            if (workoutExercise.id !== null) {
+                const sessionExercise: PerformedExercise | PlannedExercise = createSessionExercise(
+                    sourceSession, newSessionExerciseId + i, workoutExercise.id
                 );
-
-                const newPerformedExercise: PerformedExercise = {
-                    id: newPerformedExerciseId + i,
-                    workoutExerciseId: workoutExercise.id,
-                    sets: latestPerformedExercise?.sets ?? 1,
-                    target: latestPerformedExercise?.target ?? 1,
-                    weight: latestPerformedExercise?.weight ?? 0,
-                    rest: latestPerformedExercise?.rest ?? 1,
-                };
-
-                performedExercises.push(newPerformedExercise);
+                sessionExercises.push(sessionExercise);
             }
             else {
                 console.warn("workoutExercise id is null", workoutExercise);
             }
         });
-        setWorkoutSession({
-            id: null,
-            workoutId: workoutId,
-            date: Date.now(),
-            performedExercises
-        })
+        return sessionExercises;
+    }
+    function createSessionExercise(
+        source: WorkoutSession | WorkoutPlan | null, // PlannedSession or last PerformedSession
+        newObjectId: number,
+        workoutExerciseId: number
+    ): PerformedExercise | PlannedExercise {
+        let sourceExercise = isWorkoutSession(source)
+            ? getLatestPerformedExercise(source, workoutExerciseId)
+            : isWorkoutPlan(source)
+                ? getPlannedExercise(source, workoutExerciseId)
+                : null
+
+        return {
+            id: newObjectId,
+            workoutExerciseId: workoutExerciseId,
+            sets: sourceExercise?.sets ?? 1,
+            target: sourceExercise?.target ?? 1,
+            weight: sourceExercise?.weight ?? 0,
+            rest: sourceExercise?.rest ?? 1,
+        }
     }
     function saveSession(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
-        if (workoutSession) {
+        if (modalType == "plan" && plannedSession) {
+            setPlannedSessions(prevSessions => [
+                ...prevSessions,
+                {
+                    ...plannedSession,
+                    id: generateID(plannedSessions)
+                }
+            ]);
+        }
+        else if (modalType == "session" && performedSession) {
             setWorkoutSessions(prevSessions => [
                 ...prevSessions,
                 {
-                    ...workoutSession,
+                    ...performedSession,
                     id: generateID(workoutSessions)
                 }
             ])
         }
-        setIsModalFormOpen(false);
-        setWorkoutSession(null);
+        setModalType("none");
+        setSessionFormSource("none");
+        setPerformedSession(null);
+        setPlannedSession(null);
     }
     function cancelForm() {
-        setIsModalFormOpen(false);
-        setWorkoutSession(null);
+        setModalType("none");
+        setSessionFormSource("none");
+        setPerformedSession(null);
+        setPlannedSession(null);
     }
-
     function setDate(date: number) {
-        setWorkoutSession((prevSession) => {
-            if (!prevSession) {
-                return null;
-            }
-            return {
-                ...prevSession,
-                date
-            }
-        });
-    }
-
-    function handlePerformedExerciseChange(value: number, workoutExerciseId: number, field: keyof PerformedExercise) {
-        setWorkoutSession(prevWorkoutSession => {
-            if (!prevWorkoutSession) {
-                return prevWorkoutSession;
-            }
-            else {
-                return {
-                    ...prevWorkoutSession,
-                    performedExercises: prevWorkoutSession.performedExercises.map((ex) => {
-                        if (ex.workoutExerciseId == workoutExerciseId) {
-                            return {
-                                ...ex,
-                                [field]: value
-                            }
-                        }
-                        return ex;
-                    })
+        if (modalType == "session") {
+            setPerformedSession((prevSession): WorkoutSession | null => {
+                if (!prevSession) {
+                    return null;
                 }
-            }
-        })
+                return {
+                    ...prevSession,
+                    date
+                }
+            });
+        }
+        else if (modalType == "plan") {
+            setPlannedSession((prevSession): WorkoutPlan | null => {
+                if (!prevSession) {
+                    return null;
+                }
+                return {
+                    ...prevSession,
+                    date
+                }
+            });
+        }
+    }
+    function handlePerformedExerciseChange(
+        value: number,
+        workoutExerciseId: number,
+        field: keyof PerformedExercise | keyof PlannedExercise
+    ) {
+        if (modalType == "session") {
+            setPerformedSession(prevSession => {
+                if (!prevSession) {
+                    return prevSession;
+                }
+                else {
+                    return {
+                        ...prevSession,
+                        performedExercises: prevSession.performedExercises.map((ex) => {
+                            if (ex.workoutExerciseId == workoutExerciseId) {
+                                return {
+                                    ...ex,
+                                    [field]: value
+                                }
+                            }
+                            return ex;
+                        })
+                    }
+                }
+            });
+        }
+        else if (modalType == "plan") {
+            setPlannedSession(prevSession => {
+                if (!prevSession) {
+                    return prevSession;
+                }
+                else {
+                    return {
+                        ...prevSession,
+                        plannedExercises: prevSession.plannedExercises.map((ex) => {
+                            if (ex.workoutExerciseId == workoutExerciseId) {
+                                return {
+                                    ...ex,
+                                    [field]: value
+                                }
+                            }
+                            return ex;
+                        })
+                    }
+                }
+            });
+        }
+    }
+    function getSession(): WorkoutSession | WorkoutPlan | null {
+        switch (modalType) {
+            case "plan":
+                return plannedSession;
+            case "session":
+                return performedSession;
+            default:
+                return null;
+        }
     }
 
     return (
@@ -154,18 +300,23 @@ export default function WorkoutTracking({ }: Props) {
                         <WorkoutDetails
                             workout={selectedWorkout}
                             workoutSessions={workoutSessions}
-                            trackProgress={trackProgress}
+                            savePerformedSession={createPerformedSession}
+                            createNextSessionPlan={createNextSessionPlan}
                         />
                     </div>
-
-                    <WorkoutTrackingModal
-                        setDate={setDate}
-                        workoutSession={workoutSession}
-                        isModalFormOpen={isModalFormOpen}
-                        saveSession={saveSession}
-                        cancelForm={cancelForm}
-                        handlePerformedExerciseChange={handlePerformedExerciseChange}
-                    />
+                    {
+                        modalType != "none"
+                        && <WorkoutTrackingModal
+                            modalType={modalType}
+                            setDate={setDate}
+                            sessionFormSource={sessionFormSource}
+                            session={getSession()}
+                            saveSession={saveSession}
+                            cancelForm={cancelForm}
+                            setSessionFormSource={setSessionFormSource}
+                            handlePerformedExerciseChange={handlePerformedExerciseChange}
+                        />
+                    }
                 </div>
             </section>
         </main>

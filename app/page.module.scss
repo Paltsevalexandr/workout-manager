@@ -219,9 +219,27 @@ $titleLineHeight: 1.1;
 }
 
 .workoutSessionForm {
-    &Exercises {
-        // @include column;
+    &Header {
+        @include flexSpaceBetween;
+        flex-shrink: 0;
+    }
+    &SourceWrap {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        flex: 1;
+        max-width: 50%;
+        gap: 0.25rem;
+    }
+    &Source {
+        height: 20px;
+        font-size: 0.75rem;
 
+        &.active {
+            background: $darkHighlightBg;
+        }
+    }
+    &Exercises {
         &Header,
         &Item {
             display: grid;

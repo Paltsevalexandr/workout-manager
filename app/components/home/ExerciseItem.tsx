@@ -1,5 +1,5 @@
 import React from 'react'
-import { Exercise, PerformedExercise, WorkoutExercise, WorkoutSession } from '@/app/_types';
+import { Exercise, PerformedExercise, WorkoutExercise, WorkoutSession } from '@/_types';
 import styles from "../../page.module.scss";
 
 type Props = {

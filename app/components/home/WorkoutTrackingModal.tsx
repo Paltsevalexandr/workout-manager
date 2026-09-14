@@ -1,63 +1,110 @@
-import React, { type SubmitEvent } from 'react';
+import React, { Dispatch, SetStateAction, type SubmitEvent } from 'react';
 import ModalForm from '../ui/ModalForm';
 import Modal from '../ui/Modal';
 import NumberField from '../forms/NumberField';
 import DateField from '../forms/DateField';
-import { getExerciseById, getFormattedDate } from '@/lib';
-import { PerformedExercise, Workout, WorkoutExercise, WorkoutSession } from '@/app/_types';
+import { getExerciseById, getFormattedDate, isWorkoutPlan, isWorkoutSession } from '@/lib';
+import { PerformedExercise, PlannedExercise, Workout, WorkoutExercise, WorkoutPlan, WorkoutSession } from '@/_types';
 import styles from "../../page.module.scss";
 import { useExercisesContext, useWorkoutsContext } from '@/app/providers';
+import { SourceOfSession } from './WorkoutTracking';
+import { ModalType } from "./WorkoutTracking";
 
 type Props = {
-    isModalFormOpen: boolean;
-    workoutSession: WorkoutSession | null;
+    modalType: ModalType;
+    session: WorkoutSession | WorkoutPlan | null;
+    sessionFormSource: SourceOfSession;
     saveSession: (e: SubmitEvent<HTMLFormElement>) => void;
     cancelForm: () => void;
+    setSessionFormSource: Dispatch<SetStateAction<SourceOfSession>>;
     setDate: (date: number) => void;
     handlePerformedExerciseChange: (value: number, workoutExerciseId: number, field: keyof PerformedExercise) => void;
 }
 
 export default function WorkoutTrackingModal({
-    isModalFormOpen,
-    workoutSession,
+    modalType,
+    session,
+    sessionFormSource,
     saveSession,
     cancelForm,
     setDate,
+    setSessionFormSource,
     handlePerformedExerciseChange
 }: Props) {
     const { exercises } = useExercisesContext();
     const { workouts } = useWorkoutsContext();
 
-    function getWorkoutExerciseById(workouts: Workout[], workoutExerciseId: number | null): WorkoutExercise | undefined {
-        let workout = workouts.find(({ id }) => id == workoutSession?.workoutId);
+    function getWorkoutExerciseById(workoutExerciseId: number | null): WorkoutExercise | undefined {
+        let workout = workouts.find(({ id }) => id == session?.workoutId);
         if (workout) {
             return workout.workoutExercises.find(({ id }) => id == workoutExerciseId);
         }
         return undefined;
     }
+    let headerText = "";
+    switch (modalType) {
+        case "session":
+            headerText = "Track Progress";
+            break;
+        case "plan":
+            headerText = "Next Session Plan"
+            break;
+    }
+    let header = <div className={styles.workoutSessionFormHeader}>
+        <h2>{headerText}</h2>
+        { /* TODO - consider hiding if create plan, not session */}
+        <div className={styles.workoutSessionFormSourceWrap}>
+            <button onClick={() => setSessionFormSource("prevSession")}
+                type="button"
+                className={
+                    `${styles.workoutSessionFormSource} 
+                ${sessionFormSource == "prevSession" ? styles.active : ""} 
+                button-secondary`
+                }>
+                Prev Session
+            </button>
+            <button onClick={() => setSessionFormSource("plan")}
+                type="button"
+                className={
+                    `${styles.workoutSessionFormSource} 
+                    ${sessionFormSource == "plan" ? styles.active : ""} 
+                    button-secondary`
+                }>
+                Plan
+            </button>
+        </div>
+    </div>;
 
-    return (isModalFormOpen
-        && <Modal
+    let sourceExercises: PerformedExercise[] | PlannedExercise[] = [];
+    if (isWorkoutSession(session)) {
+        sourceExercises = session.performedExercises;
+    }
+    else if (isWorkoutPlan(session)) {
+        sourceExercises = session.plannedExercises;
+    }
+
+    return (
+        <Modal
             onClose={cancelForm}
         >
             <ModalForm
-                modalName="Track Progress"
+                header={header}
                 submitText="Save Progress"
                 onSubmit={saveSession}
                 onCancel={cancelForm}
             >
                 {
-                    workoutSession &&
+                    session &&
                     <DateField
                         label="Workout Date"
-                        max={Date.now()}
+                        max={modalType == "session" ? Date.now() : null}
                         name="workout_session_date"
-                        value={getFormattedDate(workoutSession.date)}
+                        value={getFormattedDate(session.date)}
                         onChange={setDate}
                     />
                 }
                 {
-                    workoutSession &&
+                    session &&
                     <div className={styles.workoutSessionFormExercises}>
                         <div className={styles.workoutSessionFormExercisesHeader}>
                             <div>Exercise Name</div>
@@ -67,45 +114,41 @@ export default function WorkoutTrackingModal({
                             <div>Weight</div>
                         </div>
                         {
-                            workoutSession.performedExercises.map((performedExercise, index) => {
-                                let workoutExercise = getWorkoutExerciseById(workouts, performedExercise.workoutExerciseId)
+                            sourceExercises.map((sessionExercise) => {
+                                let workoutExercise = getWorkoutExerciseById(sessionExercise.workoutExerciseId)
                                 let exercise = getExerciseById(exercises, workoutExercise?.exerciseId);
                                 if (!exercise) {
-                                    return null;
+                                    return null; // TODO - show error, not sure why it can happen at all
                                 }
                                 return (
-                                    <div key={`workout_session_exercise_${index}`}
+                                    <div key={`workout_session_exercise_${sessionExercise.id}`}
                                         className={styles.workoutSessionFormExercisesItem}>
-                                        <p key={`workout_session_exercise_${index}`}>
+                                        <p>
                                             {exercise.name}
                                         </p>
                                         <NumberField
-                                            key={`workout_session_exercise_target_${index}`}
                                             label=""
                                             name="workout-exercise-target"
-                                            value={performedExercise.target}
-                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.workoutExerciseId, "target")}
+                                            value={sessionExercise.target}
+                                            onChange={(value) => handlePerformedExerciseChange(value, sessionExercise.workoutExerciseId, "target")}
                                         />
                                         <NumberField
-                                            key={`workout_session_exercise_sets_${index}`}
                                             label=""
                                             name="workout-exercise-sets"
-                                            value={performedExercise.sets}
-                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.workoutExerciseId, "sets")}
+                                            value={sessionExercise.sets}
+                                            onChange={(value) => handlePerformedExerciseChange(value, sessionExercise.workoutExerciseId, "sets")}
                                         />
                                         <NumberField
-                                            key={`workout_session_exercise_rest_${index}`}
                                             label=""
                                             name="workout-exercise-rest"
-                                            value={performedExercise.rest}
-                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.workoutExerciseId, "rest")}
+                                            value={sessionExercise.rest}
+                                            onChange={(value) => handlePerformedExerciseChange(value, sessionExercise.workoutExerciseId, "rest")}
                                         />
                                         <NumberField
-                                            key={`workout_session_exercise_weight_${index}`}
                                             label=""
                                             name="workout-exercise-weight"
-                                            value={performedExercise.weight}
-                                            onChange={(value) => handlePerformedExerciseChange(value, performedExercise.workoutExerciseId, "weight")}
+                                            value={sessionExercise.weight}
+                                            onChange={(value) => handlePerformedExerciseChange(value, sessionExercise.workoutExerciseId, "weight")}
                                         />
                                     </div>
                                 )

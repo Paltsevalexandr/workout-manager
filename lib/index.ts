@@ -16,6 +16,12 @@ export {
     getLastSessionDate,
     generateID,
     getLastSession,
+    getPlannedSession,
+    isWorkoutSession,
+    isWorkoutPlan,
+    getLatestPerformedExercise,
+    getPlannedExercise,
+
 } from "./data";
 
 export {

@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
-import { Workout, Exercise } from '@/app/_types';
+import { Workout, Exercise } from '@/_types';
 import { capitalize, getDayName } from "../../../lib";
 import styles from "../page.module.scss";
 import WorkoutMenu from './WorkoutMenu';

@@ -4,7 +4,7 @@ import { useEffect, useState, type SubmitEvent } from 'react'
 import { useExercisesContext, useWorkoutsContext } from '@/app/providers';
 import Content from '../components/layout/Content';
 import styles from './page.module.scss';
-import { Workout, WorkoutExercise } from '../_types';
+import { Workout, WorkoutExercise } from '../../_types';
 import { generateID } from '../../lib/data';
 import WorkoutsList from './_components/WorkoutsList';
 import WorkoutForm from './_components/WorkoutForm';

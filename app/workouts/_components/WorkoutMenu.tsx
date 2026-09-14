@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import styles from "../page.module.scss";
 import { EllipsisVertical } from 'lucide-react';
-import { Exercise } from '@/app/_types';
+import { Exercise } from '@/_types';
 
 type Props = {
     index: number;
@@ -59,7 +59,7 @@ export default function WorkoutMenu({
                                 return (
                                     <li className={styles.workoutMenuItem}
                                         key={"workout_menu_item_" + menuItem.text}>
-                                        <button role="button" key={"workout_menu_item_btn_"+menuItem.text}
+                                        <button role="button" key={"workout_menu_item_btn_" + menuItem.text}
                                             onClick={menuItem.handler}>
                                             {menuItem.text}
                                         </button>

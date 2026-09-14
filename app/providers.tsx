@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
-import { Exercise, Workout } from "./_types";
+import { Exercise, Workout } from "../_types";
 
 type ExercisesContextType = {
     exercises: Exercise[];

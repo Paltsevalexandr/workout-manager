@@ -35,7 +35,7 @@ export type WorkoutExercise = {
     exerciseId: Exercise['id'];
 }
 
-export type WorkoutSession = {
+export type WorkoutSession = { // rename to PerformedSession
     id: number | null;
     workoutId: Workout["id"];
     date: number;
@@ -43,6 +43,22 @@ export type WorkoutSession = {
 }
 
 export type PerformedExercise = {
+    id: number | null;
+    workoutExerciseId: number;
+    sets: number;
+    target: number;
+    weight: number;
+    rest: number;
+};
+
+export type WorkoutPlan = { // rename to PlannedSession
+    id: number | null;
+    workoutId: Workout["id"];
+    date: number;
+    plannedExercises: PlannedExercise[]
+}
+
+export type PlannedExercise = {
     id: number | null;
     workoutExerciseId: number;
     sets: number;

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Dispatch, SetStateAction } from 'react';
-import { Workout, WorkoutSession } from '@/app/_types';
+import { Workout, WorkoutSession } from '@/_types';
 import styles from "../../page.module.scss";
 import { getLastSession, getLastSessionDate } from '@/lib';
 import { useExercisesContext, useWorkoutsContext } from '@/app/providers';

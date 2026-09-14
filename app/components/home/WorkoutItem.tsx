@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import { capitalize, formatRelativeDate, getExercisesLabel } from '@/lib';
 import styles from "../../page.module.scss";
-import { Exercise, Workout, } from '@/app/_types';
+import { Exercise, Workout, } from '@/_types';
 import { Clock, AlertCircle, ThumbsUp, Dumbbell } from 'lucide-react';
 import { ChevronRight } from "lucide-react";
 

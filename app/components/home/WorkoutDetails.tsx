@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
+import React, { Dispatch, SetStateAction, useState } from 'react';
 import styles from "../../page.module.scss";
-import { Workout, WorkoutSession } from '@/app/_types';
+import { Workout, WorkoutSession } from '@/_types';
 import ExerciseList from './ExerciseList';
 import { formatRelativeDate, getExercisesLabel, getLastSessionDate, getStatusClass } from '@/lib';
-import { useWorkoutsContext } from '@/app/providers';
 import { Ellipsis } from "lucide-react";
 
 type Props = {
     workout: Workout | null;
     workoutSessions: WorkoutSession[];
-    trackProgress: (workoutId: number, workouts: Workout[]) => void;
+    savePerformedSession: (workoutId: number) => void;
+    createNextSessionPlan: (workoutId: number) => void;
 }
 
 export default function WorkoutDetails({
     workout,
     workoutSessions,
-    trackProgress
+    savePerformedSession,
+    createNextSessionPlan
 
 }: Props) {
     if (!workout) {
         return null;
     }
-    const { workouts } = useWorkoutsContext();
     const [isMenuDisplayed, setIsMenuDisplayed] = useState<boolean>(false);
     const lastSessionDate = getLastSessionDate(workout.id, workoutSessions);
     const lastSessionClass = getStatusClass(lastSessionDate, styles);
@@ -44,7 +44,7 @@ export default function WorkoutDetails({
                 </div>
                 <div className={styles.detailsHeaderRight}>
                     <button className={`button-secondary`}
-                        onClick={() => trackProgress(workout.id, workouts)}>
+                        onClick={() => savePerformedSession(workout.id)}>
                         Track Progress
                     </button>
                     <button className={`button-secondary ${styles.detailsMenuTrigger}`}
@@ -55,13 +55,14 @@ export default function WorkoutDetails({
                         <div className={styles.detailsMenuContainer}>
                             <ul className={styles.detailsMenu}>
                                 <li className={styles.detailsMenuItem}>
-                                    <button className={styles.detailsMenuButton}>
-                                        History
+                                    <button onClick={() => createNextSessionPlan(workout.id)}
+                                        className={styles.detailsMenuButton}>
+                                        Plan Next Session
                                     </button>
                                 </li>
                                 <li className={styles.detailsMenuItem}>
                                     <button className={styles.detailsMenuButton}>
-                                        Foobar
+                                        History
                                     </button>
                                 </li>
                             </ul>

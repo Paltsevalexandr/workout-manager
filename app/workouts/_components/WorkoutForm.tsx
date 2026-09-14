@@ -1,7 +1,7 @@
 import React, { Dispatch, SetStateAction } from 'react';
 import Modal from '../../components/ui/Modal';
 import ModalForm from '../../components/ui/ModalForm';
-import { Exercise, Workout, WorkoutExercise } from '../../_types';
+import { Exercise, Workout, WorkoutExercise } from '../../../_types';
 import SelectField from '../../components/forms/SelectField';
 import TextField from '../../components/forms/TextField';
 import { Trash2, Plus } from "lucide-react"

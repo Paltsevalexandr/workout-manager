@@ -1,6 +1,6 @@
 import React from 'react';
 import styles from "../../page.module.scss";
-import { Workout, WorkoutSession } from '@/app/_types';
+import { Workout, WorkoutSession } from '@/_types';
 import { getLastSession } from '@/lib';
 import ExerciseItem from './ExerciseItem';
 import { useExercisesContext } from '@/app/providers';
