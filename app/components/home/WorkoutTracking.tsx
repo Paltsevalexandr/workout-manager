@@ -16,7 +16,7 @@ import {
 import WorkoutDetails from './WorkoutDetails';
 
 type Props = {}
-export type SourceOfSession = "none" | "prevSession" | "plan";
+export type SessionFormSource = "none" | "prevSession" | "plan";
 export type ModalType = "none" | "session" | "plan";
 
 export default function WorkoutTracking({ }: Props) {
@@ -55,14 +55,18 @@ export default function WorkoutTracking({ }: Props) {
     const [plannedSession, setPlannedSession] = useState<WorkoutPlan | null>(null);
     const [plannedSessions, setPlannedSessions] = useState<WorkoutPlan[]>([]);
     const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
-    const [sessionFormSource, setSessionFormSource] = useState<SourceOfSession>("none");
+    const [sessionFormSource, setSessionFormSource] = useState<SessionFormSource>("none");
 
-    function toggleSessionFormSource(source: SourceOfSession) {
-
+    function toggleSessionFormSource(source: SessionFormSource, workoutId: number) {
+        if (source === sessionFormSource) return;
+        switch (modalType) {
+            case "session":
+                createPerformedSession(workoutId, source);
+                break;
+        }
     }
-
     function createNextSessionPlan(workoutId: number) {
-        const workout = getWorkout(workoutId, workouts);
+        const workout = getWorkout(workoutId);
         if (!workout) {
             return;
         }
@@ -85,8 +89,8 @@ export default function WorkoutTracking({ }: Props) {
         });
         setModalType("plan");
     }
-    function createPerformedSession(workoutId: number) {
-        const workout = getWorkout(workoutId, workouts);
+    function createPerformedSession(workoutId: number, source?: SessionFormSource) {
+        const workout = getWorkout(workoutId);
         if (!workout) return;
 
         // temp code
@@ -95,15 +99,28 @@ export default function WorkoutTracking({ }: Props) {
 
         const lastSession = getLastSession(workoutId, workoutSessions);
         const currentPlannedSession = getPlannedSession(workoutId, plannedSessions);
-        const sessionSource = getDefaultSessionSource(lastSession, currentPlannedSession);
+        let sessionSource = getDefaultSessionSource(lastSession, currentPlannedSession);
+        let sessionSourceObj = currentPlannedSession ?? lastSession;
+        if (source) {
+            sessionSource = source;
+            switch (sessionSource) {
+                case ("plan"):
+                    sessionSourceObj = currentPlannedSession;
+                    break;
+                case ("prevSession"):
+                    sessionSourceObj = lastSession;
+                    break;
+            }
+        }
         setSessionFormSource(sessionSource);
         let performedExercises: PerformedExercise[] = createSessionExercises(
-            workout, currentPlannedSession ?? lastSession, newPerformedExerciseId
+            workout, sessionSourceObj, newPerformedExerciseId
         )
+
         setPerformedSession({
             id: null,
             workoutId: workoutId,
-            date: Date.now(),
+            date: performedSession?.date ?? Date.now(),
             performedExercises
         });
         setModalType("session");
@@ -120,7 +137,7 @@ export default function WorkoutTracking({ }: Props) {
     }
     function getDefaultSessionSource(
         lastSession: WorkoutSession | null, currentPlannedSession?: WorkoutPlan | null
-    ): SourceOfSession {
+    ): SessionFormSource {
         if (currentPlannedSession) {
             return "plan";
         }
@@ -131,7 +148,7 @@ export default function WorkoutTracking({ }: Props) {
             return "none";
         }
     }
-    function getWorkout(workoutId: number, workouts: Workout[]): Workout | null {
+    function getWorkout(workoutId: number): Workout | null {
         return workouts.find(workout => workout.id == workoutId) ?? null;
     }
     function createSessionExercises(
@@ -287,6 +304,7 @@ export default function WorkoutTracking({ }: Props) {
         }
     }
 
+    const session: WorkoutSession | WorkoutPlan | null = getSession();
     return (
         <main>
             <section>
@@ -297,23 +315,28 @@ export default function WorkoutTracking({ }: Props) {
                             workoutSessions={workoutSessions}
                             setSelectedWorkout={setSelectedWorkout}
                         />
-                        <WorkoutDetails
-                            workout={selectedWorkout}
-                            workoutSessions={workoutSessions}
-                            savePerformedSession={createPerformedSession}
-                            createNextSessionPlan={createNextSessionPlan}
-                        />
+                        {
+                            selectedWorkout &&
+                            <WorkoutDetails
+                                workout={selectedWorkout}
+                                workoutSessions={workoutSessions}
+                                savePerformedSession={createPerformedSession}
+                                createNextSessionPlan={createNextSessionPlan}
+                            />
+                        }
                     </div>
                     {
-                        modalType != "none"
+                        modalType != "none" && session
                         && <WorkoutTrackingModal
                             modalType={modalType}
+                            workoutSessions={workoutSessions}
+                            plannedSessions={plannedSessions}
                             setDate={setDate}
                             sessionFormSource={sessionFormSource}
-                            session={getSession()}
+                            session={session}
                             saveSession={saveSession}
                             cancelForm={cancelForm}
-                            setSessionFormSource={setSessionFormSource}
+                            toggleSessionFormSource={toggleSessionFormSource}
                             handlePerformedExerciseChange={handlePerformedExerciseChange}
                         />
                     }

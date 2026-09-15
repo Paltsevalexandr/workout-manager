@@ -3,20 +3,22 @@ import ModalForm from '../ui/ModalForm';
 import Modal from '../ui/Modal';
 import NumberField from '../forms/NumberField';
 import DateField from '../forms/DateField';
-import { getExerciseById, getFormattedDate, isWorkoutPlan, isWorkoutSession } from '@/lib';
+import { getExerciseById, getFormattedDate, getLastSession, getPlannedSession, isWorkoutPlan, isWorkoutSession } from '@/lib';
 import { PerformedExercise, PlannedExercise, Workout, WorkoutExercise, WorkoutPlan, WorkoutSession } from '@/_types';
 import styles from "../../page.module.scss";
 import { useExercisesContext, useWorkoutsContext } from '@/app/providers';
-import { SourceOfSession } from './WorkoutTracking';
+import { SessionFormSource } from './WorkoutTracking';
 import { ModalType } from "./WorkoutTracking";
 
 type Props = {
     modalType: ModalType;
-    session: WorkoutSession | WorkoutPlan | null;
-    sessionFormSource: SourceOfSession;
+    session: WorkoutSession | WorkoutPlan;
+    sessionFormSource: SessionFormSource;
+    plannedSessions: WorkoutPlan[];
+    workoutSessions: WorkoutSession[];
     saveSession: (e: SubmitEvent<HTMLFormElement>) => void;
     cancelForm: () => void;
-    setSessionFormSource: Dispatch<SetStateAction<SourceOfSession>>;
+    toggleSessionFormSource: (source: SessionFormSource, workoutId: number) => void;
     setDate: (date: number) => void;
     handlePerformedExerciseChange: (value: number, workoutExerciseId: number, field: keyof PerformedExercise) => void;
 }
@@ -25,17 +27,20 @@ export default function WorkoutTrackingModal({
     modalType,
     session,
     sessionFormSource,
+    workoutSessions,
+    plannedSessions,
     saveSession,
     cancelForm,
     setDate,
-    setSessionFormSource,
+    toggleSessionFormSource,
     handlePerformedExerciseChange
 }: Props) {
     const { exercises } = useExercisesContext();
     const { workouts } = useWorkoutsContext();
+    const { workoutId } = session;
 
     function getWorkoutExerciseById(workoutExerciseId: number | null): WorkoutExercise | undefined {
-        let workout = workouts.find(({ id }) => id == session?.workoutId);
+        let workout = workouts.find(({ id }) => id == workoutId);
         if (workout) {
             return workout.workoutExercises.find(({ id }) => id == workoutExerciseId);
         }
@@ -50,20 +55,23 @@ export default function WorkoutTrackingModal({
             headerText = "Next Session Plan"
             break;
     }
+    const lastSession = getLastSession(workoutId, workoutSessions);
+    const plannedSession = getPlannedSession(workoutId, plannedSessions);
+    const showSourceToggle = modalType === "session" && plannedSession && lastSession;
+
     let header = <div className={styles.workoutSessionFormHeader}>
         <h2>{headerText}</h2>
-        { /* TODO - consider hiding if create plan, not session */}
         <div className={styles.workoutSessionFormSourceWrap}>
-            <button onClick={() => setSessionFormSource("prevSession")}
+            <button onClick={() => toggleSessionFormSource("prevSession", workoutId)}
                 type="button"
                 className={
                     `${styles.workoutSessionFormSource} 
                 ${sessionFormSource == "prevSession" ? styles.active : ""} 
                 button-secondary`
                 }>
-                Prev Session
+                Last Session
             </button>
-            <button onClick={() => setSessionFormSource("plan")}
+            <button onClick={() => toggleSessionFormSource("plan", workoutId)}
                 type="button"
                 className={
                     `${styles.workoutSessionFormSource} 
@@ -75,20 +83,17 @@ export default function WorkoutTrackingModal({
         </div>
     </div>;
 
-    let sourceExercises: PerformedExercise[] | PlannedExercise[] = [];
-    if (isWorkoutSession(session)) {
-        sourceExercises = session.performedExercises;
-    }
-    else if (isWorkoutPlan(session)) {
-        sourceExercises = session.plannedExercises;
-    }
+    let sourceExercises: PerformedExercise[] | PlannedExercise[] = isWorkoutSession(session)
+        ? session.performedExercises
+        : session.plannedExercises;
 
     return (
         <Modal
             onClose={cancelForm}
         >
             <ModalForm
-                header={header}
+                header={showSourceToggle ? header : undefined}
+                title={!showSourceToggle ? headerText : undefined}
                 submitText="Save Progress"
                 onSubmit={saveSession}
                 onCancel={cancelForm}

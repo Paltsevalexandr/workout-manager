@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
 import styles from "../../page.module.scss";
 import { Workout, WorkoutSession } from '@/_types';
 import ExerciseList from './ExerciseList';
@@ -6,7 +6,7 @@ import { formatRelativeDate, getExercisesLabel, getLastSessionDate, getStatusCla
 import { Ellipsis } from "lucide-react";
 
 type Props = {
-    workout: Workout | null;
+    workout: Workout;
     workoutSessions: WorkoutSession[];
     savePerformedSession: (workoutId: number) => void;
     createNextSessionPlan: (workoutId: number) => void;
@@ -19,13 +19,24 @@ export default function WorkoutDetails({
     createNextSessionPlan
 
 }: Props) {
-    if (!workout) {
-        return null;
-    }
     const [isMenuDisplayed, setIsMenuDisplayed] = useState<boolean>(false);
     const lastSessionDate = getLastSessionDate(workout.id, workoutSessions);
     const lastSessionClass = getStatusClass(lastSessionDate, styles);
     const lastRelativeDate: string = formatRelativeDate(lastSessionDate);
+    const menuRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        if (!isMenuDisplayed) return;
+
+        function handleOutsideClick(e: MouseEvent) {
+            // TODO - figure what does the next line mean
+            if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+                setIsMenuDisplayed(false);
+            }
+        }
+
+        document.addEventListener('click', handleOutsideClick);
+        return () => document.removeEventListener('click', handleOutsideClick);
+    }, [isMenuDisplayed]);
 
     return (
         <div className={styles.details}>
@@ -51,7 +62,8 @@ export default function WorkoutDetails({
                         onClick={() => { setIsMenuDisplayed(prev => !prev) }}>
                         <Ellipsis size={16} />
                     </button>
-                    <div className={styles.detailsMenuWrap + ` ${isMenuDisplayed ? styles.active : ""}`}>
+                    <div ref={menuRef}
+                        className={styles.detailsMenuWrap + ` ${isMenuDisplayed ? styles.active : ""}`}>
                         <div className={styles.detailsMenuContainer}>
                             <ul className={styles.detailsMenu}>
                                 <li className={styles.detailsMenuItem}>

@@ -80,7 +80,7 @@ export default function Page() {
                 <Modal
                     onClose={handleCancelForm}>
                     <ModalForm
-                        modalName="New Exercise"
+                        title="New Exercise"
                         submitText="Add exercise"
                         onSubmit={handleSubmit}
                         onCancel={handleCancelForm}
@@ -102,7 +102,7 @@ export default function Page() {
                 <Modal
                     onClose={() => setDeleteIndex(null)}>
                     <ModalForm
-                        modalName="Delete Exercise?"
+                        title="Delete Exercise?"
                         submitText="Confirm"
                         onSubmit={(event) => {
                             event.preventDefault()

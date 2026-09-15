@@ -40,7 +40,7 @@ export default function WorkoutForm({
         <Modal onClose={handleCancelForm}>
             <ModalForm
                 className={styles.newWorkout}
-                modalName={`${editWorkout ? "Edit" : "Create"} Workout`}
+                title={`${editWorkout ? "Edit" : "Create"} Workout`}
                 submitText={`${editWorkout ? "Edit" : "Add"} Workout`}
                 onSubmit={handleSubmit}
                 onCancel={handleCancelForm}

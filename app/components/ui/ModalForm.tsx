@@ -5,7 +5,7 @@ type Props = {
     header?: ReactNode;
     children: ReactNode;
     className?: string;
-    modalName?: string;
+    title?: string;
     submitText: string;
     onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
     onCancel: () => void;
@@ -15,7 +15,7 @@ export default function ModalForm({
     header,
     children,
     className,
-    modalName,
+    title,
     submitText,
     onSubmit,
     onCancel,
@@ -25,7 +25,7 @@ export default function ModalForm({
             {
                 header
                     ? header
-                    : <h2>{modalName}</h2>
+                    : <h2>{title}</h2>
             }
             {children}
             <div className={styles.formActions}>
