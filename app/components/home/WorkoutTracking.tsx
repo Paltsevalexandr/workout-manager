@@ -313,6 +313,7 @@ export default function WorkoutTracking({ }: Props) {
                         <WorkoutsList
                             selectedWorkout={selectedWorkout}
                             workoutSessions={workoutSessions}
+                            plannedSessions={plannedSessions}
                             setSelectedWorkout={setSelectedWorkout}
                         />
                         {

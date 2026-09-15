@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Dispatch, SetStateAction } from 'react';
-import { Workout, WorkoutSession } from '@/_types';
+import { Workout, WorkoutPlan, WorkoutSession } from '@/_types';
 import styles from "../../page.module.scss";
 import { getLastSession, getLastSessionDate } from '@/lib';
 import { useExercisesContext, useWorkoutsContext } from '@/app/providers';
@@ -11,12 +11,14 @@ import WorkoutItem from './WorkoutItem';
 type Props = {
     selectedWorkout: Workout | null;
     workoutSessions: WorkoutSession[];
+    plannedSessions: WorkoutPlan[];
     setSelectedWorkout: Dispatch<SetStateAction<Workout | null>>;
 }
 
 export default function WorkoutsList({
     workoutSessions,
     selectedWorkout,
+    plannedSessions,
     setSelectedWorkout,
 }: Props) {
     const { exercises } = useExercisesContext();
@@ -56,11 +58,10 @@ export default function WorkoutsList({
                             return <WorkoutItem
                                 key={`workout_item_${index}`}
                                 workout={workout}
+                                plannedSessions={plannedSessions}
                                 selectedWorkout={selectedWorkout}
                                 setSelectedWorkout={() => setSelectedWorkout(workout)}
                                 lastSessionDate={getLastSessionDate(workout.id, workoutSessions)}
-                                exercises={exercises}
-                                index={index}
                             />
                         })
                     }

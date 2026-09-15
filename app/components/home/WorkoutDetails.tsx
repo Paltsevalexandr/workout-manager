@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styles from "../../page.module.scss";
 import { Workout, WorkoutSession } from '@/_types';
 import ExerciseList from './ExerciseList';

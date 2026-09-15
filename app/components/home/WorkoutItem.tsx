@@ -1,16 +1,14 @@
-import React, { Dispatch, SetStateAction } from 'react';
-import { capitalize, formatRelativeDate, getExercisesLabel } from '@/lib';
+import React from 'react';
+import { capitalize, formatRelativeDate, getExercisesLabel, getPlannedSession } from '@/lib';
 import styles from "../../page.module.scss";
-import { Exercise, Workout, } from '@/_types';
-import { Clock, AlertCircle, ThumbsUp, Dumbbell } from 'lucide-react';
-import { ChevronRight } from "lucide-react";
+import { Workout, WorkoutPlan, } from '@/_types';
+import { Clock, AlertCircle, CalendarCheck, Dumbbell } from 'lucide-react';
 
 type Props = {
     selectedWorkout: Workout | null;
     workout: Workout;
     lastSessionDate: number | null,
-    exercises: Exercise[];
-    index: number;
+    plannedSessions: WorkoutPlan[];
     setSelectedWorkout: () => void;
 }
 
@@ -18,6 +16,7 @@ export default function WorkoutItem({
     selectedWorkout,
     workout,
     lastSessionDate,
+    plannedSessions,
     setSelectedWorkout
 }: Props) {
     const lastRelativeDate: string = formatRelativeDate(lastSessionDate);
@@ -37,27 +36,26 @@ export default function WorkoutItem({
         }
     }
     const exercisesAmount = workout.workoutExercises.length;
+    const hasPlan: WorkoutPlan | null = getPlannedSession(workout.id, plannedSessions);
     return (
         <li className={`${styles.workout} ${selectedWorkout?.id == workout.id ? styles.active : ""}`}
             onClick={() => setSelectedWorkout()}>
-            <div className={styles.workoutLeft}>
+            <div className={styles.workoutTop}>
                 <h4 className={styles.workoutName}>
                     {capitalize(workout.name)}
                 </h4>
+                {
+                    hasPlan && <CalendarCheck size={16} />
+                }
+            </div>
+            <div className={styles.workoutBottom}>
                 <p className={`${styles.workoutLastDate} ${lastSessionClass}`}>
                     {lastSessionIcon} {lastRelativeDate}
                 </p>
-
-            </div>
-            <div className={styles.workoutRight}>
                 <p className={styles.workoutExercisesAmount}>
                     {getExercisesLabel(exercisesAmount)}
                 </p>
             </div>
-
         </li>
     )
 }
-{/* <div className={styles.workoutIconWrap}>
-                <ChevronRight size={16} />
-            </div> */}
