@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, useState } from 'react'
-import { Workout, Exercise } from '@/app/_types';
-import { capitalize, getDayName } from "../../lib";
+import { Workout, Exercise } from '@/_types';
+import { capitalize, getDayName } from "../../../lib";
 import styles from "../page.module.scss";
 import WorkoutMenu from './WorkoutMenu';
 
@@ -35,7 +35,7 @@ export default function WorkoutsList({
     //     `;
     // }
 
-    
+
     return (
         workouts.length == 0
             ? <p>You don't have any workouts. Start adding your routines</p>
@@ -48,7 +48,7 @@ export default function WorkoutsList({
                                 <div key={"workout_header_" + index}
                                     className={styles.workoutHeader}>
                                     <WorkoutMenu
-                                        openWorkoutMenuIndex={ openWorkoutMenuIndex }
+                                        openWorkoutMenuIndex={openWorkoutMenuIndex}
                                         setOpenWorkoutMenuIndex={setOpenWorkoutMenuIndex}
                                         handleEdit={handleEdit}
                                         index={index}
@@ -58,11 +58,12 @@ export default function WorkoutsList({
                                         {capitalize(workout.name)}
                                     </h4>
                                 </div>
-                                <ul key={"workout_exercises_" + index}>
+                                <ul key={"workout_exercises_" + index}
+                                    className={styles.workoutExercises}>
                                     {
-                                        workout.exercises.map((workoutExerciseID, index) => {
+                                        workout.workoutExercises.map((workoutExercise, index) => {
                                             let exercise = exercises.find(exercise => {
-                                                return exercise.id == workoutExerciseID
+                                                return exercise.id == workoutExercise.exerciseId
                                             });
 
                                             return (

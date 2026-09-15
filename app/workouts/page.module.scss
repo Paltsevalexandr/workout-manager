@@ -10,8 +10,7 @@
     }
     &Exercises {
         padding: 10px;
-        display: flex;
-        flex-direction: column;
+        @include column;
         gap: 8px;
         overflow-y: auto;
     }
@@ -56,8 +55,6 @@
     width: calc(25% - 12px);
     border: solid 1px rgba(0,0,0,0.4);
     border-radius: $borderRadiusSmall;
-    // display: flex;
-    // flex-direction: column;
 
     &Header {
         position: relative;
@@ -105,17 +102,15 @@
             }
         }
     }
+    &Name,
+    &Exercises {
+        padding-inline: 0.5rem;
+    }
     &Name {
-        padding: 0 0.5rem 0.5rem;
-        border-bottom: 1px solid rgba(0,0,0,0.4);
+        margin-bottom: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: $border;
         font-size: 1.25rem;
         line-height: 1;
-    }
-    &Exercise {
-        // padding: 0.5rem;
-        // border-bottom: solid 1px rgba(0,0,0,0.4);
-        // &:first-child {
-        //     border-top: solid 1px rgba(0,0,0,0.4);
-        // }
     }
 }

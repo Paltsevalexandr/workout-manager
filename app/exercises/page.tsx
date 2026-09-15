@@ -4,18 +4,18 @@ import { useState, type SubmitEvent } from "react"
 import { useExercisesContext } from '@/app/providers';
 import Content from "../components/layout/Content"
 import styles from "./page.module.scss"
-import { categories, muscleGroups, targets } from "../_types"
-import type { Category, Exercise, MuscleGroup, Target } from "../_types"
+import { categories, muscleGroups, targets } from "../../_types"
+import type { Category, Exercise, MuscleGroup, Target } from "../../_types"
 import ExerciseTable from "./_components/ExerciseTable"
 import ExerciseForm from "./_components/ExerciseForm"
 import Modal from "../components/ui/Modal"
 import ModalForm from "../components/ui/ModalForm"
-import { generateID } from "../lib/data";
+import { generateID } from "../../lib/data";
 
 
 export default function Page() {
     const { exercises, setExercises } = useExercisesContext();
-    
+
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [name, setName] = useState("");
     const [category, setCategory] = useState<Category>("strength");
@@ -77,10 +77,10 @@ export default function Page() {
                 </div>
             </section>
             {isFormOpen && (
-                <Modal 
+                <Modal
                     onClose={handleCancelForm}>
                     <ModalForm
-                        modalName="New Exercise"
+                        title="New Exercise"
                         submitText="Add exercise"
                         onSubmit={handleSubmit}
                         onCancel={handleCancelForm}
@@ -99,10 +99,10 @@ export default function Page() {
                 </Modal>
             )}
             {deleteIndex !== null && (
-                <Modal 
+                <Modal
                     onClose={() => setDeleteIndex(null)}>
                     <ModalForm
-                        modalName="Delete Exercise?"
+                        title="Delete Exercise?"
                         submitText="Confirm"
                         onSubmit={(event) => {
                             event.preventDefault()

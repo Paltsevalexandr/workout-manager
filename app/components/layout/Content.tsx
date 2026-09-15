@@ -8,7 +8,7 @@ type Props = {
 
 export default function Content({title, children}: Props) {
   return (
-        <main className="">
+        <main>
             <PageTitle title={title} />
             {children}
         </main>

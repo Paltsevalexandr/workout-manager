@@ -8,7 +8,7 @@ type Props<Value extends string | number> = {
     parseValue?: (value: string) => Value;
     formatOption?: (value: Value | string) => string;
 }
-import { capitalize } from "../../lib"
+import { capitalize } from "../../../lib"
 
 export default function SelectField<Value extends string | number>({
     label,
