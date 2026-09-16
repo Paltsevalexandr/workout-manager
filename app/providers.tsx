@@ -23,33 +23,6 @@ const WorkoutsContext = createContext<WorkoutsContextType | undefined>(undefined
 const MuscleGroupsContext = createContext<MuscleGroupContextType | undefined>(undefined);
 
 export function ExercisesProvider({ children }: { children: React.ReactNode }) {
-    // const parentMuscleGroups = [
-    //     {
-    //         id: 1,
-    //         name: "Chest",
-    //     },
-    //     {
-    //         id: 2,
-    //         name: "Back",
-    //     },
-    //     {
-    //         id: 3,
-    //         name: "Shoulders",
-    //     },
-    //     {
-    //         id: 4,
-    //         name: "Arms",
-    //     },
-    //     {
-    //         id: 5,
-    //         name: "Core",
-    //     },
-    //     {
-    //         id: 6,
-    //         name: "Legs",
-    //     },
-    // ];
-    
     const [exercises, setExercises] = useState<Exercise[]>([
         {
             id: 1,
@@ -61,6 +34,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                     name: "Chest",
                     parentId: null,
                     isSystem: true,
+                    
                 },
             ],
             target: "reps",
@@ -75,6 +49,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                     name: "Legs",
                     parentId: null,
                     isSystem: true,
+                    
                 },
             ],
             target: "reps",
@@ -89,6 +64,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                     name: "Legs",
                     parentId: null,
                     isSystem: true,
+                    
                 },
             ],
             target: "duration",
@@ -103,6 +79,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                     name: "Back",
                     parentId: null,
                     isSystem: true,
+                    
                 },
             ],
             target: "reps",
@@ -117,6 +94,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                     name: "Core",
                     parentId: null,
                     isSystem: true,
+                    
                 },
             ],
             target: "duration",
@@ -131,6 +109,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                     name: "Legs",
                     parentId: null,
                     isSystem: true,
+                    
                 },
             ],
             target: "reps",
@@ -243,36 +222,42 @@ export function MuscleGroupsProvider({ children }: { children: React.ReactNode }
             name: "Chest",
             parentId: null,
             isSystem: true,
+            
         },
         {
             id: 2,
             name: "Back",
             parentId: null,
             isSystem: true,
+            
         },
         {
             id: 3,
             name: "Shoulders",
             parentId: null,
             isSystem: true,
+            
         },
         {
             id: 4,
             name: "Arms",
             parentId: null,
             isSystem: true,
+            
         },
         {
             id: 5,
             name: "Core",
             parentId: null,
             isSystem: true,
+            
         },
         {
             id: 6,
             name: "Legs",
             parentId: null,
             isSystem: true,
+            
         },
 
         // Chest
@@ -381,6 +366,7 @@ export function MuscleGroupsProvider({ children }: { children: React.ReactNode }
             name: "Hamstrings",
             parentId: 6,
             isSystem: true,
+            
         },
         {
             id: 23,
