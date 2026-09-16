@@ -69,11 +69,9 @@ export default function page({ }: Props) {
                 const allWorkoutExercises: WorkoutExercise[] = currentWorkouts.flatMap(w => w.workoutExercises);
 
                 const updatedWorkoutExercises: WorkoutExercise[] = workoutExercises.map((we) => {
-                    // существующее вхождение — сопоставляем по id, а не по позиции
                     if (we.id !== null) {
                         return { ...we, workoutTemplateId: workout.id };
                     }
-                    // новая строка, добавленная в форме — создаём новый WorkoutExercise
                     return {
                         id: generateID(allWorkoutExercises),
                         workoutTemplateId: workout.id,

@@ -21,6 +21,7 @@ export {
     isWorkoutPlan,
     getLatestPerformedExercise,
     getPlannedExercise,
+    getMuscleGroupById,
 
 } from "./data";
 

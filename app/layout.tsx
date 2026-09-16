@@ -4,7 +4,7 @@ import "./globals.css";
 import "./globals.scss";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
-import { ExercisesProvider, WorkoutsProvider } from "./providers";
+import { ExercisesProvider, MuscleGroupsProvider, WorkoutsProvider } from "./providers";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -37,7 +37,9 @@ export default function RootLayout({
                 
                 <WorkoutsProvider>
                     <ExercisesProvider>
-                        {children}
+                        <MuscleGroupsProvider>
+                            {children}
+                        </MuscleGroupsProvider>
                     </ExercisesProvider>
                 </WorkoutsProvider>
 

@@ -8,10 +8,41 @@ $red: rgb(165, 0, 0);
 $green: darkgreen;
 
 $border: 1px solid rgba(0, 0, 0, 0.25);
+$borderLight: 1px solid rgba(0, 0, 0, 0.1);
 $borderRadiusBig: 12px;
 $borderRadius: 8px;
 $borderRadiusSmall: 4px;
 $headerHeight: 48px;
+
+@mixin mobile {
+    @media (max-width: 480px) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (max-width: 768px) {
+        @content;
+    }
+}
+
+@mixin landscape {
+    @media (max-width: 1024px) {
+        @content;
+    }
+}
+
+@mixin latptop {
+    @media (max-width: 1280px) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @media (max-width: 1440px) {
+        @content;
+    }
+}
 
 @mixin column {
     display: flex;
@@ -28,4 +59,27 @@ $headerHeight: 48px;
 @mixin fontSecondary {
     font-size: 0.875rem;
     color: $secondaryColor;
+}
+
+@mixin selectedItem {
+    padding: 2px 4px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background-color: $primaryBg;
+    border: $borderLight;
+    border-radius: $borderRadiusSmall;
+}
+
+@mixin iconButton {
+    padding: 0;
+    width: 16px;
+    min-width: 16px;
+    height: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    border-radius: $borderRadiusSmall;
+    color: $primaryColor;
 }

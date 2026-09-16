@@ -1,32 +1,35 @@
 "use client"
 
-import { categories, muscleGroups, targets } from "../../../_types"
+import { useMuscleGroupsContext } from "@/app/providers"
+import { categories, targets } from "../../../_types"
 import type { Category, MuscleGroup, Target } from "../../../_types"
-import CheckboxField from "../../components/forms/CheckboxField"
 import SelectField from "../../components/forms/SelectField"
 import TextField from "../../components/forms/TextField"
+import SearchableMultiSelect from "../../components/forms/SearchableMultiSelect"
+import { Dispatch, SetStateAction } from "react"
 
 type Props = {
     name: string;
     category: Category;
-    muscleGroup: MuscleGroup;
     target: Target;
+    selectedMuscleGroups: MuscleGroup[];
     onNameChange: (name: string) => void;
     onCategoryChange: (category: Category) => void;
-    onMuscleGroupChange: (muscleGroup: MuscleGroup) => void;
     onTargetChange: (target: Target) => void;
+    setSelectedMuscleGroups: Dispatch<SetStateAction<MuscleGroup[]>>;
 }
 
 export default function ExerciseForm({
     name,
     category,
-    muscleGroup,
     target,
+    selectedMuscleGroups,
     onNameChange,
     onCategoryChange,
-    onMuscleGroupChange,
     onTargetChange,
+    setSelectedMuscleGroups
 }: Props) {
+    const { muscleGroups } = useMuscleGroupsContext();
     return (
         <>
             <TextField
@@ -37,12 +40,12 @@ export default function ExerciseForm({
                 autoFocus
                 onChange={onNameChange}
             />
-            <SelectField
-                label="Muscle group"
-                name="muscle-group"
-                value={muscleGroup}
-                options={muscleGroups}
-                onChange={onMuscleGroupChange}
+            <SearchableMultiSelect<MuscleGroup>
+                label="Muscle Groups"
+                name="muscle-groups[]"
+                items={muscleGroups}
+                selectedItems={selectedMuscleGroups}
+                setSelectedItems={setSelectedMuscleGroups}
             />
             <SelectField
                 label="Category"
