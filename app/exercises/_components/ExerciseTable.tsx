@@ -1,11 +1,11 @@
-import React from "react"
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react"
 import styles from "../page.module.scss"
 import type { Exercise } from "../../../_types"
-import { capitalize } from "../../../lib"
-import { categories, muscleGroups, targets } from "../../../_types"
+import { capitalize, getMuscleGroupById } from "../../../lib"
+import { categories, targets } from "../../../_types"
 import type { Category, MuscleGroup, Target } from "../../../_types"
 import { ChevronsUpDown, Pencil, Save, Trash2, X } from "lucide-react"
+import { useMuscleGroupsContext } from "@/app/providers"
 
 
 type Props = {
@@ -13,7 +13,7 @@ type Props = {
     setExercises: Dispatch<SetStateAction<Exercise[]>>,
     setDeleteIndex: (index: number) => void
 }
-type SortableColumn = "name" | "category" | "muscleGroup" | "target";
+type SortableColumn = "name" | "category" | "muscleGroups" | "target";
 
 type Header = {
     text: string,
@@ -22,7 +22,7 @@ type Header = {
 const headers: Header[] = [
     { text: "Name", key: "name" },
     { text: "Category", key: "category" },
-    { text: "Muscle group", key: "muscleGroup" },
+    { text: "Muscle group", key: "muscleGroups" },
     { text: "Target", key: "target" },
     { text: "Actions", key: null },
     { text: "Delete", key: null },
@@ -31,14 +31,17 @@ const headers: Header[] = [
 type SortDirection = "asc" | "desc";
 
 export default function ExerciseTable({ exercises, setExercises, setDeleteIndex }: Props) {
+    const { muscleGroups } = useMuscleGroupsContext();
     const [editingIndex, setEditingIndex] = useState<number | null>(null);
     const [editingName, setEditingName] = useState("");
     const [editingCategory, setEditingCategory] = useState<Category>("strength");
-    const [editingMuscleGroup, setEditingMuscleGroup] = useState<MuscleGroup>("chest");
+    const [editingMuscleGroupId, setEditingMuscleGroupId] = useState<MuscleGroup["id"]>(muscleGroups[0].id);
     const [editingTarget, setEditingTarget] = useState<Target>("reps");
-    const editingInputRef = useRef<HTMLInputElement>(null);
+
     const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
+
+    const editingInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (editingIndex !== null) {
@@ -50,7 +53,7 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
         setEditingIndex(index);
         setEditingName(exercises[index].name);
         setEditingCategory(exercises[index].category);
-        setEditingMuscleGroup(exercises[index].muscleGroup);
+        setEditingMuscleGroupId(exercises[index].muscleGroups[0].id);
         setEditingTarget(exercises[index].target);
     }
 
@@ -60,22 +63,27 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
         }
 
         setExercises((currentExercises) =>
-            currentExercises.map((exercise, index) =>
-                index === editingIndex
+            currentExercises.map((exercise, index) => {
+                const exerciseMuscleGroups: MuscleGroup[] = [];
+                const group = getMuscleGroupById(editingMuscleGroupId, muscleGroups);
+                if (group) {
+                    exerciseMuscleGroups.push(group);
+                }
+                return index === editingIndex
                     ? {
                         ...exercise,
                         name: editingName.trim(),
                         category: editingCategory,
-                        muscleGroup: editingMuscleGroup,
+                        muscleGroups: exerciseMuscleGroups,
                         target: editingTarget,
                     }
                     : exercise
-            )
+            })
         );
         setEditingIndex(null);
         setEditingName("");
         setEditingCategory(categories[0]);
-        setEditingMuscleGroup(muscleGroups[0]);
+        setEditingMuscleGroupId(muscleGroups[0].id);
         setEditingTarget(targets[0]);
     }
 
@@ -83,7 +91,7 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
         setEditingIndex(null);
         setEditingName("");
         setEditingCategory(categories[0]);
-        setEditingMuscleGroup(muscleGroups[0]);
+        setEditingMuscleGroupId(muscleGroups[0].id);
         setEditingTarget(targets[0]);
     }
 
@@ -174,20 +182,21 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
                             )}
                         </td>
                         <td>
-                            {editingIndex === index ? (
-                                <select
-                                    value={editingMuscleGroup}
-                                    onChange={(event) => setEditingMuscleGroup(event.target.value as MuscleGroup)}
-                                >
-                                    {muscleGroups.map((muscleGroup) => (
-                                        <option key={muscleGroup} value={muscleGroup}>
-                                            {capitalize(muscleGroup)}
-                                        </option>
-                                    ))}
-                                </select>
-                            ) : (
-                                capitalize(exercise.muscleGroup)
-                            )}
+                            {editingIndex === index
+                                ? (
+                                    <select
+                                        value={editingMuscleGroupId}
+                                        onChange={(event) => setEditingMuscleGroupId(Number(event.target.value))}
+                                    >
+                                        {muscleGroups.map((muscleGroup) => (
+                                            <option key={muscleGroup.id} value={muscleGroup.id}>
+                                                {capitalize(muscleGroup.name)}
+                                            </option>
+                                        ))}
+                                    </select>
+                                )
+                                : capitalize(exercise.muscleGroups[0].name)
+                            }
                         </td>
                         <td>
                             {editingIndex === index ? (

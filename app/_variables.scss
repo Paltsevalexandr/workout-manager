@@ -8,10 +8,41 @@ $red: rgb(165, 0, 0);
 $green: darkgreen;
 
 $border: 1px solid rgba(0, 0, 0, 0.25);
+$borderLight: 1px solid rgba(0, 0, 0, 0.1);
 $borderRadiusBig: 12px;
 $borderRadius: 8px;
 $borderRadiusSmall: 4px;
 $headerHeight: 48px;
+
+@mixin mobile {
+    @media (max-width: 480px) {
+        @content;
+    }
+}
+
+@mixin tablet {
+    @media (max-width: 768px) {
+        @content;
+    }
+}
+
+@mixin landscape {
+    @media (max-width: 1024px) {
+        @content;
+    }
+}
+
+@mixin latptop {
+    @media (max-width: 1280px) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @media (max-width: 1440px) {
+        @content;
+    }
+}
 
 @mixin column {
     display: flex;

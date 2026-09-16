@@ -10,7 +10,7 @@ export default function Header() {
         { text: "Home", href: "/" },
         { text: "Workouts", href: "/workouts" },
         { text: "Exercises", href: "/exercises" },
-        { text: "Menu item 3", href: "#" },
+        { text: "Muscle Groups", href: "/exercises/muscle-groups" },
         { text: "Menu item 4", href: "#" },
     ]
     return (

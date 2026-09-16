@@ -5,6 +5,7 @@ type Props = {
     required?: boolean;
     autoFocus?: boolean;
     onChange: (value: string) => void;
+    onFocus: () => void;
 }
 
 export default function TextField({
@@ -14,6 +15,7 @@ export default function TextField({
     required = false,
     autoFocus = false,
     onChange,
+    onFocus,
 }: Props) {
     return (
         <label>
@@ -24,6 +26,7 @@ export default function TextField({
                 autoFocus={autoFocus}
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
+                onFocus={onFocus}
             />
         </label>
     )

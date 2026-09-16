@@ -1,38 +1,47 @@
 "use client"
 
 import { useState, type SubmitEvent } from "react"
-import { useExercisesContext } from '@/app/providers';
+import { useExercisesContext, useMuscleGroupsContext } from '@/app/providers';
 import Content from "../components/layout/Content"
 import styles from "./page.module.scss"
-import { categories, muscleGroups, targets } from "../../_types"
+import { categories, targets } from "../../_types"
 import type { Category, Exercise, MuscleGroup, Target } from "../../_types"
 import ExerciseTable from "./_components/ExerciseTable"
 import ExerciseForm from "./_components/ExerciseForm"
 import Modal from "../components/ui/Modal"
 import ModalForm from "../components/ui/ModalForm"
-import { generateID } from "../../lib/data";
+import { generateID, getMuscleGroupById } from "../../lib/data";
 
 
 export default function Page() {
     const { exercises, setExercises } = useExercisesContext();
+    const { muscleGroups, setMuscleGroups } = useMuscleGroupsContext();
 
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [name, setName] = useState("");
     const [category, setCategory] = useState<Category>("strength");
-    const [muscleGroup, setMuscleGroup] = useState<MuscleGroup>("chest");
+    const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | null>(muscleGroups[0]);
     const [target, setTarget] = useState<Target>("reps");
     const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
+
+    const [selectedMuscleGroups, setSelectedMuscleGroups] = useState<MuscleGroup[]>([]);
 
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
 
         setExercises((currentExercises) => [
             ...currentExercises,
-            { id: generateID(currentExercises), name: name.trim(), category, muscleGroup, target },
+            {
+                id: generateID(currentExercises),
+                name: name.trim(),
+                category,
+                muscleGroups: selectedMuscleGroup ? [selectedMuscleGroup] : [],
+                target
+            },
         ]);
         setName("");
         setCategory(categories[0]);
-        setMuscleGroup(muscleGroups[0]);
+        setSelectedMuscleGroup(muscleGroups[0]);
         setTarget(targets[0]);
         setIsFormOpen(false);
     }
@@ -51,7 +60,7 @@ export default function Page() {
     function handleCancelForm() {
         setName("");
         setCategory("strength");
-        setMuscleGroup("chest");
+        setSelectedMuscleGroup(muscleGroups[0]);
         setTarget("reps");
         setIsFormOpen(false);
     }
@@ -88,12 +97,14 @@ export default function Page() {
                         <ExerciseForm
                             name={name}
                             category={category}
-                            muscleGroup={muscleGroup}
+                            muscleGroup={selectedMuscleGroup}
                             target={target}
+                            selectedMuscleGroups={selectedMuscleGroups}
                             onNameChange={setName}
                             onCategoryChange={setCategory}
-                            onMuscleGroupChange={setMuscleGroup}
+                            onMuscleGroupChange={(id: number) => setSelectedMuscleGroup(getMuscleGroupById(id, muscleGroups))}
                             onTargetChange={setTarget}
+                            setSelectedMuscleGroups={setSelectedMuscleGroups}
                         />
                     </ModalForm>
                 </Modal>
