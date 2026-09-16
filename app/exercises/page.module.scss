@@ -29,33 +29,12 @@
     }
 
 
-    .editColumn,
-    .editCell {
-        width: 200px;
-
-        button svg {
-            margin-right: 0.5rem;
-        }
+    .actionColumn,
+    .actionCell {
+        width: 100px;
     }
 
-    .deleteColumn,
-    .deleteCell {
-        width: 70px;
-        text-align: center;
-    }
-
-    .deleteCell button {
-        margin-inline: auto;
-        min-width: 40px;
-        background-color: $red;
-        border: solid 1px rgba(0,0,0,0.3);
-
-        svg {
-            color: white;
-        }
-    }
-
-    .editCell {
+    .actionCell {
         text-align: center;
 
         .actions {
@@ -67,11 +46,15 @@
         }
     }
 
-    .editInput {
-        width: 100%;
-        padding: 0.25rem;
-        border: 1px solid rgba(0, 0, 0, 0.5);
-        border-radius: $borderRadiusSmall;
+    .editButton,
+    .deleteButton {
+        @include iconButton;
+        width: 32px;
+        height: 32px;
+    }
+    .deleteButton {
+        border-color: $red;
+        color: $red;
     }
 }
 
