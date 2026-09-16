@@ -22,7 +22,7 @@ type Header = {
 const headers: Header[] = [
     { text: "Name", key: "name" },
     { text: "Category", key: "category" },
-    { text: "Muscle group", key: "muscleGroups" },
+    { text: "Muscle groups", key: "muscleGroups" },
     { text: "Target", key: "target" },
     { text: "Actions", key: null },
     { text: "Delete", key: null },
@@ -121,7 +121,6 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
                 <col />
                 <col />
                 <col />
-                <col />
                 <col className={styles.editColumn} />
                 <col className={styles.deleteColumn} />
             </colgroup>
@@ -195,7 +194,18 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex 
                                         ))}
                                     </select>
                                 )
-                                : capitalize(exercise.muscleGroups[0].name)
+                                : <div className={styles.exerciseMuscleGroups}>
+                                    {
+                                        exercise.muscleGroups.map(group => {
+                                            return (
+                                                <span className={styles.exerciseMuscleGroup}
+                                                    key={"muscle_group_" + exercise.id + "_" + group.id}>
+                                                    {capitalize(group.name)}
+                                                </span>
+                                            );
+                                        })
+                                    }
+                                </div>
                             }
                         </td>
                         <td>

@@ -49,12 +49,14 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
     }
 
     let filteredItems: T[] = [];
-    if (query.length >= 3) {
-        filteredItems = items.filter(item => {
-            return item.name.toLowerCase().includes(query.toLowerCase())
-                && !selectedItems.find(selectedItem => selectedItem.id == item.id);
-        })
-    }
+    let hasMatches = false;
+    const matches = items.filter(item =>
+        item.name.toLowerCase().includes(query.toLowerCase())
+    );
+    hasMatches = matches.length > 0;
+    filteredItems = matches.filter(item =>
+        !selectedItems.find(selectedItem => selectedItem.id == item.id)
+    );
 
     const showDropdown = isDropdownOpen && query.length >= 3;
 
@@ -106,9 +108,11 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                             })
                         }
                         {
-                            !filteredItems.length
-                            && query.length >= 3
-                            && <li>Not Found</li>
+                            !filteredItems.length && query.length >= 3 && (
+                                hasMatches
+                                    ? <li>All matches already added</li>
+                                    : <li>Not Found</li>
+                            )
                         }
                     </ul>
                 }

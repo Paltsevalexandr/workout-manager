@@ -5,7 +5,7 @@ type Props = {
     required?: boolean;
     autoFocus?: boolean;
     onChange: (value: string) => void;
-    onFocus: () => void;
+    onFocus?: () => void;
 }
 
 export default function TextField({

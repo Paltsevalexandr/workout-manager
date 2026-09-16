@@ -10,17 +10,15 @@ import ExerciseTable from "./_components/ExerciseTable"
 import ExerciseForm from "./_components/ExerciseForm"
 import Modal from "../components/ui/Modal"
 import ModalForm from "../components/ui/ModalForm"
-import { generateID, getMuscleGroupById } from "../../lib/data";
+import { generateID } from "../../lib";
 
 
 export default function Page() {
     const { exercises, setExercises } = useExercisesContext();
-    const { muscleGroups, setMuscleGroups } = useMuscleGroupsContext();
 
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [name, setName] = useState("");
     const [category, setCategory] = useState<Category>("strength");
-    const [selectedMuscleGroup, setSelectedMuscleGroup] = useState<MuscleGroup | null>(muscleGroups[0]);
     const [target, setTarget] = useState<Target>("reps");
     const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 
@@ -35,13 +33,13 @@ export default function Page() {
                 id: generateID(currentExercises),
                 name: name.trim(),
                 category,
-                muscleGroups: selectedMuscleGroup ? [selectedMuscleGroup] : [],
+                muscleGroups: selectedMuscleGroups,
                 target
             },
         ]);
         setName("");
         setCategory(categories[0]);
-        setSelectedMuscleGroup(muscleGroups[0]);
+        setSelectedMuscleGroups([]);
         setTarget(targets[0]);
         setIsFormOpen(false);
     }
@@ -60,7 +58,7 @@ export default function Page() {
     function handleCancelForm() {
         setName("");
         setCategory("strength");
-        setSelectedMuscleGroup(muscleGroups[0]);
+        setSelectedMuscleGroups([]);
         setTarget("reps");
         setIsFormOpen(false);
     }
@@ -97,12 +95,10 @@ export default function Page() {
                         <ExerciseForm
                             name={name}
                             category={category}
-                            muscleGroup={selectedMuscleGroup}
                             target={target}
                             selectedMuscleGroups={selectedMuscleGroups}
                             onNameChange={setName}
                             onCategoryChange={setCategory}
-                            onMuscleGroupChange={(id: number) => setSelectedMuscleGroup(getMuscleGroupById(id, muscleGroups))}
                             onTargetChange={setTarget}
                             setSelectedMuscleGroups={setSelectedMuscleGroups}
                         />

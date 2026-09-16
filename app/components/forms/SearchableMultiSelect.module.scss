@@ -9,21 +9,10 @@
     border-radius: $borderRadius;
 }
 .selectedItem {
-    padding: 2px 4px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    background-color: $primaryBg;
-    border: $borderLight;
-    border-radius: $borderRadiusSmall;
+    @include selectedItem;
 
     &Delete {
-        padding: 0;
-        width: 16px;
-        min-width: 16px;
-        height: 16px;
-        background-color: transparent;
-        color: $primaryColor;
+        @include iconButton;
     }
 }
 .multiSelect {

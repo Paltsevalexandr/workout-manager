@@ -11,12 +11,10 @@ import { Dispatch, SetStateAction } from "react"
 type Props = {
     name: string;
     category: Category;
-    muscleGroup: MuscleGroup | null;
     target: Target;
     selectedMuscleGroups: MuscleGroup[];
     onNameChange: (name: string) => void;
     onCategoryChange: (category: Category) => void;
-    onMuscleGroupChange: (muscleGroupId: MuscleGroup["id"]) => void;
     onTargetChange: (target: Target) => void;
     setSelectedMuscleGroups: Dispatch<SetStateAction<MuscleGroup[]>>;
 }
@@ -24,12 +22,10 @@ type Props = {
 export default function ExerciseForm({
     name,
     category,
-    muscleGroup,
     target,
     selectedMuscleGroups,
     onNameChange,
     onCategoryChange,
-    onMuscleGroupChange,
     onTargetChange,
     setSelectedMuscleGroups
 }: Props) {
@@ -43,14 +39,6 @@ export default function ExerciseForm({
                 required
                 autoFocus
                 onChange={onNameChange}
-            />
-            <SelectField
-                label="Muscle group"
-                name="muscle-group"
-                value={muscleGroup?.id ?? 1}
-                options={muscleGroups.map(group => group.id)}
-                optionsNames={muscleGroups.map(group => group.name)}
-                onChange={onMuscleGroupChange}
             />
             <SearchableMultiSelect<MuscleGroup>
                 label="Muscle Groups"
