@@ -1,4 +1,4 @@
-import { Exercise, MuscleGroup, PerformedExercise, PlannedExercise, WorkoutPlan, WorkoutSession } from "../_types";
+import { Exercise, MuscleGroup, PerformedExercise, PlannedExercise, Workout, WorkoutExercise, WorkoutPlan, WorkoutSession } from "../_types";
 
 export function generateID<T extends { id: number | null }>(dataArr: T[]): number {
     const maxId = dataArr.reduce((max, item) => {
@@ -56,6 +56,9 @@ export function getLatestPerformedExercise(lastSession: WorkoutSession | null, w
     return lastSession?.performedExercises.find(
         (ex) => ex.workoutExerciseId === workoutExerciseId
     ) ?? null;
+}
+export function getWorkoutExercise(id: WorkoutExercise["id"], workout: Workout): WorkoutExercise | null {
+    return workout.workoutExercises.find(exercise => exercise.id == id) ?? null;
 }
 export function getPlannedExercise(plan: WorkoutPlan | null, workoutExerciseId: number): PlannedExercise | null {
     return plan?.plannedExercises.find(

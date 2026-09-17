@@ -5,7 +5,7 @@ import React, {
     type SubmitEvent
 } from 'react';
 import styles from "../../page.module.scss";
-import { useExercisesContext, useWorkoutsContext } from '@/app/providers';
+import { useExercisesContext, usePerformedSessionsContext, useWorkoutsContext } from '@/app/providers';
 import WorkoutsList from "./WorkoutList";
 import { PerformedExercise, PlannedExercise, Workout, WorkoutPlan, WorkoutSession } from '@/_types';
 import WorkoutTrackingModal from './WorkoutTrackingModal';
@@ -21,37 +21,38 @@ export type ModalType = "none" | "session" | "plan";
 
 export default function WorkoutTracking({ }: Props) {
     const { workouts } = useWorkoutsContext();
+    const { performedSessions: workoutSessions, setPerformedSessions: setWorkoutSessions } = usePerformedSessionsContext();
     const [modalType, setModalType] = useState<ModalType>("none");
     const [performedSession, setPerformedSession] = useState<WorkoutSession | null>(null);
-    const [workoutSessions, setWorkoutSessions] = useState<WorkoutSession[]>([
-        {
-            date: 1788894136955,
-            id: 1,
-            performedExercises: [
-                { id: 1, workoutExerciseId: 0, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 2, workoutExerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 3, workoutExerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 4, workoutExerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 5, workoutExerciseId: 4, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 6, workoutExerciseId: 5, sets: 1, target: 1, weight: 0, rest: 1 },
+    // const [workoutSessions, setWorkoutSessions] = useState<WorkoutSession[]>([
+    //     {
+    //         date: 1788894136955,
+    //         id: 1,
+    //         performedExercises: [
+    //             { id: 1, workoutExerciseId: 0, sets: 1, target: 1, weight: 0, rest: 1 },
+    //             { id: 2, workoutExerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
+    //             { id: 3, workoutExerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
+    //             { id: 4, workoutExerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
+    //             { id: 5, workoutExerciseId: 4, sets: 1, target: 1, weight: 0, rest: 1 },
+    //             { id: 6, workoutExerciseId: 5, sets: 1, target: 1, weight: 0, rest: 1 },
 
 
-            ],
-            workoutId: 1
-        },
-        {
-            date: 1788894136955,
-            id: 2,
-            performedExercises: [
-                { id: 7, workoutExerciseId: 6, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 8, workoutExerciseId: 7, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 9, workoutExerciseId: 8, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 10, workoutExerciseId: 9, sets: 1, target: 1, weight: 0, rest: 1 }
+    //         ],
+    //         workoutId: 1
+    //     },
+    //     {
+    //         date: 1788894136955,
+    //         id: 2,
+    //         performedExercises: [
+    //             { id: 7, workoutExerciseId: 6, sets: 1, target: 1, weight: 0, rest: 1 },
+    //             { id: 8, workoutExerciseId: 7, sets: 1, target: 1, weight: 0, rest: 1 },
+    //             { id: 9, workoutExerciseId: 8, sets: 1, target: 1, weight: 0, rest: 1 },
+    //             { id: 10, workoutExerciseId: 9, sets: 1, target: 1, weight: 0, rest: 1 }
 
-            ],
-            workoutId: 2
-        }
-    ]);
+    //         ],
+    //         workoutId: 2
+    //     }
+    // ]);
     const [plannedSession, setPlannedSession] = useState<WorkoutPlan | null>(null);
     const [plannedSessions, setPlannedSessions] = useState<WorkoutPlan[]>([]);
     const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);

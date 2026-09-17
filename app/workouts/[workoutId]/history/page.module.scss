@@ -1,0 +1,84 @@
+@use "../../../variables" as *;
+
+.performedSession {
+    padding: 0.125rem 0.875rem;
+    border: $border;
+    border-radius: $borderRadius;
+    &ListWrap {
+        width: 32%;
+    }
+    &List {
+        @include column;
+        padding: 1rem;
+        gap: 0.75rem;
+    }
+    &Header {
+        padding: 0.5rem 0;
+        @include flexSpaceBetween;
+        align-items: center;
+        @include fontPrimary;
+        font-size: 1.25rem;
+        font-weight: bold;
+        cursor: pointer;
+
+        &:hover .performedSessionDetailsBtn::after {
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        &Right {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: $secondaryColor;
+            font-size: 1rem;
+            font-weight: normal;
+        }
+    }
+    &DetailsBtn {
+        @include iconButton;
+        width: 24px;
+        height: 24px;
+    }
+    &ExerciseList {
+        margin-top: 0.75rem;
+    }
+    &ExerciseListHeader {
+        padding: 0.5rem 0;
+        display: flex;
+        @include fontPrimary;
+        color: $secondaryColor;
+
+        &Exercise {
+            margin-right: auto;
+        }
+        &Data {
+            display: flex;
+            gap: 0.5rem;
+        }
+    }
+    &Exercise {
+        padding: 0.5rem 0;
+        display: flex;
+        border-top: $border;
+
+        &Name{
+            margin-right: auto;
+        }
+        &Data {
+            display: flex;
+            gap: 0.5rem;
+        }
+        &Name,
+        &Volume,
+        &Rest,
+        &Weight {
+            @include fontPrimary;
+        }
+    }
+}
+.details {
+    &Wrap {
+        width: 68%;
+    }
+}
+

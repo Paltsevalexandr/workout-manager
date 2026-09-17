@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
-import { Exercise, MuscleGroup, Workout } from "../_types";
+import { Exercise, MuscleGroup, Workout, WorkoutSession } from "../_types";
 
 type ExercisesContextType = {
     exercises: Exercise[];
@@ -17,10 +17,15 @@ type MuscleGroupContextType = {
     muscleGroups: MuscleGroup[];
     setMuscleGroups: Dispatch<SetStateAction<MuscleGroup[]>>;
 }
+type PerformedSessionContextType = {
+    performedSessions: WorkoutSession[];
+    setPerformedSessions: Dispatch<SetStateAction<WorkoutSession[]>>;
+}
 
 const ExercisesContext = createContext<ExercisesContextType | undefined>(undefined);
 const WorkoutsContext = createContext<WorkoutsContextType | undefined>(undefined);
 const MuscleGroupsContext = createContext<MuscleGroupContextType | undefined>(undefined);
+const PeformedSessionsContext = createContext<PerformedSessionContextType | undefined>(undefined);
 
 export function ExercisesProvider({ children }: { children: React.ReactNode }) {
     const [exercises, setExercises] = useState<Exercise[]>([
@@ -396,6 +401,74 @@ export function MuscleGroupsProvider({ children }: { children: React.ReactNode }
     )
 }
 
+export function PeformedSessionsProvider({ children }: { children: React.ReactNode }) {
+    const [performedSessions, setPerformedSessions] = useState<WorkoutSession[]>([
+        {
+            date: 1788894136955,
+            id: 1,
+            performedExercises: [
+                { id: 1, workoutExerciseId: 0, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 2, workoutExerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 3, workoutExerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 4, workoutExerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 5, workoutExerciseId: 4, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 6, workoutExerciseId: 5, sets: 1, target: 1, weight: 0, rest: 1 },
+
+
+            ],
+            workoutId: 1
+        },
+        {
+            date: 1788894136955 - (1000 * 60 * 60 * 24 * 5),
+            id: 2,
+            performedExercises: [
+                { id: 1, workoutExerciseId: 0, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 2, workoutExerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 3, workoutExerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 4, workoutExerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 5, workoutExerciseId: 4, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 6, workoutExerciseId: 5, sets: 1, target: 1, weight: 0, rest: 1 },
+
+
+            ],
+            workoutId: 1
+        },
+        {
+            date: 1788894136955,
+            id: 3,
+            performedExercises: [
+                { id: 7, workoutExerciseId: 6, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 8, workoutExerciseId: 7, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 9, workoutExerciseId: 8, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 10, workoutExerciseId: 9, sets: 1, target: 1, weight: 0, rest: 1 }
+
+            ],
+            workoutId: 2
+        },
+        {
+            date: 1788894136955 - (1000 * 60 * 60 * 24 * 7),
+            id: 4,
+            performedExercises: [
+                { id: 1, workoutExerciseId: 0, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 2, workoutExerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 3, workoutExerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 4, workoutExerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 5, workoutExerciseId: 4, sets: 1, target: 1, weight: 0, rest: 1 },
+                { id: 6, workoutExerciseId: 5, sets: 1, target: 1, weight: 0, rest: 1 },
+
+
+            ],
+            workoutId: 1
+        },
+    ]);
+
+    return (
+        <PeformedSessionsContext.Provider value={{ performedSessions, setPerformedSessions }}>
+            {children}
+        </PeformedSessionsContext.Provider>
+    );
+}
+
 export function useExercisesContext() {
     const context = useContext(ExercisesContext);
     if (!context) {
@@ -416,6 +489,13 @@ export function useMuscleGroupsContext() {
     const context = useContext(MuscleGroupsContext);
     if (!context) {
         throw new Error('useMuscleGroupsContext must be used within MuscleGroupsProvider')
+    }
+    return context;
+}
+export function usePerformedSessionsContext() {
+    const context = useContext(PeformedSessionsContext);
+    if (!context) {
+        throw new Error('usePerformedSessionsContext must be used within PeformedSessionsProvider')
     }
     return context;
 }

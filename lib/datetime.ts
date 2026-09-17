@@ -23,6 +23,15 @@ export function getFormattedDate(timestamp: number) {
     return `${year}-${month}-${day}`;
 }
 
+export function formatFullDate(timestamp: number): string {
+    const date = new Date(timestamp);
+    return date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+    });
+}
+
 export function dateStringToDateObj(datestr: string) {
     const [year, month, day] = datestr.split('-').map(Number);
     return new Date(year, month - 1, day);

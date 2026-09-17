@@ -4,6 +4,7 @@ import { Workout, WorkoutSession } from '@/_types';
 import ExerciseList from './ExerciseList';
 import { formatRelativeDate, getExercisesLabel, getLastSessionDate, getStatusClass } from '@/lib';
 import { Ellipsis } from "lucide-react";
+import Link from 'next/link';
 
 type Props = {
     workout: Workout;
@@ -73,9 +74,9 @@ export default function WorkoutDetails({
                                     </button>
                                 </li>
                                 <li className={styles.detailsMenuItem}>
-                                    <button className={styles.detailsMenuButton}>
+                                    <Link href={`/workouts/${workout.id}/history`} className={styles.detailsMenuButton}>
                                         History
-                                    </button>
+                                    </Link>
                                 </li>
                             </ul>
                         </div>
