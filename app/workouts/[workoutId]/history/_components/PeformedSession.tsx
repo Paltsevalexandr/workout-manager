@@ -2,6 +2,7 @@ import React from 'react';
 import { formatFullDate } from '@/lib';
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Dropdown from '@/app/components/ui/Dropdown';
+import KebabMenu from '@/app/components/ui/KebabMenu';
 import { Workout, WorkoutSession } from '@/_types';
 import styles from "../page.module.scss";
 import PerformedExerciseItem from './PerformedExerciseItem';
@@ -11,6 +12,9 @@ type Props = {
     session: WorkoutSession;
     isExpanded: boolean;
     toggleSessionDropdown: () => void;
+    showDeleteModal: () => void;
+    showEditModal: () => void;
+    showDuplicateModal: () => void;
 }
 
 export default function PeformedSession({
@@ -18,6 +22,9 @@ export default function PeformedSession({
     isExpanded,
     session,
     toggleSessionDropdown,
+    showDeleteModal,
+    showEditModal,
+    showDuplicateModal
 
 }: Props) {
     const exercisesAmount = workout.workoutExercises.length;
@@ -28,11 +35,17 @@ export default function PeformedSession({
                 <span>{formatFullDate(session.date)}</span>
                 <div className={styles.performedSessionHeaderRight}>
                     <span>
-                        {`${workout.workoutExercises.length} exercise${exercisesAmount > 1 ? 's':''}`} 
+                        {`${workout.workoutExercises.length} exercise${exercisesAmount > 1 ? 's' : ''}`}
                     </span>
-                    <button className={styles.performedSessionDetailsBtn}>
-                        {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                    </button>
+                    {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                    <KebabMenu items={[
+                        { label: "Edit", onClick: showEditModal },
+                        { label: "Duplicate as New", onClick: showDuplicateModal },
+                        {
+                            label: "Delete",
+                            onClick: showDeleteModal
+                        },
+                    ]} />
                 </div>
             </h3>
             <Dropdown isExpanded={isExpanded}>

@@ -9,7 +9,6 @@ import styles from "./page.module.scss";
 import ByDate from './_components/ByDate';
 import ByExercise from './_components/ByExercise';
 
-
 type Props = {}
 
 type ViewMode = "byDate" | "byExercise";
@@ -18,7 +17,7 @@ export default function page({ }: Props) {
     let { workoutId } = useParams<{ workoutId: string }>();
     const { workouts } = useWorkoutsContext();
     const { performedSessions } = usePerformedSessionsContext();
-    const [viewMode, setViewMode] = useState<ViewMode>("byExercise");
+    const [viewMode, setViewMode] = useState<ViewMode>("byDate");
     const workout = workouts.find(w => w.id === Number(workoutId));
 
     if (!workout) {
@@ -32,7 +31,8 @@ export default function page({ }: Props) {
         <Content title={`${workout.name} History`}>
             <section>
                 <div className="section-content">
-                    <div>
+                    {
+                        workout && workoutPerformedSessions.length && 
                         <div className={styles.controls}>
                             <button
                                 className={`${styles.controlsBtn} button-secondary ${viewMode == "byDate" ? styles.active : ""}`}
@@ -47,20 +47,28 @@ export default function page({ }: Props) {
                                 By Exercise
                             </button>
                         </div>
-                        {viewMode === "byDate"
-                            ? <ByDate
-                                workout={workout}
-                                performedSessions={workoutPerformedSessions}
-                            />
-                            : <ByExercise
-                                workout={workout}
-                                performedSessions={workoutPerformedSessions}
-                            />
-                        }
-                    </div>
+                    }
+                    {
+                        !workout
+                            ? <p>Workout not found</p>
+                            : !workoutPerformedSessions.length
+                                ? <p>You haven't trained yet.</p>
+                                : <>
+                                    
+                                    {viewMode === "byDate"
+                                        ? <ByDate
+                                            workout={workout}
+                                            performedSessions={workoutPerformedSessions}
+                                        />
+                                        : <ByExercise
+                                            workout={workout}
+                                            performedSessions={workoutPerformedSessions}
+                                        />
+                                    }
+                                </>
+                    }
                 </div>
             </section>
-
         </Content>
     )
 }
