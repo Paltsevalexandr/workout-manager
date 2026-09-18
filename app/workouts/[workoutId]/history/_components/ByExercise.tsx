@@ -20,6 +20,12 @@ export default function ByExercise({ workout, performedSessions }: Props) {
 
     type TrackedWorkoutExercise = WorkoutExercise & { id: number };
     type StatField = "sets" | "target" | "weight" | "rest";
+    const higherIsBetter: Record<StatField, boolean> = {
+        sets: true,
+        target: true,
+        weight: true,
+        rest: false,
+    };
 
     const exercise = exercises.find(
         e => e.id === performedExercises.find(ex => ex.id === selectedExerciseId)?.exerciseId
@@ -69,15 +75,15 @@ export default function ByExercise({ workout, performedSessions }: Props) {
         return fields.filter(field => entries.some(e => e[field] > 0));
     }
 
-    function getSummaryFromValues(values: number[]) {
+    function getSummaryFromValues(values: number[], higherIsBetterFlag: boolean) {
         const current = values[0];
         const first = values[values.length - 1];
-        const best = Math.max(...values);
-        const worst = Math.min(...values);
+        const best = higherIsBetterFlag ? Math.max(...values) : Math.min(...values);
+        const worst = higherIsBetterFlag ? Math.min(...values) : Math.max(...values);
         return { first, current, best, worst, isAtBest: current === best };
     }
     function getProgressSummary(entries: PerformedExercise[], field: StatField) {
-        return getSummaryFromValues(entries.map(e => e[field]));
+        return getSummaryFromValues(entries.map(e => e[field]), higherIsBetter[field]);
     }
     function getFieldUnit(field: StatField): string {
         if (field === "weight") {
@@ -106,16 +112,18 @@ export default function ByExercise({ workout, performedSessions }: Props) {
 
 
     const volumeValues = getVolumeValues(performedEntries);
-    const volumeSummary = getSummaryFromValues(volumeValues);
+    const volumeSummary = getSummaryFromValues(volumeValues, true); // объём — выше всегда лучше
     const showVolume = volumeSummary.best !== volumeSummary.worst;
 
-    function renderDelta(current: number, first: number, best: number, isAtBest: boolean, unit: string) {
+    function renderDelta(current: number, first: number, best: number, isAtBest: boolean, unit: string, higherIsBetterFlag: boolean) {
         const percentChange = getPercentChange(current, first);
+        const isImprovement = percentChange !== null
+            && (higherIsBetterFlag ? percentChange >= 0 : percentChange <= 0);
         return (
             <>
                 <p className={styles.exerciseStatDelta}>
                     {percentChange !== null && (
-                        <span className={percentChange >= 0 ? styles.positive : styles.negative}>
+                        <span className={isImprovement ? styles.positive : styles.negative}>
                             {percentChange >= 0 ? "+" : ""}{percentChange}%
                         </span>
                     )}
@@ -154,7 +162,7 @@ export default function ByExercise({ workout, performedSessions }: Props) {
                         <li className={styles.exerciseStat} key="volume">
                             <p className={styles.exerciseStatFieldName}>Volume</p>
                             <h2 className={styles.exerciseStatCurrent}>{volumeSummary.current}{getVolumeUnit()}</h2>
-                            {renderDelta(volumeSummary.current, volumeSummary.first, volumeSummary.best, volumeSummary.isAtBest, getVolumeUnit())}
+                            {renderDelta(volumeSummary.current, volumeSummary.first, volumeSummary.best, volumeSummary.isAtBest, getVolumeUnit(), true)}
                         </li>
                     }
                     {
@@ -172,7 +180,7 @@ export default function ByExercise({ workout, performedSessions }: Props) {
                                         {capitalize(field == "target" ? (exercise?.target == "reps" ? "Reps" : "Duration") : field)}
                                     </p>
                                     <h2 className={styles.exerciseStatCurrent}>{current}{getFieldUnit(field)}</h2>
-                                    {renderDelta(current, first, best, isAtBest, getFieldUnit(field))}
+                                    {renderDelta(current, first, best, isAtBest, getFieldUnit(field), higherIsBetter[field])}
                                 </li>
                             )
                         })

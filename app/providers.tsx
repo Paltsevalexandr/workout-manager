@@ -403,70 +403,30 @@ export function MuscleGroupsProvider({ children }: { children: React.ReactNode }
 
 export function PeformedSessionsProvider({ children }: { children: React.ReactNode }) {
     const [performedSessions, setPerformedSessions] = useState<WorkoutSession[]>([
-        // {
-        //     date: 1788894136955,
-        //     id: 1,
-        //     performedExercises: [
-        //         { id: 1, workoutExerciseId: 0, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 2, workoutExerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 3, workoutExerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 4, workoutExerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 5, workoutExerciseId: 4, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 6, workoutExerciseId: 5, sets: 1, target: 1, weight: 0, rest: 1 },
-
-
-        //     ],
-        //     workoutId: 1
-        // },
-        // {
-        //     date: 1788894136955 - (1000 * 60 * 60 * 24 * 5),
-        //     id: 2,
-        //     performedExercises: [
-        //         { id: 1, workoutExerciseId: 0, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 2, workoutExerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 3, workoutExerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 4, workoutExerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 5, workoutExerciseId: 4, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 6, workoutExerciseId: 5, sets: 1, target: 1, weight: 0, rest: 1 },
-
-
-        //     ],
-        //     workoutId: 1
-        // },
-        // {
-        //     date: 1788894136955 - (1000 * 60 * 60 * 24 * 7),
-        //     id: 4,
-        //     performedExercises: [
-        //         { id: 1, workoutExerciseId: 0, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 2, workoutExerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 3, workoutExerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 4, workoutExerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 5, workoutExerciseId: 4, sets: 1, target: 1, weight: 0, rest: 1 },
-        //         { id: 6, workoutExerciseId: 5, sets: 1, target: 1, weight: 0, rest: 1 },
-
-
-        //     ],
-        //     workoutId: 1
-        // },
         {
-            date: 1788894136955,
+            date: 1788894136955 - (1000 * 60 * 60 * 24 * 14),
             id: 3,
             performedExercises: [
-                { id: 7, workoutExerciseId: 6, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 8, workoutExerciseId: 7, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 9, workoutExerciseId: 8, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 10, workoutExerciseId: 9, sets: 1, target: 1, weight: 0, rest: 1 }
+                { id: 7, workoutExerciseId: 6, sets: 1, target: 1, weight: 1, rest: 30 },
+                { id: 8, workoutExerciseId: 7, sets: 1, target: 1, weight: 0, rest: 30 },
+                { id: 9, workoutExerciseId: 8, sets: 1, target: 1, weight: 0, rest: 30 },
+                { id: 10, workoutExerciseId: 9, sets: 1, target: 1, weight: 0, rest: 30 }
 
             ],
             workoutId: 2
         },
-        // The 10 sessions below add progression history for Workout 1 (workoutId: 1):
-        // workoutExerciseId 0 (Dumbbell row) - steady linear progress
-        // workoutExerciseId 1 (Plank) - unchanged / plateau
-        // workoutExerciseId 2 (Barbell squat) - rise, fall with a one-time sets bump, then gradual rise again
-        // workoutExerciseId 3 (Push-ups) - steady regression
-        // workoutExerciseId 4 (Running) - wave (up-down-up-down)
-        // workoutExerciseId 5 (Lunges) - noisy/erratic, no clear trend
+        {
+            date: 1788894136955,
+            id: 55,
+            performedExercises: [
+                { id: 7, workoutExerciseId: 6, sets: 1, target: 2, weight: 1, rest: 20 },
+                { id: 8, workoutExerciseId: 7, sets: 1, target: 2, weight: 0, rest: 20},
+                { id: 9, workoutExerciseId: 8, sets: 1, target: 1, weight: 0, rest: 20 },
+                { id: 10, workoutExerciseId: 9, sets: 1, target: 1, weight: 0, rest: 20 }
+
+            ],
+            workoutId: 2
+        },
         {
             date: 1788894136955 - (1000 * 60 * 60 * 24 * 14),
             id: 20,
