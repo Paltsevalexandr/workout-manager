@@ -1,5 +1,17 @@
 @use "../../../variables" as *;
 
+
+.controls {
+    margin-bottom: 1rem;
+    display: flex;
+    gap: 1rem;
+
+    &Btn {
+        &.active {
+            background: $primaryBg;
+        }
+    }
+}
 .performedSession {
     padding: 0.125rem 0.875rem;
     border: $border;
@@ -45,8 +57,7 @@
     &ExerciseListHeader {
         padding: 0.5rem 0;
         display: flex;
-        @include fontPrimary;
-        color: $secondaryColor;
+        @include headingSecondarySmall;
 
         &Exercise {
             margin-right: auto;
@@ -81,4 +92,5 @@
         width: 68%;
     }
 }
+
 

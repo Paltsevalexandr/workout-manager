@@ -6,56 +6,57 @@ import { usePerformedSessionsContext, useWorkoutsContext } from '@/app/providers
 import { useParams } from 'next/navigation';
 
 import styles from "./page.module.scss";
-import PeformedSession from './_components/PeformedSession';
+import ByDate from './_components/ByDate';
+import ByExercise from './_components/ByExercise';
 
 
 type Props = {}
+
+type ViewMode = "byDate" | "byExercise";
 
 export default function page({ }: Props) {
     let { workoutId } = useParams<{ workoutId: string }>();
     const { workouts } = useWorkoutsContext();
     const { performedSessions } = usePerformedSessionsContext();
-    const [expandedSessions, setExpandedSessions] = useState<number[]>([1]);
+    const [viewMode, setViewMode] = useState<ViewMode>("byExercise");
     const workout = workouts.find(w => w.id === Number(workoutId));
 
     if (!workout) {
         return <p>Workout not found</p>;
     }
 
-    function toggleSessionDropdown(id: number) {
-        if (expandedSessions.includes(id)) {
-            setExpandedSessions(prev => prev.filter(i => i != id));
-        }
-        else {
-            setExpandedSessions(prev => [...prev, id]);
-        }
-    }
-
     const workoutPerformedSessions = performedSessions
-        .filter(session => session.workoutId == workout.id)
-        .sort((a, b) => b.date - a.date);
+        .filter(session => session.workoutId == workout.id);
+
     return (
         <Content title={`${workout.name} History`}>
             <section>
                 <div className="section-content">
                     <div>
-                        <div className={styles.performedSessionListWrap}>
-                            <ul className={styles.performedSessionList}>
-                                {
-                                    workoutPerformedSessions.map(session => {
-                                        return (
-                                            <PeformedSession
-                                                key={`session_${session.id}`}
-                                                workout={workout}
-                                                session={session}
-                                                isExpanded={expandedSessions.includes(session.id!)}
-                                                toggleSessionDropdown={() => toggleSessionDropdown(session.id!)}
-                                            />
-                                        )
-                                    })
-                                }
-                            </ul>
+                        <div className={styles.controls}>
+                            <button
+                                className={`${styles.controlsBtn} button-secondary ${viewMode == "byDate" ? styles.active : ""}`}
+                                onClick={() => setViewMode("byDate")}
+                            >
+                                By Date
+                            </button>
+                            <button
+                                className={`${styles.controlsBtn} button-secondary ${viewMode == "byExercise" ? styles.active : ""}`}
+                                onClick={() => setViewMode("byExercise")}
+                            >
+                                By Exercise
+                            </button>
                         </div>
+                        {viewMode === "byDate"
+                            ? <ByDate
+                                workout={workout}
+                                performedSessions={workoutPerformedSessions}
+                            />
+                            : <ByExercise
+                                workout={workout}
+                                performedSessions={workoutPerformedSessions}
+                            />
+                        }
                     </div>
                 </div>
             </section>

@@ -1,9 +1,11 @@
-$primaryColor: rgba(0, 0, 0, 0.85);
-$secondaryColor: rgba(0, 0, 0, 0.65);
+$primaryColor: rgb(34, 33, 33);
+$secondaryColor: rgb(100, 100, 100);
 
-$primaryBg: rgb(250, 250, 250);
+$primaryBg: rgb(235, 235, 235);
 $highlightBg: rgb(255, 255, 255);
+$secondaryBg: rgb(220, 220, 220);
 $darkHighlightBg: rgba(212, 212, 212);
+$buttonOverlay: rgba(0, 0, 0, 0.15);
 
 $red: rgb(165, 0, 0);
 $green: darkgreen;
@@ -53,14 +55,26 @@ $headerHeight: 48px;
     display: flex;
     justify-content: space-between
 }
+
+// fonts
+
 @mixin fontPrimary {
     font-size: 1rem;
     color: $primaryColor;
 }
 @mixin fontSecondary {
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: $secondaryColor;
 }
+@mixin headingSecondarySmall {
+    @include fontSecondary;
+    font-weight: 500;
+}
+@mixin headingSecondaryMed {
+    @include headingSecondarySmall;
+    font-size: 1rem;
+}
+// fonts end
 
 @mixin selectedItem {
     padding: 2px 4px;

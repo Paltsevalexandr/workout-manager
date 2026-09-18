@@ -1,0 +1,92 @@
+@use "../../../../variables" as *;
+
+.list {
+    @include column;
+    margin-top: 1rem;
+}
+
+
+.row {
+    display: flex;
+    padding: 0.5rem;
+
+    &:nth-child(2n) {
+        background-color: $primaryBg;
+    }
+
+    &Date {
+        font-weight: 500;
+    }
+    &Date,
+    &Sets,
+    &Weight,
+    &Rest {
+        flex: 1;
+        @include fontPrimary;
+    }
+}
+.header {
+    @extend .row;
+
+    .rowDate,
+    .rowSets,
+    .rowWeight,
+    .rowRest {
+        @include headingSecondaryMed;
+    }
+}
+
+
+.exerciseSelect {
+    width: fit-content;
+    margin-bottom: 1.25rem;
+
+    label {
+        @include headingSecondaryMed;
+    }
+}
+.exerciseSessionsAmount {
+    margin-bottom: 0.75rem;
+    @include headingSecondaryMed;
+    
+}
+.exerciseStat {
+    background: $primaryBg;
+    border-radius: $borderRadius;
+    padding: 1rem;
+    width: calc(25% - 0.75rem);
+
+    &List {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    &FieldName {
+        @include fontSecondary;
+        margin-bottom: 0.25rem;
+    }
+
+    &Current {
+        @include fontPrimary;
+        font-size: 1.5rem;
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+    }
+
+    &Delta {
+        @include fontSecondary;
+        margin: 0;
+    }
+}
+
+.positive {
+    color: $green;
+    font-weight: 500;
+}
+
+.negative {
+    color: $red;
+    font-weight: 500;
+}

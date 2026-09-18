@@ -1,3 +1,5 @@
+import styles from './SelectField.module.scss';
+
 type Props<Value extends string | number> = {
     label: string;
     name: string;
@@ -21,7 +23,7 @@ export default function SelectField<Value extends string | number>({
     formatOption = (option) => capitalize(String(option)),
 }: Props<Value>) {
     return (
-        <label>
+        <label className={styles.label}>
             {label}
             <select
                 value={String(value)}
