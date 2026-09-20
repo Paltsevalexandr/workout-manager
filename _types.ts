@@ -10,6 +10,9 @@ export type Target = typeof targets[number];
 export const days = [0, 1, 2, 3, 4, 5, 6];
 export type Day = typeof days[number];
 
+export type SessionFormSource = "none" | "prevSession" | "plan";
+export type ModalType = "none" | "session" | "plan";
+
 export type Exercise = {
     id: number;
     name: string;

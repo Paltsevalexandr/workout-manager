@@ -5,55 +5,26 @@ import React, {
     type SubmitEvent
 } from 'react';
 import styles from "../../page.module.scss";
-import { useExercisesContext, useWorkoutsContext } from '@/app/providers';
+import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from '@/app/providers';
 import WorkoutsList from "./WorkoutList";
-import { PerformedExercise, PlannedExercise, Workout, WorkoutPlan, WorkoutSession } from '@/_types';
-import WorkoutTrackingModal from './WorkoutTrackingModal';
+import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, Workout, WorkoutPlan, WorkoutSession } from '@/_types';
+import WorkoutTrackingModal from '../WorkoutTrackingModal';
 import {
-    generateID, getLastSession, getLatestPerformedExercise,
-    getPlannedExercise, getPlannedSession, isWorkoutPlan, isWorkoutSession
+    buildPerformedSession,
+    buildPlannedSession,
+    generateID,
 } from '@/lib';
 import WorkoutDetails from './WorkoutDetails';
 
 type Props = {}
-export type SessionFormSource = "none" | "prevSession" | "plan";
-export type ModalType = "none" | "session" | "plan";
 
 export default function WorkoutTracking({ }: Props) {
     const { workouts } = useWorkoutsContext();
+    const { performedSessions, setPerformedSessions: setWorkoutSessions } = usePerformedSessionsContext();
+    const { plannedSessions, setPlannedSessions } = usePlannedSessionsContext();
     const [modalType, setModalType] = useState<ModalType>("none");
     const [performedSession, setPerformedSession] = useState<WorkoutSession | null>(null);
-    const [workoutSessions, setWorkoutSessions] = useState<WorkoutSession[]>([
-        {
-            date: 1788894136955,
-            id: 1,
-            performedExercises: [
-                { id: 1, workoutExerciseId: 0, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 2, workoutExerciseId: 1, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 3, workoutExerciseId: 2, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 4, workoutExerciseId: 3, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 5, workoutExerciseId: 4, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 6, workoutExerciseId: 5, sets: 1, target: 1, weight: 0, rest: 1 },
-
-
-            ],
-            workoutId: 1
-        },
-        {
-            date: 1788894136955,
-            id: 2,
-            performedExercises: [
-                { id: 7, workoutExerciseId: 6, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 8, workoutExerciseId: 7, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 9, workoutExerciseId: 8, sets: 1, target: 1, weight: 0, rest: 1 },
-                { id: 10, workoutExerciseId: 9, sets: 1, target: 1, weight: 0, rest: 1 }
-
-            ],
-            workoutId: 2
-        }
-    ]);
     const [plannedSession, setPlannedSession] = useState<WorkoutPlan | null>(null);
-    const [plannedSessions, setPlannedSessions] = useState<WorkoutPlan[]>([]);
     const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
     const [sessionFormSource, setSessionFormSource] = useState<SessionFormSource>("none");
 
@@ -67,128 +38,27 @@ export default function WorkoutTracking({ }: Props) {
     }
     function createNextSessionPlan(workoutId: number) {
         const workout = getWorkout(workoutId);
-        if (!workout) {
-            return;
-        }
-        const lastSession = getLastSession(workoutId, workoutSessions);
-        // const currentPlannedSession = getPlannedSession(workoutId, plannedSessions);
-        const sessionSource = getDefaultSessionSource(lastSession);
-        setSessionFormSource(sessionSource);
-        // temp code
-        let newPlannedExerciseId = generateID(getAllPlannedExercises());
-        // temp code end
-        const plannedExercises: PlannedExercise[] = createSessionExercises(
-            workout, lastSession, newPlannedExerciseId
-        ) as PlannedExercise[];
+        if (!workout) return;
 
-        setPlannedSession({
-            id: null,
-            workoutId: workoutId,
-            date: Date.now(),
-            plannedExercises
-        });
+        const { plan, sessionFormSource } = buildPlannedSession(workout, performedSessions, plannedSessions);
+        setSessionFormSource(sessionFormSource);
+        setPlannedSession(plan);
         setModalType("plan");
     }
     function createPerformedSession(workoutId: number, source?: SessionFormSource) {
         const workout = getWorkout(workoutId);
         if (!workout) return;
 
-        // temp code
-        let newPerformedExerciseId = generateID(getAllPerformedExercises());
-        // temp code end
-
-        const lastSession = getLastSession(workoutId, workoutSessions);
-        const currentPlannedSession = getPlannedSession(workoutId, plannedSessions);
-        let sessionSource = getDefaultSessionSource(lastSession, currentPlannedSession);
-        let sessionSourceObj = currentPlannedSession ?? lastSession;
-        if (source) {
-            sessionSource = source;
-            switch (sessionSource) {
-                case ("plan"):
-                    sessionSourceObj = currentPlannedSession;
-                    break;
-                case ("prevSession"):
-                    sessionSourceObj = lastSession;
-                    break;
-            }
-        }
-        setSessionFormSource(sessionSource);
-        let performedExercises: PerformedExercise[] = createSessionExercises(
-            workout, sessionSourceObj, newPerformedExerciseId
-        )
-
-        setPerformedSession({
-            id: null,
-            workoutId: workoutId,
-            date: performedSession?.date ?? Date.now(),
-            performedExercises
-        });
+        const { session, sessionFormSource } = buildPerformedSession(
+            workout, performedSessions, plannedSessions,
+            { source, date: performedSession?.date }
+        );
+        setSessionFormSource(sessionFormSource);
+        setPerformedSession(session);
         setModalType("session");
-    }
-    function getAllPerformedExercises(): PerformedExercise[] {
-        let allPerformedExercises: PerformedExercise[] = [];
-        workoutSessions.forEach(session => allPerformedExercises.push(...session.performedExercises));
-        return allPerformedExercises;
-    }
-    function getAllPlannedExercises(): PlannedExercise[] {
-        let allPlannedExercises: PlannedExercise[] = [];
-        plannedSessions.forEach(session => allPlannedExercises.push(...session.plannedExercises));
-        return allPlannedExercises;
-    }
-    function getDefaultSessionSource(
-        lastSession: WorkoutSession | null, currentPlannedSession?: WorkoutPlan | null
-    ): SessionFormSource {
-        if (currentPlannedSession) {
-            return "plan";
-        }
-        else if (lastSession) {
-            return "prevSession";
-        }
-        else {
-            return "none";
-        }
     }
     function getWorkout(workoutId: number): Workout | null {
         return workouts.find(workout => workout.id == workoutId) ?? null;
-    }
-    function createSessionExercises(
-        workout: Workout,
-        sourceSession: WorkoutSession | WorkoutPlan | null,
-        newSessionExerciseId: number
-    ): PerformedExercise[] | PlannedExercise[] {
-        let sessionExercises: PerformedExercise[] | PlannedExercise[] = [];
-        workout.workoutExercises.forEach((workoutExercise, i) => {
-            if (workoutExercise.id !== null) {
-                const sessionExercise: PerformedExercise | PlannedExercise = createSessionExercise(
-                    sourceSession, newSessionExerciseId + i, workoutExercise.id
-                );
-                sessionExercises.push(sessionExercise);
-            }
-            else {
-                console.warn("workoutExercise id is null", workoutExercise);
-            }
-        });
-        return sessionExercises;
-    }
-    function createSessionExercise(
-        source: WorkoutSession | WorkoutPlan | null, // PlannedSession or last PerformedSession
-        newObjectId: number,
-        workoutExerciseId: number
-    ): PerformedExercise | PlannedExercise {
-        let sourceExercise = isWorkoutSession(source)
-            ? getLatestPerformedExercise(source, workoutExerciseId)
-            : isWorkoutPlan(source)
-                ? getPlannedExercise(source, workoutExerciseId)
-                : null
-
-        return {
-            id: newObjectId,
-            workoutExerciseId: workoutExerciseId,
-            sets: sourceExercise?.sets ?? 1,
-            target: sourceExercise?.target ?? 1,
-            weight: sourceExercise?.weight ?? 0,
-            rest: sourceExercise?.rest ?? 1,
-        }
     }
     function saveSession(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -206,7 +76,7 @@ export default function WorkoutTracking({ }: Props) {
                 ...prevSessions,
                 {
                     ...performedSession,
-                    id: generateID(workoutSessions)
+                    id: generateID(performedSessions)
                 }
             ])
         }
@@ -312,7 +182,7 @@ export default function WorkoutTracking({ }: Props) {
                     <div className={styles.workoutColumns}>
                         <WorkoutsList
                             selectedWorkout={selectedWorkout}
-                            workoutSessions={workoutSessions}
+                            workoutSessions={performedSessions}
                             plannedSessions={plannedSessions}
                             setSelectedWorkout={setSelectedWorkout}
                         />
@@ -320,7 +190,7 @@ export default function WorkoutTracking({ }: Props) {
                             selectedWorkout &&
                             <WorkoutDetails
                                 workout={selectedWorkout}
-                                workoutSessions={workoutSessions}
+                                workoutSessions={performedSessions}
                                 savePerformedSession={createPerformedSession}
                                 createNextSessionPlan={createNextSessionPlan}
                             />
@@ -330,7 +200,7 @@ export default function WorkoutTracking({ }: Props) {
                         modalType != "none" && session
                         && <WorkoutTrackingModal
                             modalType={modalType}
-                            workoutSessions={workoutSessions}
+                            workoutSessions={performedSessions}
                             plannedSessions={plannedSessions}
                             setDate={setDate}
                             sessionFormSource={sessionFormSource}

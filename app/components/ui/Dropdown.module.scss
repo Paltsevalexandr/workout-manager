@@ -1,0 +1,14 @@
+.dropdown {
+    display: grid;
+    grid-template-rows: 0fr;
+    overflow: hidden;
+    transition: grid-template-rows 0.2s ease;
+
+    &.active {
+        grid-template-rows: 1fr;
+    }
+
+    &Content {
+        min-height: 0;
+    }
+}

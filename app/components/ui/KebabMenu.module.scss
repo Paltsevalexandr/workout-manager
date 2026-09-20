@@ -1,0 +1,53 @@
+@use "../../variables" as *;
+
+.wrap {
+    position: relative;
+}
+
+.trigger {
+    padding: 0;
+    min-width: 0;
+    width: 28px;
+    height: 28px;
+    border: none;
+}
+
+.dropdownPosition {
+    z-index: 5;
+    position: absolute;
+    top: 14px;
+    right: -7px;
+}
+
+.menu {
+    border: $border;
+    background-color: $highlightBg;
+    border-radius: $borderRadius;
+}
+
+.menuItem {
+    border-bottom: $border;
+    min-width: 175px;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    &:first-child .menuButton {
+        border-radius: $borderRadius $borderRadius 0 0;
+    }
+    &:last-child .menuButton {
+        border-radius: 0 0 $borderRadius $borderRadius;
+    }
+}
+
+.menuButton {
+    padding: 0.625rem 0.5rem;
+    min-width: 0;
+    width: 100%;
+    height: 100%;
+    color: $primaryColor;
+    border: none;
+    border-radius: 0;
+    background-color: transparent;
+}

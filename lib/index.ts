@@ -8,6 +8,7 @@ export {
     dayNames,
     getDayName,
     getFormattedDate,
+    formatFullDate,
     dateStringToDateObj,
 } from "./datetime";
 
@@ -22,8 +23,20 @@ export {
     getLatestPerformedExercise,
     getPlannedExercise,
     getMuscleGroupById,
+    getWorkoutExercise,
+
 
 } from "./data";
+
+export {
+    getAllPerformedExercises,
+    getAllPlannedExercises,
+    getDefaultSessionSource,
+    createSessionExercises,
+    createSessionExercise,
+    buildPerformedSession,
+    buildPlannedSession,
+} from "./session";
 
 export {
     getStatusClass,

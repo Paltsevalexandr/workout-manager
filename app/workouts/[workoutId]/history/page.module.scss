@@ -1,0 +1,31 @@
+@use "../../../variables" as *;
+
+
+.controls {
+    margin-bottom: 1rem;
+    max-width: 950px;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    &Btn {
+        &.active {
+            background: $primaryBg;
+        }
+
+        &AddSession {
+            margin-left: auto;
+        }
+    }
+    .exerciseSelect {
+        width: fit-content;
+        margin-left: auto;
+
+        label {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            @include headingSecondaryMed;
+        }
+    }
+}

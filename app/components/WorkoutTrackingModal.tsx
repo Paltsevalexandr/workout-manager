@@ -1,14 +1,12 @@
-import React, { Dispatch, SetStateAction, type SubmitEvent } from 'react';
-import ModalForm from '../ui/ModalForm';
-import Modal from '../ui/Modal';
-import NumberField from '../forms/NumberField';
-import DateField from '../forms/DateField';
+import React, { type SubmitEvent } from 'react';
+import ModalForm from './ui/ModalForm';
+import Modal from './ui/Modal';
+import NumberField from './forms/NumberField';
+import DateField from './forms/DateField';
 import { getExerciseById, getFormattedDate, getLastSession, getPlannedSession, isWorkoutPlan, isWorkoutSession } from '@/lib';
-import { PerformedExercise, PlannedExercise, Workout, WorkoutExercise, WorkoutPlan, WorkoutSession } from '@/_types';
-import styles from "../../page.module.scss";
+import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, WorkoutExercise, WorkoutPlan, WorkoutSession } from '@/_types';
+import styles from "./WorkoutTrackingModal.module.scss";
 import { useExercisesContext, useWorkoutsContext } from '@/app/providers';
-import { SessionFormSource } from './WorkoutTracking';
-import { ModalType } from "./WorkoutTracking";
 
 type Props = {
     modalType: ModalType;
@@ -18,7 +16,7 @@ type Props = {
     workoutSessions: WorkoutSession[];
     saveSession: (e: SubmitEvent<HTMLFormElement>) => void;
     cancelForm: () => void;
-    toggleSessionFormSource: (source: SessionFormSource, workoutId: number) => void;
+    toggleSessionFormSource?: (source: SessionFormSource, workoutId: number) => void;
     setDate: (date: number) => void;
     handlePerformedExerciseChange: (value: number, workoutExerciseId: number, field: keyof PerformedExercise) => void;
 }
@@ -32,7 +30,7 @@ export default function WorkoutTrackingModal({
     saveSession,
     cancelForm,
     setDate,
-    toggleSessionFormSource,
+    toggleSessionFormSource = () => { },
     handlePerformedExerciseChange
 }: Props) {
     const { exercises } = useExercisesContext();

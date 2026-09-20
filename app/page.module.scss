@@ -126,63 +126,10 @@ $titleLineHeight: 1.1;
             flex-shrink: 0;
         }
     }
-
-    &MenuTrigger {
-        position: absolute;
-        top: -13px;
-        right: -13px;
-        padding: 0;
-        min-width: 0;
-        width: 26px;
-        height: 26px;
-        border: none;
-    }
     &MenuWrap {
-        display: grid;
-        grid-template-rows: 0fr;
-        overflow: hidden;
-        transition: grid-template-rows 0.2s ease;
-
-        &.active {
-            grid-template-rows: 1fr;
-        }
-        top: 14px;
-        right: -7px;
         position: absolute;
-    }
-    &MenuContainer {
-        min-height: 0;
-    }
-    &Menu {
-        border: $border;
-        background-color: $highlightBg;
-        border-radius: $borderRadius;
-        
-        &Item {
-            border-bottom: $border;
-            min-width: 175px;
-
-            &:last-child {
-                border-bottom: none;
-            }
-
-            &:first-child .detailsMenuButton{
-                border-radius: $borderRadius $borderRadius 0 0;
-            }
-            &:last-child .detailsMenuButton {
-                border-radius: 0 0 $borderRadius $borderRadius;
-            }
-        }
-        &Button {
-            padding: 0.625rem 0.5rem;
-            min-width: 0;
-            width: 100%;
-            height: 100%;
-            color: $primaryColor;
-            border: none;
-            border-radius: 0;
-            background-color: transparent;
-        }
+        top: -14px;
+        right: -14px;
     }
 
     &Title{
@@ -222,48 +169,4 @@ $titleLineHeight: 1.1;
         border-top: $border;
         background-color: $primaryBg;
     }
-}
-
-.workoutSessionForm {
-    &Header {
-        @include flexSpaceBetween;
-        flex-shrink: 0;
-    }
-    &SourceWrap {
-        display: flex;
-        justify-content: flex-end;
-        flex-wrap: wrap;
-        flex: 1;
-        max-width: 50%;
-        gap: 0.25rem;
-    }
-    &Source {
-        height: 20px;
-        font-size: 0.75rem;
-
-        &.active {
-            background: $darkHighlightBg;
-        }
-    }
-    &Exercises {
-        &Header,
-        &Item {
-            display: grid;
-            grid-template-columns: minmax(10rem, 1fr) 5rem 5rem 5rem 5rem;
-            align-items: center;
-            // gap: 8px;
-        }
-        &Header {
-            padding: 0.5rem;
-            border-block: $border;
-        }
-
-        &Item {
-            padding: 0.5rem;
-            border-bottom: $border;
-        }
-    }
-    
-
-    
 }
