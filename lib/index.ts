@@ -24,9 +24,19 @@ export {
     getPlannedExercise,
     getMuscleGroupById,
     getWorkoutExercise,
-    
+
 
 } from "./data";
+
+export {
+    getAllPerformedExercises,
+    getAllPlannedExercises,
+    getDefaultSessionSource,
+    createSessionExercises,
+    createSessionExercise,
+    buildPerformedSession,
+    buildPlannedSession,
+} from "./session";
 
 export {
     getStatusClass,

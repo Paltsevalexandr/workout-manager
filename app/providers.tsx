@@ -1,12 +1,16 @@
 "use client";
 
 import { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
-import { Exercise, MuscleGroup, Workout, WorkoutSession } from "../_types";
+import { Exercise, MuscleGroup, Workout, WorkoutPlan, WorkoutSession } from "../_types";
 
 type ExercisesContextType = {
     exercises: Exercise[];
     setExercises: Dispatch<SetStateAction<Exercise[]>>;
 };
+type PlannedSessionContextType = {
+    plannedSessions: WorkoutPlan[];
+    setPlannedSessions: Dispatch<SetStateAction<WorkoutPlan[]>>;
+}
 
 type WorkoutsContextType = {
     workouts: Workout[];
@@ -26,6 +30,7 @@ const ExercisesContext = createContext<ExercisesContextType | undefined>(undefin
 const WorkoutsContext = createContext<WorkoutsContextType | undefined>(undefined);
 const MuscleGroupsContext = createContext<MuscleGroupContextType | undefined>(undefined);
 const PeformedSessionsContext = createContext<PerformedSessionContextType | undefined>(undefined);
+const PlannedSessionsContext = createContext<PlannedSessionContextType | undefined>(undefined);
 
 export function ExercisesProvider({ children }: { children: React.ReactNode }) {
     const [exercises, setExercises] = useState<Exercise[]>([
@@ -420,7 +425,7 @@ export function PeformedSessionsProvider({ children }: { children: React.ReactNo
             id: 55,
             performedExercises: [
                 { id: 7, workoutExerciseId: 6, sets: 1, target: 2, weight: 1, rest: 20 },
-                { id: 8, workoutExerciseId: 7, sets: 1, target: 2, weight: 0, rest: 20},
+                { id: 8, workoutExerciseId: 7, sets: 1, target: 2, weight: 0, rest: 20 },
                 { id: 9, workoutExerciseId: 8, sets: 1, target: 1, weight: 0, rest: 20 },
                 { id: 10, workoutExerciseId: 9, sets: 1, target: 1, weight: 0, rest: 20 }
 
@@ -566,6 +571,16 @@ export function PeformedSessionsProvider({ children }: { children: React.ReactNo
     );
 }
 
+export function PlannedSessionsProvider({ children }: { children: React.ReactNode }) {
+    const [plannedSessions, setPlannedSessions] = useState<WorkoutPlan[]>([]);
+
+    return (
+        <PlannedSessionsContext.Provider value={{ plannedSessions, setPlannedSessions }}>
+            {children}
+        </PlannedSessionsContext.Provider>
+    );
+}
+
 export function useExercisesContext() {
     const context = useContext(ExercisesContext);
     if (!context) {
@@ -593,6 +608,14 @@ export function usePerformedSessionsContext() {
     const context = useContext(PeformedSessionsContext);
     if (!context) {
         throw new Error('usePerformedSessionsContext must be used within PeformedSessionsProvider')
+    }
+    return context;
+}
+
+export function usePlannedSessionsContext() {
+    const context = useContext(PlannedSessionsContext);
+    if (!context) {
+        throw new Error('usePlannedSessionsContext must be used within PlannedSessionsProvider');
     }
     return context;
 }

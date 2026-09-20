@@ -107,26 +107,24 @@ export default function ByDate({
     }
     return (
         <>
-            <div className={styles.performedSessionListWrap}>
-                <ul className={styles.performedSessionList}>
-                    {
-                        sortedPerformedSessions.map(session => {
-                            return (
-                                <PeformedSession
-                                    key={`session_${session.id}`}
-                                    workout={workout}
-                                    session={session}
-                                    showDeleteModal={() => setDeleteSession(session)}
-                                    showEditModal={() => setEditSession(session)}
-                                    showDuplicateModal={() => duplicateSessionForCreating(session)}
-                                    isExpanded={expandedSessions.includes(session.id!)}
-                                    toggleSessionDropdown={() => toggleSessionDropdown(session.id!)}
-                                />
-                            )
-                        })
-                    }
-                </ul>
-            </div>
+            <ul className={styles.performedSessionList}>
+                {
+                    sortedPerformedSessions.map(session => {
+                        return (
+                            <PeformedSession
+                                key={`session_${session.id}`}
+                                workout={workout}
+                                session={session}
+                                showDeleteModal={() => setDeleteSession(session)}
+                                showEditModal={() => setEditSession(session)}
+                                showDuplicateModal={() => duplicateSessionForCreating(session)}
+                                isExpanded={expandedSessions.includes(session.id!)}
+                                toggleSessionDropdown={() => toggleSessionDropdown(session.id!)}
+                            />
+                        )
+                    })
+                }
+            </ul>
             {
                 deleteSession &&
                 <Modal
