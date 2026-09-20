@@ -1,7 +1,8 @@
 import styles from './SelectField.module.scss';
-
+import { capitalize } from "../../../lib"
+import { ReactNode } from 'react';
 type Props<Value extends string | number> = {
-    label: string;
+    label: string | ReactNode;
     name: string;
     value: Value;
     options: readonly Value[];
@@ -10,7 +11,6 @@ type Props<Value extends string | number> = {
     parseValue?: (value: string) => Value;
     formatOption?: (value: Value | string) => string;
 }
-import { capitalize } from "../../../lib"
 
 export default function SelectField<Value extends string | number>({
     label,

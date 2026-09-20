@@ -1,7 +1,7 @@
 import { useState, type SubmitEvent } from 'react'
 import { PerformedExercise, Workout, WorkoutSession } from '@/_types';
 import { generateID } from '@/lib';
-import styles from "../page.module.scss";
+import styles from "./ByDate.module.scss";
 import PeformedSession from './PeformedSession';
 import Modal from '@/app/components/ui/Modal';
 import ModalForm from '@/app/components/ui/ModalForm';
@@ -105,8 +105,14 @@ export default function ByDate({
         ]);
         setDuplicateSession(null);
     }
+    const sessionsAmount = sortedPerformedSessions.length;
     return (
         <>
+            {
+                <p className={styles.performedSessionsAmount}>
+                    {`${sessionsAmount} ${sessionsAmount > 1 ? "sessions" : "session"} logged`}
+                </p>
+            }
             <ul className={styles.performedSessionList}>
                 {
                     sortedPerformedSessions.map(session => {

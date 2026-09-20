@@ -4,21 +4,20 @@ import { useExercisesContext } from '@/app/providers';
 import { capitalize, formatFullDate } from '@/lib';
 import { useState } from 'react'
 import styles from './ByExercise.module.scss';
+import { TrackedWorkoutExercise } from '../page';
 
 type Props = {
     workout: Workout;
     performedSessions: WorkoutSession[];
+    selectedExerciseId: number | null;
+    workoutExercises: TrackedWorkoutExercise[];
 }
 
-export default function ByExercise({ workout, performedSessions }: Props) {
+export default function ByExercise({
+    workout, performedSessions,
+    selectedExerciseId, workoutExercises
+}: Props) {
     const { exercises } = useExercisesContext();
-
-    const performedExercises = getTrackedWorkoutExercises(workout, performedSessions);
-    const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(
-        performedExercises[0]?.id ?? null
-    );
-
-    type TrackedWorkoutExercise = WorkoutExercise & { id: number };
     type StatField = "sets" | "target" | "weight" | "rest";
     const higherIsBetter: Record<StatField, boolean> = {
         sets: true,
@@ -28,7 +27,7 @@ export default function ByExercise({ workout, performedSessions }: Props) {
     };
 
     const exercise = exercises.find(
-        e => e.id === performedExercises.find(ex => ex.id === selectedExerciseId)?.exerciseId
+        e => e.id === workoutExercises.find(ex => ex.id === selectedExerciseId)?.exerciseId
     );
 
     const sessionEntries = performedSessions
@@ -50,25 +49,6 @@ export default function ByExercise({ workout, performedSessions }: Props) {
     const performedEntries = getPerformedExercises(sessionEntries);
     let relevantFields = getRelevantFields(performedEntries);
     const hasAnyWeight = relevantFields.includes("weight");
-
-    function getTrackedWorkoutExercises(workout: Workout, sessions: WorkoutSession[]): TrackedWorkoutExercise[] {
-        const usedIds = new Set(
-            sessions.flatMap(session => session.performedExercises.map(pe => pe.workoutExerciseId))
-        );
-        return workout.workoutExercises.filter(
-            (we): we is TrackedWorkoutExercise => we.id !== null && usedIds.has(we.id)
-        );
-    }
-
-    function getExerciseSelectLabel(workoutExercise: WorkoutExercise, workout: Workout, exercises: Exercise[]): string {
-        const exercise = exercises.find(e => e.id === workoutExercise.exerciseId);
-        const sameNameEntries = workout.workoutExercises.filter(we => we.exerciseId === workoutExercise.exerciseId);
-        if (sameNameEntries.length <= 1) {
-            return exercise?.name ?? "Unknown";
-        }
-        const position = sameNameEntries.findIndex(we => we.id === workoutExercise.id) + 1;
-        return `${exercise?.name} (${position})`;
-    }
 
     function getRelevantFields(entries: PerformedExercise[]): StatField[] {
         const fields: StatField[] = ["sets", "target", "weight", "rest"];
@@ -139,21 +119,11 @@ export default function ByExercise({ workout, performedSessions }: Props) {
     }
     return (
         <div>
-            <div className={styles.exerciseSelect}>
-                <SelectField
-                    label="Exercise"
-                    name="exercise"
-                    parseValue={Number}
-                    value={selectedExerciseId}
-                    options={performedExercises.map(ex => ex.id)}
-                    optionsNames={performedExercises.map(ex => getExerciseSelectLabel(ex, workout, exercises))}
-                    onChange={(id: number) => setSelectedExerciseId(id)}
-                />
-            </div>
-
-            <p className={styles.exerciseSessionsAmount}>
-                {`${sessionEntries.length} session${sessionEntries.length > 1 ? "s" : ""} logged`}
-            </p>
+            {
+                <p className={styles.exerciseSessionsAmount}>
+                    {`${sessionEntries.length} session${sessionEntries.length > 1 ? "s" : ""} logged`}
+                </p>
+            }
             {
                 (relevantFields.length || showVolume)
                 && <ul className={styles.exerciseStatList}>

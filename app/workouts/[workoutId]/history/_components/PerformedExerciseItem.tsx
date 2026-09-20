@@ -2,7 +2,7 @@ import React from 'react';
 import { PerformedExercise, Workout } from '@/_types';
 import { useExercisesContext } from '@/app/providers';
 import { getExerciseById, getWorkoutExercise } from '@/lib';
-import styles from '../page.module.scss';
+import styles from './ByDate.module.scss';
 
 
 type Props = {

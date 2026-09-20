@@ -2,19 +2,21 @@
 
 import { useState, type SubmitEvent } from 'react';
 import Content from '@/app/components/layout/Content';
-import { usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from '@/app/providers';
+import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from '@/app/providers';
 import { useParams } from 'next/navigation';
-import { PerformedExercise, SessionFormSource, WorkoutSession } from '@/_types';
+import { Exercise, PerformedExercise, SessionFormSource, Workout, WorkoutExercise, WorkoutSession } from '@/_types';
 import { buildPerformedSession, generateID } from '@/lib';
 import WorkoutTrackingModal from '@/app/components/WorkoutTrackingModal';
 
 import styles from "./page.module.scss";
 import ByDate from './_components/ByDate';
 import ByExercise from './_components/ByExercise';
+import SelectField from '@/app/components/forms/SelectField';
 
 type Props = {}
 
 type ViewMode = "byDate" | "byExercise";
+export type TrackedWorkoutExercise = WorkoutExercise & { id: number };
 
 export default function page({ }: Props) {
     let { workoutId } = useParams<{ workoutId: string }>();
@@ -25,6 +27,15 @@ export default function page({ }: Props) {
     const [newSession, setNewSession] = useState<WorkoutSession | null>(null);
     const [sessionFormSource, setSessionFormSource] = useState<SessionFormSource>("none");
     const workout = workouts.find(w => w.id === Number(workoutId));
+    const { exercises } = useExercisesContext();
+
+    let workoutExercises: TrackedWorkoutExercise[] = [];
+    if (workout) {
+        workoutExercises = getTrackedWorkoutExercises(workout, performedSessions);
+    }
+    const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(
+        workoutExercises[0]?.id ?? null
+    );
 
     const workoutPerformedSessions = performedSessions
         .filter(session => session.workoutId == workout?.id);
@@ -85,6 +96,29 @@ export default function page({ }: Props) {
         setNewSession(null);
         setSessionFormSource("none");
     }
+    function getTrackedWorkoutExercises(workout: Workout, sessions: WorkoutSession[]): TrackedWorkoutExercise[] {
+        const usedIds = new Set(
+            sessions.flatMap(session => session.performedExercises.map(pe => pe.workoutExerciseId))
+        );
+        return workout.workoutExercises.filter(
+            (we): we is TrackedWorkoutExercise => we.id !== null && usedIds.has(we.id)
+        );
+    }
+
+    function getExerciseSelectLabel(
+        workoutExercise: WorkoutExercise,
+        workout: Workout,
+        exercises: Exercise[]
+    ): string {
+        const exercise = exercises.find(e => e.id === workoutExercise.exerciseId);
+        const sameNameEntries = workout.workoutExercises
+            .filter(we => we.exerciseId === workoutExercise.exerciseId);
+        if (sameNameEntries.length <= 1) {
+            return exercise?.name ?? "Unknown";
+        }
+        const position = sameNameEntries.findIndex(we => we.id === workoutExercise.id) + 1;
+        return `${exercise?.name} (${position})`;
+    }
 
     return (
         <Content title={workout ? `${workout.name} History` : "History"}>
@@ -117,6 +151,21 @@ export default function page({ }: Props) {
                                 Add Session
                             </button>
                         }
+                        {
+                            workout && viewMode == "byExercise"
+                            && selectedExerciseId !== null &&
+                            <div className={styles.exerciseSelect}>
+                                <SelectField
+                                    label=""
+                                    name="exercise"
+                                    parseValue={Number}
+                                    value={selectedExerciseId}
+                                    options={workoutExercises.map(ex => ex.id)}
+                                    optionsNames={workoutExercises.map(ex => getExerciseSelectLabel(ex, workout, exercises))}
+                                    onChange={(id: number) => setSelectedExerciseId(id)}
+                                />
+                            </div>
+                        }
                     </div>
                     {
                         !workout
@@ -133,6 +182,8 @@ export default function page({ }: Props) {
                                         : <ByExercise
                                             workout={workout}
                                             performedSessions={workoutPerformedSessions}
+                                            selectedExerciseId={selectedExerciseId}
+                                            workoutExercises={workoutExercises}
                                         />
                                     }
                                 </>

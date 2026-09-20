@@ -39,19 +39,9 @@
     }
 }
 
-
-.exerciseSelect {
-    width: fit-content;
-    margin-bottom: 1.25rem;
-
-    label {
-        @include headingSecondaryMed;
-    }
-}
 .exerciseSessionsAmount {
     margin-bottom: 0.75rem;
-    @include headingSecondaryMed;
-    
+    @include headingSecondaryMed; 
 }
 .exerciseStat {
     background: $primaryBg;

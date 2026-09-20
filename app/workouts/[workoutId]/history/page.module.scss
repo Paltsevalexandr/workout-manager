@@ -5,6 +5,7 @@
     margin-bottom: 1rem;
     max-width: 950px;
     display: flex;
+    align-items: center;
     gap: 1rem;
 
     &Btn {
@@ -16,78 +17,15 @@
             margin-left: auto;
         }
     }
-}
-.performedSession {
-    padding: 0.125rem 0.875rem;
-    border: $border;
-    border-radius: $borderRadius;
-    &List {
-        max-width: 950px;
-        @include column;
-        gap: 0.75rem;
-    }
-    &Header {
-        padding: 0.5rem 0;
-        @include flexSpaceBetween;
-        align-items: center;
-        @include fontPrimary;
-        font-size: 1.25rem;
-        font-weight: bold;
-        cursor: pointer;
+    .exerciseSelect {
+        width: fit-content;
+        margin-left: auto;
 
-        &:hover .performedSessionDetailsBtn::after {
-            background-color: rgba(0, 0, 0, 0.15);
-        }
-
-        &Right {
+        label {
             display: flex;
             align-items: center;
-            gap: 0.25rem;
-            color: $secondaryColor;
-            font-size: 1rem;
-            font-weight: normal;
-        }
-    }
-    &DetailsBtn {
-        @include iconButton;
-        width: 24px;
-        height: 24px;
-    }
-    &ExerciseList {
-        margin-top: 0.75rem;
-    }
-    &ExerciseListHeader {
-        padding: 0.5rem 0;
-        display: flex;
-        @include headingSecondarySmall;
-
-        &Exercise {
-            margin-right: auto;
-        }
-        &Data {
-            display: flex;
-            gap: 0.5rem;
-        }
-    }
-    &Exercise {
-        padding: 0.5rem 0;
-        display: flex;
-        border-top: $border;
-
-        &Name{
-            margin-right: auto;
-        }
-        &Data {
-            display: flex;
-            gap: 0.5rem;
-        }
-        &Name,
-        &Volume,
-        &Rest,
-        &Weight {
-            @include fontPrimary;
+            gap: 1rem;
+            @include headingSecondaryMed;
         }
     }
 }
-
-
