@@ -3,17 +3,17 @@ import ModalForm from './ui/ModalForm';
 import Modal from './ui/Modal';
 import NumberField from './forms/NumberField';
 import DateField from './forms/DateField';
-import { getExerciseById, getFormattedDate, getLastSession, getPlannedSession, isWorkoutPlan, isWorkoutSession } from '@/lib';
-import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, WorkoutExercise, WorkoutPlan, WorkoutSession } from '@/_types';
+import { getExerciseById, getFormattedDate, getLastSession, getPlannedSession, isPlannedSession, isPerformedSession } from '@/lib';
+import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, WorkoutExercise, PlannedSession, PerformedSession } from '@/_types';
 import styles from "./WorkoutTrackingModal.module.scss";
 import { useExercisesContext, useWorkoutsContext } from '@/app/providers';
 
 type Props = {
     modalType: ModalType;
-    session: WorkoutSession | WorkoutPlan;
+    session: PerformedSession | PlannedSession;
     sessionFormSource: SessionFormSource;
-    plannedSessions: WorkoutPlan[];
-    workoutSessions: WorkoutSession[];
+    plannedSessions: PlannedSession[];
+    performedSessions: PerformedSession[];
     saveSession: (e: SubmitEvent<HTMLFormElement>) => void;
     cancelForm: () => void;
     toggleSessionFormSource?: (source: SessionFormSource, workoutId: number) => void;
@@ -25,7 +25,7 @@ export default function WorkoutTrackingModal({
     modalType,
     session,
     sessionFormSource,
-    workoutSessions,
+    performedSessions,
     plannedSessions,
     saveSession,
     cancelForm,
@@ -53,7 +53,7 @@ export default function WorkoutTrackingModal({
             headerText = "Next Session Plan"
             break;
     }
-    const lastSession = getLastSession(workoutId, workoutSessions);
+    const lastSession = getLastSession(workoutId, performedSessions);
     const plannedSession = getPlannedSession(workoutId, plannedSessions);
     const showSourceToggle = modalType === "session" && plannedSession && lastSession;
 
@@ -81,7 +81,7 @@ export default function WorkoutTrackingModal({
         </div>
     </div>;
 
-    let sourceExercises: PerformedExercise[] | PlannedExercise[] = isWorkoutSession(session)
+    let sourceExercises: PerformedExercise[] | PlannedExercise[] = isPerformedSession(session)
         ? session.performedExercises
         : session.plannedExercises;
 

@@ -1,5 +1,5 @@
 import { useState, type SubmitEvent } from 'react'
-import { PerformedExercise, Workout, WorkoutSession } from '@/_types';
+import { PerformedExercise, Workout, PerformedSession } from '@/_types';
 import { generateID } from '@/lib';
 import styles from "./ByDate.module.scss";
 import PeformedSession from './PeformedSession';
@@ -10,7 +10,7 @@ import { usePerformedSessionsContext } from '@/app/providers';
 
 type Props = {
     workout: Workout;
-    performedSessions: WorkoutSession[];
+    performedSessions: PerformedSession[];
 }
 
 export default function ByDate({
@@ -19,9 +19,9 @@ export default function ByDate({
 }: Props) {
     const [expandedSessions, setExpandedSessions] = useState<number[]>([1]);
     const { setPerformedSessions } = usePerformedSessionsContext();
-    const [deleteSession, setDeleteSession] = useState<WorkoutSession | null>(null);
-    const [editSession, setEditSession] = useState<WorkoutSession | null>(null);
-    const [duplicateSession, setDuplicateSession] = useState<WorkoutSession | null>(null);
+    const [deleteSession, setDeleteSession] = useState<PerformedSession | null>(null);
+    const [editSession, setEditSession] = useState<PerformedSession | null>(null);
+    const [duplicateSession, setDuplicateSession] = useState<PerformedSession | null>(null);
     const sortedPerformedSessions = performedSessions.sort((a, b) => b.date - a.date);
 
     function toggleSessionDropdown(id: number) {
@@ -58,7 +58,7 @@ export default function ByDate({
         setEditSession(null);
     }
 
-    function duplicateSessionForCreating(session: WorkoutSession) {
+    function duplicateSessionForCreating(session: PerformedSession) {
         const performedExerciseIds = performedSessions.flatMap(
             currentSession => currentSession.performedExercises
         );
@@ -156,7 +156,7 @@ export default function ByDate({
                     session={editSession}
                     sessionFormSource="none"
                     plannedSessions={[]}
-                    workoutSessions={performedSessions}
+                    performedSessions={performedSessions}
                     saveSession={saveEditSession}
                     cancelForm={() => setEditSession(null)}
                     setDate={setEditSessionDate}
@@ -170,7 +170,7 @@ export default function ByDate({
                     session={duplicateSession}
                     sessionFormSource="none"
                     plannedSessions={[]}
-                    workoutSessions={performedSessions}
+                    performedSessions={performedSessions}
                     saveSession={saveDuplicateSession}
                     cancelForm={() => setDuplicateSession(null)}
                     setDate={setDuplicateSessionDate}

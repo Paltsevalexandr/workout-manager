@@ -1,11 +1,11 @@
 import React from 'react'
-import { Exercise, PerformedExercise, WorkoutExercise, WorkoutSession } from '@/_types';
+import { Exercise, PerformedExercise, WorkoutExercise, PerformedSession } from '@/_types';
 import styles from "../../page.module.scss";
 
 type Props = {
     exercises: Exercise[];
     workoutExercise: WorkoutExercise;
-    lastSession: WorkoutSession | null;
+    lastSession: PerformedSession | null;
 }
 
 export default function ExerciseItem({ exercises, workoutExercise, lastSession }: Props) {

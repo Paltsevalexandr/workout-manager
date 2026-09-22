@@ -1,4 +1,4 @@
-import { Exercise, MuscleGroup, PerformedExercise, PlannedExercise, Workout, WorkoutExercise, WorkoutPlan, WorkoutSession } from "../_types";
+import { Exercise, MuscleGroup, PerformedExercise, PlannedExercise, PlannedSession, Workout, WorkoutExercise, PerformedSession } from "../_types";
 
 export function generateID<T extends { id: number | null }>(dataArr: T[]): number {
     const maxId = dataArr.reduce((max, item) => {
@@ -15,44 +15,44 @@ export function getExerciseById(exercises: Exercise[], id: number | null | undef
     return exercises.find(exercise => exercise.id == id);
 }
 
-export function getLastSessionDate(templateId: number, sessions: WorkoutSession[]): number | null {
+export function getLastSessionDate(templateId: number, sessions: PerformedSession[]): number | null {
     const templateSessions = sessions.filter(s => s.workoutId === templateId);
     if (templateSessions.length === 0) return null;
     return Math.max(...templateSessions.map(s => s.date));
 }
 
-export function getLastSession(workoutId: number, sessions: WorkoutSession[]): WorkoutSession | null {
+export function getLastSession(workoutId: number, sessions: PerformedSession[]): PerformedSession | null {
     const templateSessions = sessions.filter(s => s.workoutId === workoutId);
     return templateSessions.reduce((prev, current) => {
         if (!prev || current.date > prev.date) {
             return current;
         }
         return prev;
-    }, null as WorkoutSession | null);
+    }, null as PerformedSession | null);
 }
 
-export function getPlannedSession(workoutId: number, plans: WorkoutPlan[]): WorkoutPlan | null {
+export function getPlannedSession(workoutId: number, plans: PlannedSession[]): PlannedSession | null {
     return plans.find(plan => plan.workoutId === workoutId) ?? null;
 }
 
-export function isWorkoutSession(
-    source: WorkoutSession | WorkoutPlan | null
-): source is WorkoutSession {
+export function isPerformedSession(
+    source: PerformedSession | PlannedSession | null
+): source is PerformedSession {
     if (source === null) {
         return false;
     }
     return "performedExercises" in source;
 }
-export function isWorkoutPlan(
-    source: WorkoutSession | WorkoutPlan | null
-): source is WorkoutPlan {
+export function isPlannedSession(
+    source: PerformedSession | PlannedSession | null
+): source is PlannedSession {
     if (source === null) {
         return false;
     }
     return "plannedExercises" in source;
 }
 
-export function getLatestPerformedExercise(lastSession: WorkoutSession | null, workoutExerciseId: number): PerformedExercise | null {
+export function getLatestPerformedExercise(lastSession: PerformedSession | null, workoutExerciseId: number): PerformedExercise | null {
     return lastSession?.performedExercises.find(
         (ex) => ex.workoutExerciseId === workoutExerciseId
     ) ?? null;
@@ -60,7 +60,7 @@ export function getLatestPerformedExercise(lastSession: WorkoutSession | null, w
 export function getWorkoutExercise(id: WorkoutExercise["id"], workout: Workout): WorkoutExercise | null {
     return workout.workoutExercises.find(exercise => exercise.id == id) ?? null;
 }
-export function getPlannedExercise(plan: WorkoutPlan | null, workoutExerciseId: number): PlannedExercise | null {
+export function getPlannedExercise(plan: PlannedSession | null, workoutExerciseId: number): PlannedExercise | null {
     return plan?.plannedExercises.find(
         ex => ex.workoutExerciseId === workoutExerciseId
     ) ?? null

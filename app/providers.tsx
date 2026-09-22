@@ -1,15 +1,15 @@
 "use client";
 
 import { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
-import { Exercise, MuscleGroup, Workout, WorkoutPlan, WorkoutSession } from "../_types";
+import { Exercise, MuscleGroup, Workout, PlannedSession, PerformedSession } from "../_types";
 
 type ExercisesContextType = {
     exercises: Exercise[];
     setExercises: Dispatch<SetStateAction<Exercise[]>>;
 };
 type PlannedSessionContextType = {
-    plannedSessions: WorkoutPlan[];
-    setPlannedSessions: Dispatch<SetStateAction<WorkoutPlan[]>>;
+    plannedSessions: PlannedSession[];
+    setPlannedSessions: Dispatch<SetStateAction<PlannedSession[]>>;
 }
 
 type WorkoutsContextType = {
@@ -22,8 +22,8 @@ type MuscleGroupContextType = {
     setMuscleGroups: Dispatch<SetStateAction<MuscleGroup[]>>;
 }
 type PerformedSessionContextType = {
-    performedSessions: WorkoutSession[];
-    setPerformedSessions: Dispatch<SetStateAction<WorkoutSession[]>>;
+    performedSessions: PerformedSession[];
+    setPerformedSessions: Dispatch<SetStateAction<PerformedSession[]>>;
 }
 
 const ExercisesContext = createContext<ExercisesContextType | undefined>(undefined);
@@ -407,7 +407,7 @@ export function MuscleGroupsProvider({ children }: { children: React.ReactNode }
 }
 
 export function PeformedSessionsProvider({ children }: { children: React.ReactNode }) {
-    const [performedSessions, setPerformedSessions] = useState<WorkoutSession[]>([
+    const [performedSessions, setPerformedSessions] = useState<PerformedSession[]>([
         {
             date: 1788894136955 - (1000 * 60 * 60 * 24 * 14),
             id: 3,
@@ -572,7 +572,7 @@ export function PeformedSessionsProvider({ children }: { children: React.ReactNo
 }
 
 export function PlannedSessionsProvider({ children }: { children: React.ReactNode }) {
-    const [plannedSessions, setPlannedSessions] = useState<WorkoutPlan[]>([]);
+    const [plannedSessions, setPlannedSessions] = useState<PlannedSession[]>([]);
 
     return (
         <PlannedSessionsContext.Provider value={{ plannedSessions, setPlannedSessions }}>

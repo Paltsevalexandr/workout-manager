@@ -1,7 +1,7 @@
 "use client";
 
 import { Dispatch, SetStateAction } from 'react';
-import { Workout, WorkoutPlan, WorkoutSession } from '@/_types';
+import { Workout, PlannedSession, PerformedSession } from '@/_types';
 import styles from "../../page.module.scss";
 import { getLastSession, getLastSessionDate } from '@/lib';
 import { useWorkoutsContext } from '@/app/providers';
@@ -9,15 +9,15 @@ import WorkoutItem from './WorkoutItem';
 
 type Props = {
     selectedWorkout: Workout | null;
-    workoutSessions: WorkoutSession[];
-    plannedSessions: WorkoutPlan[];
+    performedSessions: PerformedSession[];
+    plannedSessions: PlannedSession[];
     setSelectedWorkout: Dispatch<SetStateAction<Workout | null>>;
     openCreateWorkoutModal: () => void;
     savePerformedSession: (workoutId: number) => void;
 }
 
 export default function WorkoutsList({
-    workoutSessions,
+    performedSessions,
     selectedWorkout,
     plannedSessions,
     setSelectedWorkout,
@@ -28,8 +28,8 @@ export default function WorkoutsList({
 
     function sortWorkouts(workouts: Workout[]) {
         return [...workouts].sort((prev, current) => {
-            const lastPrevSession = getLastSession(prev.id, workoutSessions);
-            const lastCurrentSession = getLastSession(current.id, workoutSessions);
+            const lastPrevSession = getLastSession(prev.id, performedSessions);
+            const lastCurrentSession = getLastSession(current.id, performedSessions);
 
             const prevHasSession = lastPrevSession !== null;
             const currentHasSession = lastCurrentSession !== null;
@@ -69,7 +69,7 @@ export default function WorkoutsList({
                                 plannedSessions={plannedSessions}
                                 selectedWorkout={selectedWorkout}
                                 setSelectedWorkout={() => setSelectedWorkout(workout)}
-                                lastSessionDate={getLastSessionDate(workout.id, workoutSessions)}
+                                lastSessionDate={getLastSessionDate(workout.id, performedSessions)}
                                 savePerformedSession={() => savePerformedSession(workout.id)}
                             />
                         })

@@ -1,4 +1,4 @@
-import { Exercise, Workout, WorkoutExercise, WorkoutSession, PerformedExercise, Target } from '@/_types';
+import { Exercise, Workout, WorkoutExercise, PerformedSession, PerformedExercise, Target } from '@/_types';
 import SelectField from '@/app/components/forms/SelectField';
 import { useExercisesContext } from '@/app/providers';
 import { capitalize, formatFullDate } from '@/lib';
@@ -8,7 +8,7 @@ import { TrackedWorkoutExercise } from '../page';
 
 type Props = {
     workout: Workout;
-    performedSessions: WorkoutSession[];
+    performedSessions: PerformedSession[];
     selectedExerciseId: number | null;
     workoutExercises: TrackedWorkoutExercise[];
 }
@@ -86,7 +86,7 @@ export default function ByExercise({
     function getPercentChange(current: number, first: number): number | null {
         return first !== 0 ? Math.round((current - first) / first * 1000) / 10 : null;
     }
-    function getPerformedExercises(sessionEntries: { session: WorkoutSession, performedExercise: PerformedExercise }[]) {
+    function getPerformedExercises(sessionEntries: { session: PerformedSession, performedExercise: PerformedExercise }[]) {
         return sessionEntries.map(({ performedExercise }) => performedExercise);
     }
 

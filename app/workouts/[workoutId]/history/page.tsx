@@ -4,7 +4,7 @@ import { useState, type SubmitEvent } from 'react';
 import Content from '@/app/components/layout/Content';
 import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from '@/app/providers';
 import { useParams } from 'next/navigation';
-import { Exercise, PerformedExercise, SessionFormSource, Workout, WorkoutExercise, WorkoutSession } from '@/_types';
+import { Exercise, PerformedExercise, SessionFormSource, Workout, WorkoutExercise, PerformedSession } from '@/_types';
 import { buildPerformedSession, generateID } from '@/lib';
 import WorkoutTrackingModal from '@/app/components/WorkoutTrackingModal';
 
@@ -24,7 +24,7 @@ export default function page({ }: Props) {
     const { performedSessions, setPerformedSessions } = usePerformedSessionsContext();
     const { plannedSessions } = usePlannedSessionsContext();
     const [viewMode, setViewMode] = useState<ViewMode>("byDate");
-    const [newSession, setNewSession] = useState<WorkoutSession | null>(null);
+    const [newSession, setNewSession] = useState<PerformedSession | null>(null);
     const [sessionFormSource, setSessionFormSource] = useState<SessionFormSource>("none");
     const workout = workouts.find(w => w.id === Number(workoutId));
     const { exercises } = useExercisesContext();
@@ -96,7 +96,7 @@ export default function page({ }: Props) {
         setNewSession(null);
         setSessionFormSource("none");
     }
-    function getTrackedWorkoutExercises(workout: Workout, sessions: WorkoutSession[]): TrackedWorkoutExercise[] {
+    function getTrackedWorkoutExercises(workout: Workout, sessions: PerformedSession[]): TrackedWorkoutExercise[] {
         const usedIds = new Set(
             sessions.flatMap(session => session.performedExercises.map(pe => pe.workoutExerciseId))
         );
@@ -195,7 +195,7 @@ export default function page({ }: Props) {
                             session={newSession}
                             sessionFormSource={sessionFormSource}
                             plannedSessions={plannedSessions}
-                            workoutSessions={workoutPerformedSessions}
+                            performedSessions={workoutPerformedSessions}
                             saveSession={saveNewSession}
                             cancelForm={cancelNewSession}
                             setDate={setNewSessionDate}

@@ -7,7 +7,7 @@ import React, {
 import styles from "../../page.module.scss";
 import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from '@/app/providers';
 import WorkoutsList from "./WorkoutList";
-import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, Workout, WorkoutExercise, WorkoutPlan, WorkoutSession } from '@/_types';
+import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, Workout, WorkoutExercise, PlannedSession, PerformedSession } from '@/_types';
 import WorkoutTrackingModal from '../WorkoutTrackingModal';
 import {
     buildPerformedSession,
@@ -32,11 +32,11 @@ export default function WorkoutTracking({ }: Props) {
     const [isCreateWorkoutFormOpen, setIsCreateWorkoutFormOpen] = useState(false);
     const [isEditWorkoutFormOpen, setIsEditWorkoutFormOpen] = useState(false);
 
-    const { performedSessions, setPerformedSessions: setWorkoutSessions } = usePerformedSessionsContext();
+    const { performedSessions, setPerformedSessions } = usePerformedSessionsContext();
     const { plannedSessions, setPlannedSessions } = usePlannedSessionsContext();
     const [modalType, setModalType] = useState<ModalType>("none");
-    const [performedSession, setPerformedSession] = useState<WorkoutSession | null>(null);
-    const [plannedSession, setPlannedSession] = useState<WorkoutPlan | null>(null);
+    const [performedSession, setPerformedSession] = useState<PerformedSession | null>(null);
+    const [plannedSession, setPlannedSession] = useState<PlannedSession | null>(null);
     const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
     const [sessionFormSource, setSessionFormSource] = useState<SessionFormSource>("none");
 
@@ -165,7 +165,7 @@ export default function WorkoutTracking({ }: Props) {
             ]);
         }
         else if (modalType == "session" && performedSession) {
-            setWorkoutSessions(prevSessions => [
+            setPerformedSessions(prevSessions => [
                 ...prevSessions,
                 {
                     ...performedSession,
@@ -186,7 +186,7 @@ export default function WorkoutTracking({ }: Props) {
     }
     function setDate(date: number) {
         if (modalType == "session") {
-            setPerformedSession((prevSession): WorkoutSession | null => {
+            setPerformedSession((prevSession): PerformedSession | null => {
                 if (!prevSession) {
                     return null;
                 }
@@ -197,7 +197,7 @@ export default function WorkoutTracking({ }: Props) {
             });
         }
         else if (modalType == "plan") {
-            setPlannedSession((prevSession): WorkoutPlan | null => {
+            setPlannedSession((prevSession): PlannedSession | null => {
                 if (!prevSession) {
                     return null;
                 }
@@ -256,7 +256,7 @@ export default function WorkoutTracking({ }: Props) {
             });
         }
     }
-    function getSession(): WorkoutSession | WorkoutPlan | null {
+    function getSession(): PerformedSession | PlannedSession | null {
         switch (modalType) {
             case "plan":
                 return plannedSession;
@@ -288,7 +288,7 @@ export default function WorkoutTracking({ }: Props) {
         ]
     }
 
-    const session: WorkoutSession | WorkoutPlan | null = getSession();
+    const session: PerformedSession | PlannedSession | null = getSession();
     return (
         <main>
             <section>
@@ -296,7 +296,7 @@ export default function WorkoutTracking({ }: Props) {
                     <div className={styles.workoutColumns}>
                         <WorkoutsList
                             selectedWorkout={selectedWorkout}
-                            workoutSessions={performedSessions}
+                            performedSessions={performedSessions}
                             plannedSessions={plannedSessions}
                             savePerformedSession={savePerformedSession}
                             setSelectedWorkout={setSelectedWorkout}
@@ -306,7 +306,7 @@ export default function WorkoutTracking({ }: Props) {
                             selectedWorkout &&
                             <WorkoutDetails
                                 workout={selectedWorkout}
-                                workoutSessions={performedSessions}
+                                performedSessions={performedSessions}
                                 menuItems={getMenuItems(selectedWorkout)}
                                 savePerformedSession={savePerformedSession}
                                 createNextSessionPlan={createNextSessionPlan}
@@ -317,7 +317,7 @@ export default function WorkoutTracking({ }: Props) {
                         modalType != "none" && session
                         && <WorkoutTrackingModal
                             modalType={modalType}
-                            workoutSessions={performedSessions}
+                            performedSessions={performedSessions}
                             plannedSessions={plannedSessions}
                             setDate={setDate}
                             sessionFormSource={sessionFormSource}

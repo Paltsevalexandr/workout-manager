@@ -1,5 +1,5 @@
 import styles from "../../page.module.scss";
-import { Workout, WorkoutSession } from '@/_types';
+import { Workout, PerformedSession } from '@/_types';
 import ExerciseList from './ExerciseList';
 import { formatRelativeDate, getExercisesLabel, getLastSessionDate, getStatusClass } from '@/lib';
 import KebabMenu, { MenuItem } from '../ui/KebabMenu';
@@ -7,7 +7,7 @@ import { ListChecks } from "lucide-react";
 
 type Props = {
     workout: Workout;
-    workoutSessions: WorkoutSession[];
+    performedSessions: PerformedSession[];
     savePerformedSession: (workoutId: number) => void;
     createNextSessionPlan: (workoutId: number) => void;
     menuItems: MenuItem[];
@@ -15,11 +15,11 @@ type Props = {
 
 export default function WorkoutDetails({
     workout,
-    workoutSessions,
+    performedSessions,
     menuItems,
     savePerformedSession,
 }: Props) {
-    const lastSessionDate = getLastSessionDate(workout.id, workoutSessions);
+    const lastSessionDate = getLastSessionDate(workout.id, performedSessions);
     const lastSessionClass = getStatusClass(lastSessionDate, styles);
     const lastRelativeDate: string = formatRelativeDate(lastSessionDate);
 
@@ -51,7 +51,7 @@ export default function WorkoutDetails({
             <div className={styles.workoutDetailsContent}>
                 <ExerciseList
                     workout={workout}
-                    workoutSessions={workoutSessions}
+                    performedSessions={performedSessions}
                 />
             </div>
         </div>

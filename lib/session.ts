@@ -3,22 +3,22 @@ import {
     PlannedExercise,
     SessionFormSource,
     Workout,
-    WorkoutPlan,
-    WorkoutSession,
+    PlannedSession,
+    PerformedSession,
 } from "../_types";
-import { generateID, getLastSession, getLatestPerformedExercise, getPlannedExercise, getPlannedSession, isWorkoutPlan, isWorkoutSession } from "./data";
+import { generateID, getLastSession, getLatestPerformedExercise, getPlannedExercise, getPlannedSession, isPlannedSession, isPerformedSession } from "./data";
 
-export function getAllPerformedExercises(sessions: WorkoutSession[]): PerformedExercise[] {
+export function getAllPerformedExercises(sessions: PerformedSession[]): PerformedExercise[] {
     return sessions.flatMap(session => session.performedExercises);
 }
 
-export function getAllPlannedExercises(plans: WorkoutPlan[]): PlannedExercise[] {
+export function getAllPlannedExercises(plans: PlannedSession[]): PlannedExercise[] {
     return plans.flatMap(plan => plan.plannedExercises);
 }
 
 export function getDefaultSessionSource(
-    lastSession: WorkoutSession | null,
-    currentPlannedSession?: WorkoutPlan | null
+    lastSession: PerformedSession | null,
+    currentPlannedSession?: PlannedSession | null
 ): SessionFormSource {
     if (currentPlannedSession) {
         return "plan";
@@ -31,7 +31,7 @@ export function getDefaultSessionSource(
 
 export function createSessionExercises(
     workout: Workout,
-    sourceSession: WorkoutSession | WorkoutPlan | null,
+    sourceSession: PerformedSession | PlannedSession | null,
     newSessionExerciseId: number
 ): PerformedExercise[] | PlannedExercise[] {
     const sessionExercises: (PerformedExercise | PlannedExercise)[] = [];
@@ -49,17 +49,17 @@ export function createSessionExercises(
 
 export function buildPerformedSession(
     workout: Workout,
-    performedSessions: WorkoutSession[],
-    plannedSessions: WorkoutPlan[],
+    performedSessions: PerformedSession[],
+    plannedSessions: PlannedSession[],
     options?: { source?: SessionFormSource; date?: number }
-): { session: WorkoutSession; sessionFormSource: SessionFormSource } {
+): { session: PerformedSession; sessionFormSource: SessionFormSource } {
     const newPerformedExerciseId = generateID(getAllPerformedExercises(performedSessions));
 
     const lastSession = getLastSession(workout.id, performedSessions);
     const currentPlannedSession = getPlannedSession(workout.id, plannedSessions);
 
     let sessionFormSource = getDefaultSessionSource(lastSession, currentPlannedSession);
-    let sessionSourceObj: WorkoutSession | WorkoutPlan | null = currentPlannedSession ?? lastSession;
+    let sessionSourceObj: PerformedSession | PlannedSession | null = currentPlannedSession ?? lastSession;
     if (options?.source) {
         sessionFormSource = options.source;
         switch (sessionFormSource) {
@@ -89,9 +89,9 @@ export function buildPerformedSession(
 
 export function buildPlannedSession(
     workout: Workout,
-    performedSessions: WorkoutSession[],
-    plannedSessions: WorkoutPlan[]
-): { plan: WorkoutPlan; sessionFormSource: SessionFormSource } {
+    performedSessions: PerformedSession[],
+    plannedSessions: PlannedSession[]
+): { plan: PlannedSession; sessionFormSource: SessionFormSource } {
     const newPlannedExerciseId = generateID(getAllPlannedExercises(plannedSessions));
 
     const lastSession = getLastSession(workout.id, performedSessions);
@@ -113,13 +113,13 @@ export function buildPlannedSession(
 }
 
 export function createSessionExercise(
-    source: WorkoutSession | WorkoutPlan | null,
+    source: PerformedSession | PlannedSession | null,
     newObjectId: number,
     workoutExerciseId: number
 ): PerformedExercise | PlannedExercise {
-    const sourceExercise = isWorkoutSession(source)
+    const sourceExercise = isPerformedSession(source)
         ? getLatestPerformedExercise(source, workoutExerciseId)
-        : isWorkoutPlan(source)
+        : isPlannedSession(source)
             ? getPlannedExercise(source, workoutExerciseId)
             : null;
 
