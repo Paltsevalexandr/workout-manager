@@ -86,6 +86,7 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     @include fontPrimary;
     line-height: 1;
     color: white;

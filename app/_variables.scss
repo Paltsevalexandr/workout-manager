@@ -53,7 +53,12 @@ $headerHeight: 48px;
 }
 @mixin flexSpaceBetween {
     display: flex;
-    justify-content: space-between
+    justify-content: space-between;
+    
+}
+@mixin flex {
+    display: flex;
+    align-items: center;
 }
 
 // fonts
@@ -86,11 +91,11 @@ $headerHeight: 48px;
     border-radius: $borderRadiusSmall;
 }
 
-@mixin iconButton {
+@mixin iconButton($size: 16px) {
     padding: 0;
-    width: 16px;
-    min-width: 16px;
-    height: 16px;
+    width: $size;
+    min-width: $size;
+    height: $size;
     display: inline-flex;
     align-items: center;
     justify-content: center;

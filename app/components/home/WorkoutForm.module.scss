@@ -1,0 +1,36 @@
+@use "../../variables" as *;
+
+.newWorkout {
+    color: $primaryColor;
+
+    &ExercisesWrap {
+        border: $border;
+        border-radius: $borderRadius;
+    }
+    &Exercises {
+        padding: 10px;
+        @include column;
+        gap: 8px;
+        overflow-y: auto;
+    }
+    &ExercisesHeader {
+        padding: 10px;
+        border-bottom: $border;
+        color: $secondaryColor;
+    }
+    &ExercisesHeader,
+    &Exercise {
+        display: grid;
+        grid-template-columns: minmax(6rem, 1fr) 4.25rem;
+        gap: 8px;
+    }
+    &DeleteExercise {
+        margin-left: auto;
+        min-width: 36px;
+        width: 36px;
+        height: 36px;
+        background-color: $red;
+        border: $border;
+        border-radius: $borderRadius;
+    }
+}

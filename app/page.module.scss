@@ -5,7 +5,6 @@ $titleFontSize: 1.5rem;
 $titleLineHeight: 1.1;
 
 @mixin sectionTitle {
-    margin-bottom: 1rem;
     font-size: $titleFontSize;
     line-height: $titleLineHeight;
     font-weight: bold;
@@ -32,6 +31,11 @@ $titleLineHeight: 1.1;
     width: 32%;
     border-right: $border;
 
+    &Header {
+        margin-bottom: 1rem;
+        @include flexSpaceBetween;
+        align-items: center;
+    }
     &Title {
         @include sectionTitle;
     }
@@ -39,6 +43,7 @@ $titleLineHeight: 1.1;
     &ListWrap {
         max-height: calc(100vh - $headerHeight - ($columnPadding * 2) - ($titleFontSize * $titleLineHeight));
         overflow-y: auto;
+        overflow-x: hidden;
     }
     &List {
         display: flex;
@@ -62,12 +67,21 @@ $titleLineHeight: 1.1;
         @include fontPrimary;
         font-size: 1.125rem;
         font-weight: bold;
+
+        &Wrap {
+            @include flex;
+            gap: 1rem;
+        }
     }
     &Top {
         margin-bottom: 0.5rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
+    }
+    &TrackProgressBtn {
+        @include iconButton(22px);
+        background-color: $highlightBg;
     }
     &Bottom {
         display: flex;
@@ -133,6 +147,7 @@ $titleLineHeight: 1.1;
     }
 
     &Title{
+        margin-bottom: 1rem;
         @include sectionTitle;
     }
     

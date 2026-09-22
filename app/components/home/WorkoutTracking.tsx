@@ -7,7 +7,7 @@ import React, {
 import styles from "../../page.module.scss";
 import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from '@/app/providers';
 import WorkoutsList from "./WorkoutList";
-import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, Workout, WorkoutPlan, WorkoutSession } from '@/_types';
+import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, Workout, WorkoutExercise, WorkoutPlan, WorkoutSession } from '@/_types';
 import WorkoutTrackingModal from '../WorkoutTrackingModal';
 import {
     buildPerformedSession,
@@ -15,11 +15,23 @@ import {
     generateID,
 } from '@/lib';
 import WorkoutDetails from './WorkoutDetails';
+import WorkoutForm from './WorkoutForm';
+import { MenuItem } from '../ui/KebabMenu';
 
 type Props = {}
 
 export default function WorkoutTracking({ }: Props) {
-    const { workouts } = useWorkoutsContext();
+    const { workouts, setWorkouts } = useWorkoutsContext();
+    const { exercises, setExercises } = useExercisesContext();
+
+    const [workoutToEdit, setWorkoutToEdit] = useState<Workout | null>(null);
+    const [workoutName, setWorkoutName] = useState<string>("");
+    const [workoutExercises, setWorkoutExercises] = useState<WorkoutExercise[]>([
+        { id: null, workoutTemplateId: null, exerciseId: exercises[0].id }
+    ]);
+    const [isCreateWorkoutFormOpen, setIsCreateWorkoutFormOpen] = useState(false);
+    const [isEditWorkoutFormOpen, setIsEditWorkoutFormOpen] = useState(false);
+
     const { performedSessions, setPerformedSessions: setWorkoutSessions } = usePerformedSessionsContext();
     const { plannedSessions, setPlannedSessions } = usePlannedSessionsContext();
     const [modalType, setModalType] = useState<ModalType>("none");
@@ -28,11 +40,92 @@ export default function WorkoutTracking({ }: Props) {
     const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
     const [sessionFormSource, setSessionFormSource] = useState<SessionFormSource>("none");
 
+    function createWorkout(event: SubmitEvent<HTMLFormElement>) {
+        event.preventDefault();
+        // TODO - send to server new workout and get the ID
+        const newWorkoutId = generateID(workouts);
+        const allWorkoutExercises: WorkoutExercise[] = workouts.flatMap(w => w.workoutExercises);
+
+        const newWorkoutExercises: WorkoutExercise[] = workoutExercises.map((we, i) => ({
+            id: generateID(allWorkoutExercises) + i,
+            workoutTemplateId: newWorkoutId,
+            exerciseId: we.exerciseId,
+        }));
+
+        setWorkouts((currentWorkouts) => [
+            ...currentWorkouts,
+            {
+                id: newWorkoutId,
+                name: workoutName,
+                workoutExercises: newWorkoutExercises,
+            },
+        ]);
+        setWorkoutExercises([
+            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1 }
+        ]);
+        setWorkoutName("");
+        setIsCreateWorkoutFormOpen(false);
+    }
+
+    function editWorkout(event: SubmitEvent<HTMLFormElement>) {
+        event.preventDefault();
+        // TODO - send to server
+        setWorkouts((currentWorkouts) => {
+            return currentWorkouts.map((workout) => {
+                if (workoutToEdit?.id !== workout.id) {
+                    return workout;
+                }
+
+                const allWorkoutExercises: WorkoutExercise[] = currentWorkouts.flatMap(w => w.workoutExercises);
+
+                const updatedWorkoutExercises: WorkoutExercise[] = workoutExercises.map((we) => {
+                    if (we.id !== null) {
+                        return { ...we, workoutTemplateId: workout.id };
+                    }
+                    return {
+                        id: generateID(allWorkoutExercises),
+                        workoutTemplateId: workout.id,
+                        exerciseId: we.exerciseId,
+                    };
+                });
+
+                return {
+                    id: workout.id,
+                    name: workoutName,
+                    workoutExercises: updatedWorkoutExercises,
+                };
+            });
+        });
+        setWorkoutToEdit(null);
+        setWorkoutExercises([
+            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1 }
+        ]);
+        setWorkoutName("");
+        setIsEditWorkoutFormOpen(false);
+    }
+
+    function handleCancelForm() {
+        setWorkoutExercises([
+            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1 }
+        ]);
+        setWorkoutName("");
+        setIsCreateWorkoutFormOpen(false);
+        setIsEditWorkoutFormOpen(false);
+        setWorkoutToEdit(null);
+    }
+
+    function handleEdit(workout: Workout) {
+        setWorkoutToEdit(workout);
+        setWorkoutName(workout.name);
+        setWorkoutExercises([...workout.workoutExercises]);
+        setIsEditWorkoutFormOpen(true);
+    }
+
     function toggleSessionFormSource(source: SessionFormSource, workoutId: number) {
         if (source === sessionFormSource) return;
         switch (modalType) {
             case "session":
-                createPerformedSession(workoutId, source);
+                savePerformedSession(workoutId, source);
                 break;
         }
     }
@@ -45,7 +138,7 @@ export default function WorkoutTracking({ }: Props) {
         setPlannedSession(plan);
         setModalType("plan");
     }
-    function createPerformedSession(workoutId: number, source?: SessionFormSource) {
+    function savePerformedSession(workoutId: number, source?: SessionFormSource) {
         const workout = getWorkout(workoutId);
         if (!workout) return;
 
@@ -174,6 +267,27 @@ export default function WorkoutTracking({ }: Props) {
         }
     }
 
+    function getMenuItems(workout: Workout | null): MenuItem[] {
+        return [
+            {
+                label: "Plan Next Session",
+                onClick: () => workout ? createNextSessionPlan(workout.id) : null
+            },
+            {
+                label: "History",
+                href: workout ? `/workouts/${workout.id}/history` : "#"
+            },
+            {
+                label: "Edit",
+                onClick: () => workout ? handleEdit(workout) : null
+            },
+            {
+                label: "Archive",
+                onClick: () => { }
+            }
+        ]
+    }
+
     const session: WorkoutSession | WorkoutPlan | null = getSession();
     return (
         <main>
@@ -184,14 +298,17 @@ export default function WorkoutTracking({ }: Props) {
                             selectedWorkout={selectedWorkout}
                             workoutSessions={performedSessions}
                             plannedSessions={plannedSessions}
+                            savePerformedSession={savePerformedSession}
                             setSelectedWorkout={setSelectedWorkout}
+                            openCreateWorkoutModal={() => setIsCreateWorkoutFormOpen(true)}
                         />
                         {
                             selectedWorkout &&
                             <WorkoutDetails
                                 workout={selectedWorkout}
                                 workoutSessions={performedSessions}
-                                savePerformedSession={createPerformedSession}
+                                menuItems={getMenuItems(selectedWorkout)}
+                                savePerformedSession={savePerformedSession}
                                 createNextSessionPlan={createNextSessionPlan}
                             />
                         }
@@ -209,6 +326,31 @@ export default function WorkoutTracking({ }: Props) {
                             cancelForm={cancelForm}
                             toggleSessionFormSource={toggleSessionFormSource}
                             handlePerformedExerciseChange={handlePerformedExerciseChange}
+                        />
+                    }
+                    {
+                        isCreateWorkoutFormOpen &&
+                        <WorkoutForm
+                            exercises={exercises}
+                            workoutName={workoutName}
+                            handleCancelForm={handleCancelForm}
+                            handleSubmit={createWorkout}
+                            setWorkoutName={setWorkoutName}
+                            workoutExercises={workoutExercises}
+                            setWorkoutExercises={setWorkoutExercises}
+                        />
+                    }
+                    {
+                        isEditWorkoutFormOpen &&
+                        <WorkoutForm
+                            exercises={exercises}
+                            editWorkout={workoutToEdit}
+                            workoutName={workoutName}
+                            handleCancelForm={handleCancelForm}
+                            handleSubmit={editWorkout}
+                            setWorkoutName={setWorkoutName}
+                            workoutExercises={workoutExercises}
+                            setWorkoutExercises={setWorkoutExercises}
                         />
                     }
                 </div>

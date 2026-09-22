@@ -5,7 +5,7 @@ import { Exercise, Workout, WorkoutExercise } from '../../../_types';
 import SelectField from '../../components/forms/SelectField';
 import TextField from '../../components/forms/TextField';
 import { Trash2, Plus } from "lucide-react"
-import styles from "../page.module.scss";
+import styles from "./WorkoutForm.module.scss";
 
 type Props = {
     editWorkout?: Workout | null;
@@ -63,21 +63,19 @@ export default function WorkoutForm({
                                 <div className={styles.newWorkoutExercises}>
                                     {
                                         workoutExercises.map((workoutExercise, index) => {
-                                            let id = workoutExercise.id;
                                             return (
                                                 <div className={styles.newWorkoutExercise}
-                                                    key={"workout_exercise_wrap_" + id}>
+                                                    key={"form_workout_exercise_"+ index}>
                                                     <SelectField
-                                                        key={"workout_exercise_" + id}
                                                         label=""
                                                         name="workout-exercise[]"
-                                                        value={workoutExercises[index].exerciseId}
+                                                        value={workoutExercise.exerciseId}
                                                         options={exercises.map(exercise => exercise.id)}
                                                         optionsNames={exercises.map(exercise => exercise.name)}
                                                         parseValue={Number}
                                                         onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                            return currentWorkoutExercises.map((workoutExercise) => {
-                                                                return id == workoutExercise.id
+                                                            return currentWorkoutExercises.map((workoutExercise, i) => {
+                                                                return i == index
                                                                     ? {
                                                                         ...workoutExercise,
                                                                         exerciseId: value
@@ -87,10 +85,9 @@ export default function WorkoutForm({
                                                         })}
                                                     />
                                                     <button type="button"
-                                                        key={"delete_ex_btn_" + index}
                                                         onClick={() => deleteExercise(index)}
                                                         className={styles.newWorkoutDeleteExercise}>
-                                                        <Trash2 size={16} key={"delete_ex_icon_" + index} />
+                                                        <Trash2 size={16} />
                                                     </button>
                                                 </div>
                                             )

@@ -2,21 +2,22 @@ import styles from "../../page.module.scss";
 import { Workout, WorkoutSession } from '@/_types';
 import ExerciseList from './ExerciseList';
 import { formatRelativeDate, getExercisesLabel, getLastSessionDate, getStatusClass } from '@/lib';
-import KebabMenu from '../ui/KebabMenu';
+import KebabMenu, { MenuItem } from '../ui/KebabMenu';
+import { ListChecks } from "lucide-react";
 
 type Props = {
     workout: Workout;
     workoutSessions: WorkoutSession[];
     savePerformedSession: (workoutId: number) => void;
     createNextSessionPlan: (workoutId: number) => void;
+    menuItems: MenuItem[];
 }
 
 export default function WorkoutDetails({
     workout,
     workoutSessions,
+    menuItems,
     savePerformedSession,
-    createNextSessionPlan
-
 }: Props) {
     const lastSessionDate = getLastSessionDate(workout.id, workoutSessions);
     const lastSessionClass = getStatusClass(lastSessionDate, styles);
@@ -40,19 +41,10 @@ export default function WorkoutDetails({
                 <div className={styles.detailsHeaderRight}>
                     <button className={`button-secondary`}
                         onClick={() => savePerformedSession(workout.id)}>
-                        Track Progress
+                        <ListChecks size={16} />Track Progress
                     </button>
                     <div className={styles.detailsMenuWrap}>
-                        <KebabMenu items={[
-                            {
-                                label: "Plan Next Session",
-                                onClick: () => createNextSessionPlan(workout.id)
-                            },
-                            {
-                                label: "History",
-                                href: `/workouts/${workout.id}/history`
-                            }
-                        ]} />
+                        <KebabMenu items={menuItems} />
                     </div>
                 </div>
             </div>
