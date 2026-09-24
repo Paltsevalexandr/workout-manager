@@ -1,19 +1,14 @@
 import React from 'react';
 import styles from "../../page.module.scss";
-import { Workout, WorkoutSession } from '@/_types';
-import { getLastSession } from '@/lib';
+import { Workout, PerformedSession, PlannedSession } from '@/_types';
 import ExerciseItem from './ExerciseItem';
-import { useExercisesContext } from '@/app/providers';
 
 type Props = {
     workout: Workout;
-    workoutSessions: WorkoutSession[];
+    session: PerformedSession | PlannedSession;
 }
 
-export default function ExerciseList({ workout, workoutSessions }: Props) {
-    const { exercises } = useExercisesContext();
-    const lastSession = getLastSession(workout.id, workoutSessions);
-
+export default function ExerciseList({ workout, session }: Props) {
     return (
         <ul className={styles.detailsExercises}>
             <li className={styles.detailsExercisesHeader}>
@@ -28,8 +23,7 @@ export default function ExerciseList({ workout, workoutSessions }: Props) {
                 workout.workoutExercises.map((workoutExercise, i) => {
                     return <ExerciseItem key={`workout_exercise_${i}`}
                         workoutExercise={workoutExercise}
-                        exercises={exercises}
-                        lastSession={lastSession}
+                        session={session}
                     />
                 })
             }

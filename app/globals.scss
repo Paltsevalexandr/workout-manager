@@ -1,8 +1,10 @@
 @use "./variables" as *;
 
-section,
+section {
+  padding: 1.75rem 0;
+}
 footer {
-  padding: 2rem 0;
+    padding: 1.25rem 0;
 }
 section:first-child {
     padding-top: 1rem;
@@ -32,7 +34,16 @@ footer {
 }
 
 header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     height: $headerHeight;
+    z-index: 1;
+}
+main {
+    flex: 1;
+    padding-top: $headerHeight;
 }
 nav,
 .section-content {
@@ -86,8 +97,8 @@ button {
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 8px;
     @include fontPrimary;
-    line-height: 1;
     color: white;
     background-color: rgb(17, 17, 17);
     border-radius: $borderRadius;

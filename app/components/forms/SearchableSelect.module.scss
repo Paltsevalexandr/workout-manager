@@ -1,0 +1,56 @@
+@use "../../variables" as *;
+
+.searchableSelect {
+    position: relative;
+}
+
+.fieldWrap {
+    position: relative;
+}
+
+.searchInput {
+    padding-right: 2.25rem;
+}
+
+.clearSelection {
+    @include iconButton;
+    position: absolute;
+    top: 50%;
+    right: 0.5rem;
+    transform: translateY(-50%);
+}
+
+.foundItems {
+    position: fixed;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    border: $borderLight;
+}
+
+.foundItem {
+    height: 2rem;
+    &:not(:last-child) {
+        border-bottom: $borderLight;
+    }
+
+    button {
+        padding: 0.25rem 0.5rem;
+        width: 100%;
+        height: 100%;
+        min-width: 0;
+        justify-content: flex-start;
+        background-color: $primaryBg;
+        color: $primaryColor;
+        border-radius: 0;
+    }
+}
+
+.foundItemEmpty {
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    background-color: $primaryBg;
+    color: $secondaryColor;
+}

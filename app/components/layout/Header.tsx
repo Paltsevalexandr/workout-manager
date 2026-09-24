@@ -7,8 +7,7 @@ import { usePathname } from "next/navigation"
 export default function Header() {
     const pathname = usePathname()
     const menuItems = [
-        { text: "Home", href: "/" },
-        { text: "Workouts", href: "/workouts" },
+        { text: "Workouts", href: "/" },
         { text: "Exercises", href: "/exercises" },
         { text: "Muscle Groups", href: "/exercises/muscle-groups" },
         { text: "Menu item 4", href: "#" },
@@ -32,7 +31,7 @@ export default function Header() {
                             )
                         })
                     }
-                    
+
                 </ul>
             </nav>
         </header>

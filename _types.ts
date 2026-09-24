@@ -32,9 +32,8 @@ export type Workout = {
     id: number;
     name: string;
     workoutExercises: WorkoutExercise[];
-
     // tags: string[];
-    // status: 'active' | 'archived';
+    status: 'active' | 'archived';
     // createdAt: string;
     // archivedAt: string | null;
 };
@@ -45,7 +44,7 @@ export type WorkoutExercise = {
     exerciseId: Exercise['id'];
 }
 
-export type WorkoutSession = { // rename to PerformedSession
+export type PerformedSession = {
     id: number | null;
     workoutId: Workout["id"];
     date: number;
@@ -61,7 +60,7 @@ export type PerformedExercise = {
     rest: number;
 };
 
-export type WorkoutPlan = { // rename to PlannedSession
+export type PlannedSession = {
     id: number | null;
     workoutId: Workout["id"];
     date: number;

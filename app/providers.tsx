@@ -1,15 +1,15 @@
 "use client";
 
 import { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
-import { Exercise, MuscleGroup, Workout, WorkoutPlan, WorkoutSession } from "../_types";
+import { Exercise, MuscleGroup, Workout, PlannedSession, PerformedSession } from "../_types";
 
 type ExercisesContextType = {
     exercises: Exercise[];
     setExercises: Dispatch<SetStateAction<Exercise[]>>;
 };
 type PlannedSessionContextType = {
-    plannedSessions: WorkoutPlan[];
-    setPlannedSessions: Dispatch<SetStateAction<WorkoutPlan[]>>;
+    plannedSessions: PlannedSession[];
+    setPlannedSessions: Dispatch<SetStateAction<PlannedSession[]>>;
 }
 
 type WorkoutsContextType = {
@@ -22,8 +22,8 @@ type MuscleGroupContextType = {
     setMuscleGroups: Dispatch<SetStateAction<MuscleGroup[]>>;
 }
 type PerformedSessionContextType = {
-    performedSessions: WorkoutSession[];
-    setPerformedSessions: Dispatch<SetStateAction<WorkoutSession[]>>;
+    performedSessions: PerformedSession[];
+    setPerformedSessions: Dispatch<SetStateAction<PerformedSession[]>>;
 }
 
 const ExercisesContext = createContext<ExercisesContextType | undefined>(undefined);
@@ -136,11 +136,11 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
 export function WorkoutsProvider({ children }: { children: React.ReactNode }) {
     const [workouts, setWorkouts] = useState<Workout[]>([
         {
-            id: 1, name: 'Workout 1', workoutExercises: [
+            id: 1, name: 'Workout 1', status: "active", workoutExercises: [
                 {
                     id: 0,
                     workoutTemplateId: 1,
-                    exerciseId: 4
+                    exerciseId: 4,
                 },
                 {
                     id: 1,
@@ -170,7 +170,7 @@ export function WorkoutsProvider({ children }: { children: React.ReactNode }) {
             ]
         },
         {
-            id: 2, name: 'Workout 2', workoutExercises: [
+            id: 2, name: 'Workout 2', status: "active", workoutExercises: [
                 {
                     id: 6,
                     workoutTemplateId: 2,
@@ -194,21 +194,21 @@ export function WorkoutsProvider({ children }: { children: React.ReactNode }) {
             ]
         },
         {
-            id: 3, name: 'Workout 3', workoutExercises: [{
+            id: 3, name: 'Workout 3', status: "active", workoutExercises: [{
                 id: 10,
                 workoutTemplateId: 3,
                 exerciseId: 2
             },]
         },
         {
-            id: 4, name: 'Workout 4', workoutExercises: [{
+            id: 4, name: 'Workout 4', status: "active", workoutExercises: [{
                 id: 11,
                 workoutTemplateId: 4,
                 exerciseId: 2
             },]
         },
         {
-            id: 5, name: 'Workout 5', workoutExercises: [
+            id: 5, name: 'Workout 5', status: "active", workoutExercises: [
                 {
                     id: 12,
                     workoutTemplateId: 5,
@@ -407,7 +407,7 @@ export function MuscleGroupsProvider({ children }: { children: React.ReactNode }
 }
 
 export function PeformedSessionsProvider({ children }: { children: React.ReactNode }) {
-    const [performedSessions, setPerformedSessions] = useState<WorkoutSession[]>([
+    const [performedSessions, setPerformedSessions] = useState<PerformedSession[]>([
         {
             date: 1788894136955 - (1000 * 60 * 60 * 24 * 14),
             id: 3,
@@ -572,7 +572,21 @@ export function PeformedSessionsProvider({ children }: { children: React.ReactNo
 }
 
 export function PlannedSessionsProvider({ children }: { children: React.ReactNode }) {
-    const [plannedSessions, setPlannedSessions] = useState<WorkoutPlan[]>([]);
+    const [plannedSessions, setPlannedSessions] = useState<PlannedSession[]>([
+        {
+            id: 1,
+            workoutId: 1,
+            date: Date.now(),
+            plannedExercises: [
+                { id: 1, workoutExerciseId: 0, sets: 3, target: 25, weight: 20, rest: 60 },
+                { id: 2, workoutExerciseId: 1, sets: 3, target: 30, weight: 0, rest: 60 },
+                { id: 3, workoutExerciseId: 2, sets: 4, target: 12, weight: 44, rest: 60 },
+                { id: 4, workoutExerciseId: 3, sets: 3, target: 11, weight: 0, rest: 60 },
+                { id: 5, workoutExerciseId: 4, sets: 1, target: 15, weight: 0, rest: 60 },
+                { id: 6, workoutExerciseId: 5, sets: 3, target: 17, weight: 0, rest: 60 },
+            ]
+        }
+    ]);
 
     return (
         <PlannedSessionsContext.Provider value={{ plannedSessions, setPlannedSessions }}>

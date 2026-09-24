@@ -5,7 +5,6 @@ $titleFontSize: 1.5rem;
 $titleLineHeight: 1.1;
 
 @mixin sectionTitle {
-    margin-bottom: 1rem;
     font-size: $titleFontSize;
     line-height: $titleLineHeight;
     font-weight: bold;
@@ -28,19 +27,42 @@ $titleLineHeight: 1.1;
 }
 
 .sidebar {
-    padding: $columnPadding 0.5rem;
+    padding: $columnPadding 0 1rem 0.5rem;
     width: 32%;
     border-right: $border;
 
+    &Header {
+        margin-bottom: 1rem;
+        padding-right: 0.5rem;
+        @include flexSpaceBetween;
+        align-items: center;
+    }
     &Title {
         @include sectionTitle;
     }
+    &AddWorkoutBtn {
+        @include buttonSm;
+    }
 
     &ListWrap {
-        max-height: calc(100vh - $headerHeight - ($columnPadding * 2) - ($titleFontSize * $titleLineHeight));
+        max-height: calc(100vh - $headerHeight - $footerHeight - ($columnPadding * 2) - ($titleFontSize * $titleLineHeight));
         overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: thin;
+
+        &::-webkit-scrollbar {
+            width: 6px;
+        }
+        &::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        &::-webkit-scrollbar-thumb {
+            background-color: $secondaryBg;
+            border-radius: $borderRadiusSmall;
+        }
     }
     &List {
+        padding-right: 0.5rem;
         display: flex;
         flex-direction: column;
         gap: 4px;
@@ -52,22 +74,33 @@ $titleLineHeight: 1.1;
     border: $border;
     border-radius: $borderRadius;
     background-color: $primaryBg;
+    cursor: pointer;
 
     &.active {
         background-color: $highlightBg;
         border-color: #444;
+        cursor: auto;
     }
 
     &Name {
         @include fontPrimary;
         font-size: 1.125rem;
         font-weight: bold;
+
+        &Wrap {
+            @include flex;
+            gap: 1rem;
+        }
     }
     &Top {
         margin-bottom: 0.5rem;
         display: flex;
         justify-content: space-between;
         align-items: center;
+    }
+    &TrackProgressBtn {
+        @include iconButton(22px);
+        background-color: $highlightBg;
     }
     &Bottom {
         display: flex;
@@ -126,6 +159,30 @@ $titleLineHeight: 1.1;
             flex-shrink: 0;
         }
     }
+    &SourceControls {
+        margin-bottom: 1rem;
+        max-width: 950px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        &Btn {
+            @include buttonSm;
+            border-radius: $borderRadiusSmall;
+
+            &.active {
+                background: $primaryBg;
+            }
+        }
+    }
+    &Source {
+        @include headingSecondaryMed;
+        padding: 0 0.5rem;
+        margin-bottom: 0.625rem;
+    }
+    &NoDataMsg {
+        @include headingSecondaryMed;
+    }
     &MenuWrap {
         position: absolute;
         top: -14px;
@@ -133,6 +190,7 @@ $titleLineHeight: 1.1;
     }
 
     &Title{
+        margin-bottom: 1rem;
         @include sectionTitle;
     }
     
@@ -150,12 +208,12 @@ $titleLineHeight: 1.1;
         display: flex;
         justify-content: space-between;
         border-bottom: $border;
-        
+
 
         // &:first-child {
         //     border-top: $border;
         // }
-        
+
         &Name {
             @include fontPrimary;
             font-weight: 500;

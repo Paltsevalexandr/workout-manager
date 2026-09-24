@@ -1,16 +1,15 @@
 import { useState, type SubmitEvent } from 'react'
-import { PerformedExercise, Workout, WorkoutSession } from '@/_types';
+import { PerformedExercise, Workout, PerformedSession } from '@/_types';
 import { generateID } from '@/lib';
 import styles from "./ByDate.module.scss";
 import PeformedSession from './PeformedSession';
-import Modal from '@/app/components/ui/Modal';
-import ModalForm from '@/app/components/ui/ModalForm';
+import ConfirmDialog from '@/app/components/ui/ConfirmDialog';
 import WorkoutTrackingModal from '@/app/components/WorkoutTrackingModal';
 import { usePerformedSessionsContext } from '@/app/providers';
 
 type Props = {
     workout: Workout;
-    performedSessions: WorkoutSession[];
+    performedSessions: PerformedSession[];
 }
 
 export default function ByDate({
@@ -19,9 +18,9 @@ export default function ByDate({
 }: Props) {
     const [expandedSessions, setExpandedSessions] = useState<number[]>([1]);
     const { setPerformedSessions } = usePerformedSessionsContext();
-    const [deleteSession, setDeleteSession] = useState<WorkoutSession | null>(null);
-    const [editSession, setEditSession] = useState<WorkoutSession | null>(null);
-    const [duplicateSession, setDuplicateSession] = useState<WorkoutSession | null>(null);
+    const [deleteSession, setDeleteSession] = useState<PerformedSession | null>(null);
+    const [editSession, setEditSession] = useState<PerformedSession | null>(null);
+    const [duplicateSession, setDuplicateSession] = useState<PerformedSession | null>(null);
     const sortedPerformedSessions = performedSessions.sort((a, b) => b.date - a.date);
 
     function toggleSessionDropdown(id: number) {
@@ -58,7 +57,7 @@ export default function ByDate({
         setEditSession(null);
     }
 
-    function duplicateSessionForCreating(session: WorkoutSession) {
+    function duplicateSessionForCreating(session: PerformedSession) {
         const performedExerciseIds = performedSessions.flatMap(
             currentSession => currentSession.performedExercises
         );
@@ -133,21 +132,16 @@ export default function ByDate({
             </ul>
             {
                 deleteSession &&
-                <Modal
-                    onClose={() => setDeleteSession(null)}>
-                    <ModalForm
-                        title="Delete Session?"
-                        submitText="Confirm"
-                        onSubmit={(event) => {
-                            event.preventDefault();
-                            setPerformedSessions(prev => prev.filter(s => s.id != deleteSession.id));
-                            setDeleteSession(null);
-                        }}
-                        onCancel={() => setDeleteSession(null)}
-                    >
-                        <p>Are you sure you want to delete session from { }?</p>
-                    </ModalForm>
-                </Modal>
+                <ConfirmDialog
+                    title="Delete Session?"
+                    onConfirm={() => {
+                        setPerformedSessions(prev => prev.filter(s => s.id != deleteSession.id));
+                        setDeleteSession(null);
+                    }}
+                    onCancel={() => setDeleteSession(null)}
+                >
+                    <p>Are you sure you want to delete session from { }?</p>
+                </ConfirmDialog>
             }
             {
                 editSession &&
@@ -155,8 +149,10 @@ export default function ByDate({
                     modalType="session"
                     session={editSession}
                     sessionFormSource="none"
+                    workoutName={workout.name}
                     plannedSessions={[]}
-                    workoutSessions={performedSessions}
+                    performedSessions={performedSessions}
+                    submitText="Save Progress"
                     saveSession={saveEditSession}
                     cancelForm={() => setEditSession(null)}
                     setDate={setEditSessionDate}
@@ -169,8 +165,10 @@ export default function ByDate({
                     modalType="session"
                     session={duplicateSession}
                     sessionFormSource="none"
+                    workoutName={workout.name}
                     plannedSessions={[]}
-                    workoutSessions={performedSessions}
+                    performedSessions={performedSessions}
+                    submitText="Save Progress"
                     saveSession={saveDuplicateSession}
                     cancelForm={() => setDuplicateSession(null)}
                     setDate={setDuplicateSessionDate}

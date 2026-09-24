@@ -4,6 +4,8 @@ type Props = {
     value: string;
     required?: boolean;
     autoFocus?: boolean;
+    autoComplete?: string;
+    className?: string;
     onChange: (value: string) => void;
     onFocus?: () => void;
 }
@@ -14,6 +16,8 @@ export default function TextField({
     value,
     required = false,
     autoFocus = false,
+    autoComplete,
+    className,
     onChange,
     onFocus,
 }: Props) {
@@ -21,9 +25,11 @@ export default function TextField({
         <label>
             {label}
             <input
+                className={className}
                 name={name}
                 required={required}
                 autoFocus={autoFocus}
+                autoComplete={autoComplete}
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
                 onFocus={onFocus}

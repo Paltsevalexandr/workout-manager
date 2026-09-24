@@ -2,10 +2,10 @@ import React, { Dispatch, SetStateAction } from 'react';
 import Modal from '../../components/ui/Modal';
 import ModalForm from '../../components/ui/ModalForm';
 import { Exercise, Workout, WorkoutExercise } from '../../../_types';
-import SelectField from '../../components/forms/SelectField';
 import TextField from '../../components/forms/TextField';
 import { Trash2, Plus } from "lucide-react"
-import styles from "../page.module.scss";
+import styles from "./WorkoutForm.module.scss";
+import SearchableSelect from '../forms/SearchableSelect';
 
 type Props = {
     editWorkout?: Workout | null;
@@ -49,6 +49,7 @@ export default function WorkoutForm({
                     exercises.length
                         ? <>
                             <TextField
+                                autoFocus={true}
                                 label="Workout Name"
                                 name="workout-name"
                                 value={workoutName}
@@ -63,34 +64,36 @@ export default function WorkoutForm({
                                 <div className={styles.newWorkoutExercises}>
                                     {
                                         workoutExercises.map((workoutExercise, index) => {
-                                            let id = workoutExercise.id;
+                                            const selectedExercise = exercises.find(
+                                                exercise => exercise.id === workoutExercise.exerciseId
+                                            ) ?? null;
                                             return (
                                                 <div className={styles.newWorkoutExercise}
-                                                    key={"workout_exercise_wrap_" + id}>
-                                                    <SelectField
-                                                        key={"workout_exercise_" + id}
+                                                    key={"form_workout_exercise_" + index}>
+                                                    <SearchableSelect
                                                         label=""
-                                                        name="workout-exercise[]"
-                                                        value={workoutExercises[index].exerciseId}
-                                                        options={exercises.map(exercise => exercise.id)}
-                                                        optionsNames={exercises.map(exercise => exercise.name)}
-                                                        parseValue={Number}
-                                                        onChange={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                            return currentWorkoutExercises.map((workoutExercise) => {
-                                                                return id == workoutExercise.id
-                                                                    ? {
-                                                                        ...workoutExercise,
-                                                                        exerciseId: value
-                                                                    }
-                                                                    : workoutExercise;
+                                                        name="workout_exercise[]"
+                                                        items={exercises}
+                                                        selectedItem={selectedExercise}
+                                                        setSelectedItem={(value) => setWorkoutExercises((currentWorkoutExercises) => {
+                                                            return currentWorkoutExercises.map((workoutExercise, i) => {
+                                                                if (i != index) {
+                                                                    return workoutExercise;
+                                                                }
+                                                                const nextExercise = typeof value === "function"
+                                                                    ? value(selectedExercise)
+                                                                    : value;
+                                                                return {
+                                                                    ...workoutExercise,
+                                                                    exerciseId: nextExercise?.id ?? 0
+                                                                };
                                                             });
                                                         })}
                                                     />
                                                     <button type="button"
-                                                        key={"delete_ex_btn_" + index}
                                                         onClick={() => deleteExercise(index)}
                                                         className={styles.newWorkoutDeleteExercise}>
-                                                        <Trash2 size={16} key={"delete_ex_icon_" + index} />
+                                                        <Trash2 size={16} />
                                                     </button>
                                                 </div>
                                             )
