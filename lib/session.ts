@@ -6,7 +6,7 @@ import {
     PlannedSession,
     PerformedSession,
 } from "../_types";
-import { generateID, getLastSession, getLatestPerformedExercise, getPlannedExercise, getPlannedSession, isPlannedSession, isPerformedSession } from "./data";
+import { generateID, getLastSession, getLatestPerformedExercise, getPlannedExercise, getLastPlan, isPlannedSession, isPerformedSession } from "./data";
 
 export function getAllPerformedExercises(sessions: PerformedSession[]): PerformedExercise[] {
     return sessions.flatMap(session => session.performedExercises);
@@ -56,7 +56,7 @@ export function buildPerformedSession(
     const newPerformedExerciseId = generateID(getAllPerformedExercises(performedSessions));
 
     const lastSession = getLastSession(workout.id, performedSessions);
-    const currentPlannedSession = getPlannedSession(workout.id, plannedSessions);
+    const currentPlannedSession = getLastPlan(workout.id, plannedSessions);
 
     let sessionFormSource = getDefaultSessionSource(lastSession, currentPlannedSession);
     let sessionSourceObj: PerformedSession | PlannedSession | null = currentPlannedSession ?? lastSession;

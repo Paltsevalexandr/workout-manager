@@ -197,6 +197,7 @@ export default function page({ }: Props) {
                             workoutName={workout?.name ?? ""}
                             plannedSessions={plannedSessions}
                             performedSessions={workoutPerformedSessions}
+                            submitText="Save Progress"
                             saveSession={saveNewSession}
                             cancelForm={cancelNewSession}
                             setDate={setNewSessionDate}

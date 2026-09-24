@@ -31,7 +31,7 @@ export function getLastSession(workoutId: number, sessions: PerformedSession[]):
     }, null as PerformedSession | null);
 }
 
-export function getPlannedSession(workoutId: number, plans: PlannedSession[]): PlannedSession | null {
+export function getLastPlan(workoutId: number, plans: PlannedSession[]): PlannedSession | null {
     return plans.find(plan => plan.workoutId === workoutId) ?? null;
 }
 
@@ -50,6 +50,16 @@ export function isPlannedSession(
         return false;
     }
     return "plannedExercises" in source;
+}
+
+export function getSourceExercises(session: PerformedSession | PlannedSession)
+    : PerformedExercise[] | PlannedExercise[] {
+    let sourceExercises: PerformedExercise[] | PlannedExercise[] =
+        isPerformedSession(session)
+            ? session.performedExercises
+            : session.plannedExercises;
+    return sourceExercises;
+
 }
 
 export function getLatestPerformedExercise(lastSession: PerformedSession | null, workoutExerciseId: number): PerformedExercise | null {

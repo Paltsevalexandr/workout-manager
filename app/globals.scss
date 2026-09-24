@@ -34,10 +34,16 @@ footer {
 }
 
 header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
     height: $headerHeight;
+    z-index: 1;
 }
 main {
     flex: 1;
+    padding-top: $headerHeight;
 }
 nav,
 .section-content {
@@ -93,7 +99,6 @@ button {
     justify-content: center;
     gap: 8px;
     @include fontPrimary;
-    line-height: 1;
     color: white;
     background-color: rgb(17, 17, 17);
     border-radius: $borderRadius;

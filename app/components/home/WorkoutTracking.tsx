@@ -330,7 +330,7 @@ export default function WorkoutTracking({ }: Props) {
     const session: PerformedSession | PlannedSession | null = getSession();
     return (
         <main>
-            <section className={styles.homeSection}>
+            <section>
                 <div className="section-content">
                     <div className={styles.workoutColumns}>
                         <WorkoutsList
@@ -359,6 +359,7 @@ export default function WorkoutTracking({ }: Props) {
                             workoutName={selectedWorkoutName}
                             performedSessions={performedSessions}
                             plannedSessions={plannedSessions}
+                            submitText={modalType == "plan" ? "Save Plan" : "Save Progress"}
                             setDate={setDate}
                             sessionFormSource={sessionFormSource}
                             session={session}

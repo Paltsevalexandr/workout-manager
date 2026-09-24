@@ -5,6 +5,7 @@ import styles from "../../page.module.scss";
 import { getLastSession, getLastSessionDate } from '@/lib';
 import { useWorkoutsContext } from '@/app/providers';
 import WorkoutItem from './WorkoutItem';
+import { Plus } from 'lucide-react';
 
 type Props = {
     selectedWorkout: Workout | null;
@@ -56,7 +57,7 @@ export default function WorkoutsList({
                 </h2>
                 <button className={styles.sidebarAddWorkoutBtn + " button-secondary"}
                     onClick={openCreateWorkoutModal}>
-                    Add Workout
+                    <Plus size={16} /> Add Workout
                 </button>
             </div>
             <div className={styles.sidebarListWrap}>

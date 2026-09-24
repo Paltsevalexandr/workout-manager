@@ -152,6 +152,7 @@ export default function ByDate({
                     workoutName={workout.name}
                     plannedSessions={[]}
                     performedSessions={performedSessions}
+                    submitText="Save Progress"
                     saveSession={saveEditSession}
                     cancelForm={() => setEditSession(null)}
                     setDate={setEditSessionDate}
@@ -167,6 +168,7 @@ export default function ByDate({
                     workoutName={workout.name}
                     plannedSessions={[]}
                     performedSessions={performedSessions}
+                    submitText="Save Progress"
                     saveSession={saveDuplicateSession}
                     cancelForm={() => setDuplicateSession(null)}
                     setDate={setDuplicateSessionDate}

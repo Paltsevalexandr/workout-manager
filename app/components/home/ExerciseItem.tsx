@@ -1,16 +1,19 @@
 import React from 'react'
-import { Exercise, PerformedExercise, WorkoutExercise, PerformedSession } from '@/_types';
+import { Exercise, PerformedExercise, WorkoutExercise, PerformedSession, PlannedSession } from '@/_types';
 import styles from "../../page.module.scss";
+import { useExercisesContext } from '@/app/providers';
+import { getSourceExercises } from '@/lib';
 
 type Props = {
-    exercises: Exercise[];
     workoutExercise: WorkoutExercise;
-    lastSession: PerformedSession | null;
+    session: PerformedSession | PlannedSession;
 }
 
-export default function ExerciseItem({ exercises, workoutExercise, lastSession }: Props) {
+export default function ExerciseItem({ workoutExercise, session }: Props) {
+    const { exercises } = useExercisesContext();
     let exerciseData = exercises.find(ex => ex.id == workoutExercise.exerciseId);
-    let performedExercise = lastSession?.performedExercises.find(
+    let sourceExercises = getSourceExercises(session);
+    let sessionExercise = sourceExercises.find(
         (exercise) => workoutExercise.id == exercise.workoutExerciseId
     );
     if (!exerciseData) {
@@ -23,8 +26,8 @@ export default function ExerciseItem({ exercises, workoutExercise, lastSession }
             </span>
             <span className={styles.detailsExerciseVolume}>
                 {
-                    performedExercise
-                        ? `${performedExercise.sets}\u00D7${performedExercise.target}`
+                    sessionExercise
+                        ? `${sessionExercise.sets}\u00D7${sessionExercise.target}`
                         : ""
                 }
             </span>

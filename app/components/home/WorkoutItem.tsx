@@ -1,5 +1,5 @@
 import React from 'react';
-import { capitalize, formatRelativeDate, getExercisesLabel, getPlannedSession } from '@/lib';
+import { capitalize, formatRelativeDate, getExercisesLabel, getLastPlan } from '@/lib';
 import styles from "../../page.module.scss";
 import { Workout, PlannedSession, } from '@/_types';
 import { Clock, AlertCircle, CalendarCheck, Dumbbell, ListChecks } from 'lucide-react';
@@ -38,7 +38,7 @@ export default function WorkoutItem({
         }
     }
     const exercisesAmount = workout.workoutExercises.length;
-    const hasPlan: PlannedSession | null = getPlannedSession(workout.id, plannedSessions);
+    const hasPlan: PlannedSession | null = getLastPlan(workout.id, plannedSessions);
     return (
         <li className={`${styles.workout} ${selectedWorkout?.id == workout.id ? styles.active : ""}`}
             onClick={() => setSelectedWorkout()}>

@@ -17,14 +17,14 @@ export {
     getLastSessionDate,
     generateID,
     getLastSession,
-    getPlannedSession,
+    getLastPlan,
     isPerformedSession,
     isPlannedSession,
     getLatestPerformedExercise,
     getPlannedExercise,
     getMuscleGroupById,
     getWorkoutExercise,
-
+    getSourceExercises,
 
 } from "./data";
 

@@ -14,14 +14,18 @@
         overflow-y: auto;
     }
     &ExercisesHeader {
-        padding: 10px;
+        padding: 8px 10px;
         border-bottom: $border;
         color: $secondaryColor;
+
+        div:last-child {
+            text-align: end;
+        }
     }
     &ExercisesHeader,
     &Exercise {
         display: grid;
-        grid-template-columns: minmax(6rem, 1fr) 4.25rem;
+        grid-template-columns: minmax(6rem, 1fr) 3.5rem;
         gap: 8px;
     }
     &DeleteExercise {

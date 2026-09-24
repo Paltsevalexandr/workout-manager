@@ -92,6 +92,10 @@ $footerHeight: 104px;
     border-radius: $borderRadiusSmall;
 }
 
+@mixin buttonSm {
+    height: 28px;
+}
+
 @mixin iconButton($size: 16px) {
     padding: 0;
     width: $size;

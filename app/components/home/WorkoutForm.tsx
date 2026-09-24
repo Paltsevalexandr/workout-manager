@@ -54,7 +54,6 @@ export default function WorkoutForm({
                                 name="workout-name"
                                 value={workoutName}
                                 required={true}
-
                                 onChange={setWorkoutName}
                             />
                             <div className={styles.newWorkoutExercisesWrap}>
