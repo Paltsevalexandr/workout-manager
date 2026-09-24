@@ -194,6 +194,7 @@ export default function page({ }: Props) {
                             modalType="session"
                             session={newSession}
                             sessionFormSource={sessionFormSource}
+                            workoutName={workout?.name ?? ""}
                             plannedSessions={plannedSessions}
                             performedSessions={workoutPerformedSessions}
                             saveSession={saveNewSession}

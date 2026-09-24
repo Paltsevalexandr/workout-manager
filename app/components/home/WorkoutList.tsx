@@ -1,6 +1,5 @@
 "use client";
 
-import { Dispatch, SetStateAction } from 'react';
 import { Workout, PlannedSession, PerformedSession } from '@/_types';
 import styles from "../../page.module.scss";
 import { getLastSession, getLastSessionDate } from '@/lib';
@@ -11,7 +10,7 @@ type Props = {
     selectedWorkout: Workout | null;
     performedSessions: PerformedSession[];
     plannedSessions: PlannedSession[];
-    setSelectedWorkout: Dispatch<SetStateAction<Workout | null>>;
+    setSelectedWorkout: (workout: Workout) => void;
     openCreateWorkoutModal: () => void;
     savePerformedSession: (workoutId: number) => void;
 }
@@ -27,7 +26,8 @@ export default function WorkoutsList({
     const { workouts } = useWorkoutsContext();
 
     function sortWorkouts(workouts: Workout[]) {
-        return [...workouts].sort((prev, current) => {
+        return workouts.filter(workout => workout.status !== "archived")
+            .sort((prev, current) => {
             const lastPrevSession = getLastSession(prev.id, performedSessions);
             const lastCurrentSession = getLastSession(current.id, performedSessions);
 
@@ -35,7 +35,7 @@ export default function WorkoutsList({
             const currentHasSession = lastCurrentSession !== null;
 
             if (!prevHasSession && !currentHasSession) {
-                return 0;
+                return prev.name.localeCompare(current.name);
             }
             if (!prevHasSession) {
                 return -1;

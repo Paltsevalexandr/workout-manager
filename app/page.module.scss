@@ -18,7 +18,16 @@ $titleLineHeight: 1.1;
     font-weight: 500;
 }
 
+.homeSection {
+    height: 100%;
+
+    :global(.section-content) {
+        height: 100%;
+    }
+}
+
 .workoutColumns {
+    min-height: 100%;
     display: flex;
     justify-content: space-between;
     background-color: rgb(250, 250, 250);

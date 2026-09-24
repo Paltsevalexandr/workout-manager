@@ -32,9 +32,8 @@ export type Workout = {
     id: number;
     name: string;
     workoutExercises: WorkoutExercise[];
-
     // tags: string[];
-    // status: 'active' | 'archived';
+    status: 'active' | 'archived';
     // createdAt: string;
     // archivedAt: string | null;
 };

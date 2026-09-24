@@ -88,6 +88,7 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                     name={name}
                     label={label}
                     value={query}
+                    autoComplete="off"
                     onFocus={() => setIsDropdownOpen(true)}
                     onChange={setQuery}
                 />

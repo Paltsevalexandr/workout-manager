@@ -3,8 +3,7 @@ import { PerformedExercise, Workout, PerformedSession } from '@/_types';
 import { generateID } from '@/lib';
 import styles from "./ByDate.module.scss";
 import PeformedSession from './PeformedSession';
-import Modal from '@/app/components/ui/Modal';
-import ModalForm from '@/app/components/ui/ModalForm';
+import ConfirmDialog from '@/app/components/ui/ConfirmDialog';
 import WorkoutTrackingModal from '@/app/components/WorkoutTrackingModal';
 import { usePerformedSessionsContext } from '@/app/providers';
 
@@ -133,21 +132,16 @@ export default function ByDate({
             </ul>
             {
                 deleteSession &&
-                <Modal
-                    onClose={() => setDeleteSession(null)}>
-                    <ModalForm
-                        title="Delete Session?"
-                        submitText="Confirm"
-                        onSubmit={(event) => {
-                            event.preventDefault();
-                            setPerformedSessions(prev => prev.filter(s => s.id != deleteSession.id));
-                            setDeleteSession(null);
-                        }}
-                        onCancel={() => setDeleteSession(null)}
-                    >
-                        <p>Are you sure you want to delete session from { }?</p>
-                    </ModalForm>
-                </Modal>
+                <ConfirmDialog
+                    title="Delete Session?"
+                    onConfirm={() => {
+                        setPerformedSessions(prev => prev.filter(s => s.id != deleteSession.id));
+                        setDeleteSession(null);
+                    }}
+                    onCancel={() => setDeleteSession(null)}
+                >
+                    <p>Are you sure you want to delete session from { }?</p>
+                </ConfirmDialog>
             }
             {
                 editSession &&
@@ -155,6 +149,7 @@ export default function ByDate({
                     modalType="session"
                     session={editSession}
                     sessionFormSource="none"
+                    workoutName={workout.name}
                     plannedSessions={[]}
                     performedSessions={performedSessions}
                     saveSession={saveEditSession}
@@ -169,6 +164,7 @@ export default function ByDate({
                     modalType="session"
                     session={duplicateSession}
                     sessionFormSource="none"
+                    workoutName={workout.name}
                     plannedSessions={[]}
                     performedSessions={performedSessions}
                     saveSession={saveDuplicateSession}

@@ -17,12 +17,13 @@ import {
 import WorkoutDetails from './WorkoutDetails';
 import WorkoutForm from './WorkoutForm';
 import { MenuItem } from '../ui/KebabMenu';
+import ConfirmDialog from '../ui/ConfirmDialog';
 
 type Props = {}
 
 export default function WorkoutTracking({ }: Props) {
     const { workouts, setWorkouts } = useWorkoutsContext();
-    const { exercises, setExercises } = useExercisesContext();
+    const { exercises } = useExercisesContext();
 
     const [workoutToEdit, setWorkoutToEdit] = useState<Workout | null>(null);
     const [workoutName, setWorkoutName] = useState<string>("");
@@ -35,10 +36,14 @@ export default function WorkoutTracking({ }: Props) {
     const { performedSessions, setPerformedSessions } = usePerformedSessionsContext();
     const { plannedSessions, setPlannedSessions } = usePlannedSessionsContext();
     const [modalType, setModalType] = useState<ModalType>("none");
+    const [selectedWorkoutName, setSelectedWorkoutName] = useState<string>("");
     const [performedSession, setPerformedSession] = useState<PerformedSession | null>(null);
     const [plannedSession, setPlannedSession] = useState<PlannedSession | null>(null);
-    const [selectedWorkout, setSelectedWorkout] = useState<Workout | null>(null);
+    const [selectedWorkoutId, setSelectedWorkoutId] = useState<number | null>(null);
+    const selectedWorkout = workouts.find(workout => workout.id === selectedWorkoutId) ?? null;
     const [sessionFormSource, setSessionFormSource] = useState<SessionFormSource>("none");
+    const [deleteWorkoutId, setDeletedWorkoutId] = useState<number | null>(null);
+    const [archiveWorkoutId, setArchiveWorkoutId] = useState<number | null>(null);
 
     function createWorkout(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
@@ -57,6 +62,7 @@ export default function WorkoutTracking({ }: Props) {
             {
                 id: newWorkoutId,
                 name: workoutName,
+                status: "active",
                 workoutExercises: newWorkoutExercises,
             },
         ]);
@@ -92,6 +98,7 @@ export default function WorkoutTracking({ }: Props) {
                 return {
                     id: workout.id,
                     name: workoutName,
+                    status: workout.status,
                     workoutExercises: updatedWorkoutExercises,
                 };
             });
@@ -114,7 +121,10 @@ export default function WorkoutTracking({ }: Props) {
         setWorkoutToEdit(null);
     }
 
-    function handleEdit(workout: Workout) {
+    function handleEdit(workout: Workout | null) {
+        if (!workout) {
+            return;
+        }
         setWorkoutToEdit(workout);
         setWorkoutName(workout.name);
         setWorkoutExercises([...workout.workoutExercises]);
@@ -129,15 +139,17 @@ export default function WorkoutTracking({ }: Props) {
                 break;
         }
     }
-    function createNextSessionPlan(workoutId: number) {
-        const workout = getWorkout(workoutId);
+
+    function createNextSessionPlan(workout: Workout | null) {
         if (!workout) return;
 
         const { plan, sessionFormSource } = buildPlannedSession(workout, performedSessions, plannedSessions);
         setSessionFormSource(sessionFormSource);
         setPlannedSession(plan);
         setModalType("plan");
+        setSelectedWorkoutName(workout.name);
     }
+
     function savePerformedSession(workoutId: number, source?: SessionFormSource) {
         const workout = getWorkout(workoutId);
         if (!workout) return;
@@ -149,10 +161,13 @@ export default function WorkoutTracking({ }: Props) {
         setSessionFormSource(sessionFormSource);
         setPerformedSession(session);
         setModalType("session");
+        setSelectedWorkoutName(workout.name);
     }
+
     function getWorkout(workoutId: number): Workout | null {
         return workouts.find(workout => workout.id == workoutId) ?? null;
     }
+
     function saveSession(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         if (modalType == "plan" && plannedSession) {
@@ -177,12 +192,14 @@ export default function WorkoutTracking({ }: Props) {
         setSessionFormSource("none");
         setPerformedSession(null);
         setPlannedSession(null);
+        setSelectedWorkoutName("");
     }
     function cancelForm() {
         setModalType("none");
         setSessionFormSource("none");
         setPerformedSession(null);
         setPlannedSession(null);
+        setSelectedWorkoutName("");
     }
     function setDate(date: number) {
         if (modalType == "session") {
@@ -266,12 +283,30 @@ export default function WorkoutTracking({ }: Props) {
                 return null;
         }
     }
+    function deleteWorkout(workout: Workout | null) {
+        setDeletedWorkoutId(workout?.id ?? null);
+    }
+    function handleDeleteWorkout() {
+        setWorkouts(prev => prev.filter(w => w.id != deleteWorkoutId));
+        setSelectedWorkoutId(null);
+        setDeletedWorkoutId(null);
+    }
+    function archiveWorkout(workout: Workout | null) {
+        setArchiveWorkoutId(workout?.id ?? null);
+    }
+    function handleArchiveWorkout() {
+        setWorkouts(prev => prev.map(w => w.id === archiveWorkoutId ? { ...w, status: "archived" } : w));
+        if (selectedWorkoutId === archiveWorkoutId) {
+            setSelectedWorkoutId(null);
+        }
+        setArchiveWorkoutId(null);
+    }
 
     function getMenuItems(workout: Workout | null): MenuItem[] {
         return [
             {
                 label: "Plan Next Session",
-                onClick: () => workout ? createNextSessionPlan(workout.id) : null
+                onClick: () => createNextSessionPlan(workout)
             },
             {
                 label: "History",
@@ -279,11 +314,15 @@ export default function WorkoutTracking({ }: Props) {
             },
             {
                 label: "Edit",
-                onClick: () => workout ? handleEdit(workout) : null
+                onClick: () => handleEdit(workout)
             },
             {
                 label: "Archive",
-                onClick: () => { }
+                onClick: () => archiveWorkout(workout)
+            },
+            {
+                label: "Delete",
+                onClick: () => deleteWorkout(workout)
             }
         ]
     }
@@ -291,7 +330,7 @@ export default function WorkoutTracking({ }: Props) {
     const session: PerformedSession | PlannedSession | null = getSession();
     return (
         <main>
-            <section>
+            <section className={styles.homeSection}>
                 <div className="section-content">
                     <div className={styles.workoutColumns}>
                         <WorkoutsList
@@ -299,7 +338,7 @@ export default function WorkoutTracking({ }: Props) {
                             performedSessions={performedSessions}
                             plannedSessions={plannedSessions}
                             savePerformedSession={savePerformedSession}
-                            setSelectedWorkout={setSelectedWorkout}
+                            setSelectedWorkout={(workout) => setSelectedWorkoutId(workout.id)}
                             openCreateWorkoutModal={() => setIsCreateWorkoutFormOpen(true)}
                         />
                         {
@@ -309,7 +348,7 @@ export default function WorkoutTracking({ }: Props) {
                                 performedSessions={performedSessions}
                                 menuItems={getMenuItems(selectedWorkout)}
                                 savePerformedSession={savePerformedSession}
-                                createNextSessionPlan={createNextSessionPlan}
+                                createNextSessionPlan={() => createNextSessionPlan(selectedWorkout)}
                             />
                         }
                     </div>
@@ -317,6 +356,7 @@ export default function WorkoutTracking({ }: Props) {
                         modalType != "none" && session
                         && <WorkoutTrackingModal
                             modalType={modalType}
+                            workoutName={selectedWorkoutName}
                             performedSessions={performedSessions}
                             plannedSessions={plannedSessions}
                             setDate={setDate}
@@ -353,6 +393,24 @@ export default function WorkoutTracking({ }: Props) {
                             setWorkoutExercises={setWorkoutExercises}
                         />
                     }
+                    {deleteWorkoutId !== null && (
+                        <ConfirmDialog
+                            title="Delete Workout?"
+                            onConfirm={handleDeleteWorkout}
+                            onCancel={() => setDeletedWorkoutId(null)}
+                        >
+                            <p>Are you sure you want to delete "{workouts.find((workout) => workout.id === deleteWorkoutId)?.name}"?</p>
+                        </ConfirmDialog>
+                    )}
+                    {archiveWorkoutId !== null && (
+                        <ConfirmDialog
+                            title="Archive Workout?"
+                            onConfirm={handleArchiveWorkout}
+                            onCancel={() => setArchiveWorkoutId(null)}
+                        >
+                            <p>Are you sure you want to archive "{workouts.find((workout) => workout.id === archiveWorkoutId)?.name}"?</p>
+                        </ConfirmDialog>
+                    )}
                 </div>
             </section>
         </main>

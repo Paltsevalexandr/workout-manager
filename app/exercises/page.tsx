@@ -10,6 +10,7 @@ import ExerciseTable from "./_components/ExerciseTable"
 import ExerciseForm from "./_components/ExerciseForm"
 import Modal from "../components/ui/Modal"
 import ModalForm from "../components/ui/ModalForm"
+import ConfirmDialog from "../components/ui/ConfirmDialog"
 import { generateID } from "../../lib";
 
 type ExerciseDraft = {
@@ -152,20 +153,13 @@ export default function Page() {
                 </Modal>
             )}
             {deleteIndex !== null && (
-                <Modal
-                    onClose={() => setDeleteIndex(null)}>
-                    <ModalForm
-                        title="Delete Exercise?"
-                        submitText="Confirm"
-                        onSubmit={(event) => {
-                            event.preventDefault()
-                            handleDelete()
-                        }}
-                        onCancel={() => setDeleteIndex(null)}
-                    >
-                        <p>Are you sure you want to delete "{exercises[deleteIndex].name}"?</p>
-                    </ModalForm>
-                </Modal>
+                <ConfirmDialog
+                    title="Delete Exercise?"
+                    onConfirm={handleDelete}
+                    onCancel={() => setDeleteIndex(null)}
+                >
+                    <p>Are you sure you want to delete "{exercises[deleteIndex].name}"?</p>
+                </ConfirmDialog>
             )}
         </Content>
     )

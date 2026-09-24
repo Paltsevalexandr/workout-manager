@@ -14,6 +14,7 @@ type Props = {
     sessionFormSource: SessionFormSource;
     plannedSessions: PlannedSession[];
     performedSessions: PerformedSession[];
+    workoutName: string;
     saveSession: (e: SubmitEvent<HTMLFormElement>) => void;
     cancelForm: () => void;
     toggleSessionFormSource?: (source: SessionFormSource, workoutId: number) => void;
@@ -27,6 +28,7 @@ export default function WorkoutTrackingModal({
     sessionFormSource,
     performedSessions,
     plannedSessions,
+    workoutName,
     saveSession,
     cancelForm,
     setDate,
@@ -47,10 +49,10 @@ export default function WorkoutTrackingModal({
     let headerText = "";
     switch (modalType) {
         case "session":
-            headerText = "Track Progress";
+            headerText = `Track ${workoutName ? `"${workoutName}" ` : ""}Progress`;
             break;
         case "plan":
-            headerText = "Next Session Plan"
+            headerText = `${workoutName ? `"${workoutName}" ` : ""}Next Session Plan`
             break;
     }
     const lastSession = getLastSession(workoutId, performedSessions);

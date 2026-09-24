@@ -16,6 +16,7 @@ $borderRadiusBig: 12px;
 $borderRadius: 8px;
 $borderRadiusSmall: 4px;
 $headerHeight: 48px;
+$footerHeight: 104px;
 
 @mixin mobile {
     @media (max-width: 480px) {
