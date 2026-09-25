@@ -63,7 +63,11 @@ $footerHeight: 104px;
 }
 
 // fonts
-
+@mixin pageTitle {
+    color: $primaryColor;
+    font-size: 2rem;
+    font-weight: bold;
+}
 @mixin fontPrimary {
     font-size: 1rem;
     color: $primaryColor;

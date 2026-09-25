@@ -13,6 +13,7 @@
 
     &Delete {
         @include iconButton;
+        background-color: $primaryBg;
     }
 }
 .multiSelect {
@@ -20,12 +21,19 @@
 }
 .foundItems {
     position: absolute;
+    z-index: 1;
     top: calc(100% - 1px);
     left: 1.5%;
     width: 97%;
     display: flex;
     flex-direction: column;
     border: $borderLight;
+}
+
+.error {
+    margin: 0.25rem 0 0;
+    color: $red;
+    font-size: 0.85rem;
 }
 
 .foundItem {

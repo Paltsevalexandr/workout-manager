@@ -23,11 +23,6 @@ main {
   border-bottom: 1px solid rgba(0, 0, 0, 0.4);
 }
 
-.page-title-section {
-  padding: 1rem 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-}
-
 header,
 footer {
   background-color: #e3e3e3;
@@ -82,12 +77,6 @@ nav {
     }
   }
 }
-
-.page-title {
-  font-size: 2rem;
-  font-weight: bold;
-}
-
 button {
     position: relative;
     padding: 0 0.625rem;
@@ -118,6 +107,15 @@ button {
     &:hover::after {
       background-color: $buttonOverlay;
       cursor: pointer;
+    }
+
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+
+      &::after {
+        content: none;
+      }
     }
 
     span {

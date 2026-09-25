@@ -1,4 +1,5 @@
-import React from "react"
+import React from "react";
+import styles from './PageTitle.module.scss';
 
 type Props = {
     title:string
@@ -6,9 +7,9 @@ type Props = {
 
 export default function PageTitle({title}: Props) {
     return (
-        <section className="page-title-section">
+        <section className={styles.pageTitleSection}>
             <div className="section-content">
-                <h1 className='page-title'>
+                <h1 className={styles.pageTitle}>
                     {title}
                 </h1>
             </div>

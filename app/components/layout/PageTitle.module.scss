@@ -1,0 +1,8 @@
+@use '../../variables' as *;
+
+.pageTitleSection {
+  padding: 1rem 0 0;
+}
+.pageTitle {
+    @include pageTitle;
+}

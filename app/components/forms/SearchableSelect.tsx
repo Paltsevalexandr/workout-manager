@@ -11,6 +11,7 @@ type Props<T extends { name: string, id: number }> = {
     name: string;
     label: string;
     selectedItem: T | null;
+    queryMinLength?: number;
     setSelectedItem: Dispatch<SetStateAction<T | null>>
 }
 
@@ -25,6 +26,7 @@ export default function SearchableSelect<T extends { name: string, id: number }>
     name,
     label,
     selectedItem,
+    queryMinLength = 1,
     setSelectedItem,
 }: Props<T>) {
     const [query, setQuery] = useState<string>(selectedItem?.name ?? "");
@@ -71,8 +73,6 @@ export default function SearchableSelect<T extends { name: string, id: number }>
                 closeDropdown();
             }
         }
-        // закрываем вместо репозиционирования при скролле, т.к. дропдаун
-        // теперь в портале и сам за скроллом не следит
         function handleScroll() {
             closeDropdown();
         }
@@ -102,7 +102,7 @@ export default function SearchableSelect<T extends { name: string, id: number }>
         item.name.toLowerCase().includes(query.toLowerCase())
     );
 
-    const showDropdown = isDropdownOpen && query.length >= 3;
+    const showDropdown = isDropdownOpen && query.length >= queryMinLength;
 
     return (
         <div ref={containerRef} className={styles.searchableSelect}>

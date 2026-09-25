@@ -11,6 +11,8 @@ type Props<T extends { name: string, id: number }> = {
     name: string;
     label: string;
     selectedItems: T[];
+    queryMinLength?: number;
+    error?: string;
     setSelectedItems: Dispatch<SetStateAction<T[]>>
 }
 
@@ -19,6 +21,8 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
     name,
     label,
     selectedItems,
+    queryMinLength=1,
+    error,
     setSelectedItems
 
 }: Props<T>) {
@@ -58,7 +62,7 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
         !selectedItems.find(selectedItem => selectedItem.id == item.id)
     );
 
-    const showDropdown = isDropdownOpen && query.length >= 3;
+    const showDropdown = isDropdownOpen && query.length >= queryMinLength;
 
     return (
         <div ref={containerRef}>
@@ -109,7 +113,7 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                             })
                         }
                         {
-                            !filteredItems.length && query.length >= 3 && (
+                            !filteredItems.length && query.length >= queryMinLength && (
                                 hasMatches
                                     ? <li>All matches already added</li>
                                     : <li>Not Found</li>
@@ -118,6 +122,7 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                     </ul>
                 }
             </div>
+            {error && <p className={styles.error}>{error}</p>}
         </div>
     )
 }
