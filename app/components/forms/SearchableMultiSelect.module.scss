@@ -1,31 +1,61 @@
 @use "../../variables" as *;
 
-.selectedItems {
-    padding: 0.5rem 0.5rem 0.75rem;
+.label {
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.multiSelect {
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 4px 6px;
+    min-height: 2.25rem;
+    padding: 0.375rem 0.5rem;
     border: $border;
     border-radius: $borderRadius;
+    background-color: $highlightBg;
 }
+
+.multiSelectInput {
+    flex: 1;
+    min-width: 80px;
+    height: 1.75rem;
+    padding: 0;
+    border: none;
+    background: transparent;
+
+    &:focus {
+        outline: none;
+    }
+}
+
 .selectedItem {
     @include selectedItem;
 
     &Delete {
         @include iconButton;
+        background-color: $primaryBg;
     }
 }
-.multiSelect {
-    position: relative;
-}
+
 .foundItems {
-    position: absolute;
-    top: calc(100% - 1px);
-    left: 1.5%;
-    width: 97%;
+    position: fixed;
+    z-index: 100;
+    margin: 0;
+    padding: 0;
+    max-width: 320px;
+    list-style: none;
     display: flex;
     flex-direction: column;
+    background-color: $primaryBg;
     border: $borderLight;
+}
+
+.error {
+    margin: 0.25rem 0 0;
+    color: $red;
+    font-size: 0.85rem;
 }
 
 .foundItem {
@@ -45,4 +75,12 @@
         border-radius: 0;
 
     }
+}
+
+.foundItemEmpty {
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    color: $secondaryColor;
 }

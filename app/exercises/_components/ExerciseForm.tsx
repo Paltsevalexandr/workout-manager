@@ -1,35 +1,50 @@
 "use client"
 
-import { useMuscleGroupsContext } from "@/app/providers"
-import { categories, targets } from "../../../_types"
-import type { Category, MuscleGroup, Target } from "../../../_types"
+import { useCategoriesContext, useExercisesContext, useMuscleGroupsContext } from "@/app/providers"
+import { targets } from "../../../_types"
+import type { Category, Exercise, MuscleGroup, Target } from "../../../_types"
 import SelectField from "../../components/forms/SelectField"
 import TextField from "../../components/forms/TextField"
 import SearchableMultiSelect from "../../components/forms/SearchableMultiSelect"
+import SearchableSelect from "../../components/forms/SearchableSelect"
 import { Dispatch, SetStateAction } from "react"
 
 type Props = {
     name: string;
-    category: Category;
+    draftCategories: Category[];
     target: Target;
-    selectedMuscleGroups: MuscleGroup[];
+    draftMuscleGroups: MuscleGroup[];
+    draftParent: Exercise | null;
+    excludeExerciseId?: number;
+    categoriesError?: string;
+    muscleGroupsError?: string;
     onNameChange: (name: string) => void;
-    onCategoryChange: (category: Category) => void;
-    onTargetChange: (target: Target) => void;
-    setSelectedMuscleGroups: Dispatch<SetStateAction<MuscleGroup[]>>;
+    setDraftCategories: Dispatch<SetStateAction<Category[]>>;
+    setDraftTarget: (target: Target) => void;
+    setDraftMuscleGroups: Dispatch<SetStateAction<MuscleGroup[]>>;
+    setDraftParent: Dispatch<SetStateAction<Exercise | null>>;
 }
 
 export default function ExerciseForm({
     name,
-    category,
+    draftCategories,
     target,
-    selectedMuscleGroups,
+    draftMuscleGroups,
+    draftParent,
+    excludeExerciseId,
+    categoriesError,
+    muscleGroupsError,
     onNameChange,
-    onCategoryChange,
-    onTargetChange,
-    setSelectedMuscleGroups
+    setDraftCategories,
+    setDraftTarget,
+    setDraftMuscleGroups,
+    setDraftParent
 }: Props) {
     const { muscleGroups } = useMuscleGroupsContext();
+    const { categories } = useCategoriesContext();
+    const { exercises } = useExercisesContext();
+    const parentOptions = exercises.filter((exercise) => exercise.id !== excludeExerciseId);
+
     return (
         <>
             <TextField
@@ -40,26 +55,37 @@ export default function ExerciseForm({
                 autoFocus
                 onChange={onNameChange}
             />
+            <SearchableSelect<Exercise>
+                label="Parent Exercise"
+                name="parent"
+                items={parentOptions}
+                selectedItem={draftParent}
+                setSelectedItem={setDraftParent}
+            />
             <SearchableMultiSelect<MuscleGroup>
                 label="Muscle Groups"
-                name="muscle-groups[]"
+                name="muscle-group[]"
                 items={muscleGroups}
-                selectedItems={selectedMuscleGroups}
-                setSelectedItems={setSelectedMuscleGroups}
+                selectedItems={draftMuscleGroups}
+                error={muscleGroupsError}
+                setSelectedItems={setDraftMuscleGroups}
             />
-            <SelectField
-                label="Category"
-                name="category"
-                value={category}
-                options={categories}
-                onChange={onCategoryChange}
+
+            <SearchableMultiSelect<Category>
+                label="Categories"
+                name="category[]"
+                items={categories}
+                selectedItems={draftCategories}
+                error={categoriesError}
+                setSelectedItems={setDraftCategories}
             />
+
             <SelectField
                 label="Target"
                 name="target"
                 value={target}
                 options={targets}
-                onChange={onTargetChange}
+                onChange={setDraftTarget}
             />
         </>
     )

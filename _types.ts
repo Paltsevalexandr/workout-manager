@@ -1,9 +1,3 @@
-export const categories = ["strength", "cardio", "mobility", "stretching"] as const;
-export type Category = typeof categories[number];
-
-// export const muscleGroups = ["chest", "back", "legs", "shoulders", "arms", "core"] as const;
-// export type MuscleGroup = typeof muscleGroups[number];
-
 export const targets = ["reps", "duration"] as const;
 export type Target = typeof targets[number];
 
@@ -15,10 +9,12 @@ export type ModalType = "none" | "session" | "plan";
 
 export type Exercise = {
     id: number;
+    parent: number | null;
     name: string;
-    category: Category;
+    categories: Category[];
     muscleGroups: MuscleGroup[];
     target: Target;
+    isSystem: boolean;
 };
 
 export type MuscleGroup = {
@@ -27,6 +23,13 @@ export type MuscleGroup = {
     parentId: number | null;
     isSystem: boolean;
 };
+
+export type Category = {
+    id: number;
+    name: string;
+    parentId: number | null;
+    isSystem: boolean;
+}
 
 export type Workout = {
     id: number;

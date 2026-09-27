@@ -11,6 +11,7 @@ type Props<T extends { name: string, id: number }> = {
     name: string;
     label: string;
     selectedItem: T | null;
+    queryMinLength?: number;
     setSelectedItem: Dispatch<SetStateAction<T | null>>
 }
 
@@ -25,6 +26,7 @@ export default function SearchableSelect<T extends { name: string, id: number }>
     name,
     label,
     selectedItem,
+    queryMinLength = 1,
     setSelectedItem,
 }: Props<T>) {
     const [query, setQuery] = useState<string>(selectedItem?.name ?? "");
@@ -50,9 +52,9 @@ export default function SearchableSelect<T extends { name: string, id: number }>
     useLayoutEffect(() => {
         if (!isDropdownOpen || !containerRef.current) return;
 
-        const gap = 4;
+        const gap = 1;
         const rect = containerRef.current.getBoundingClientRect();
-        const inset = rect.width * 0.015; // тот же зазор по бокам, что и раньше был через left:1.5%/width:97%
+        const inset = rect.width * 0.015; // same side gap as the old left:1.5%/width:97% CSS
         setPosition({
             top: rect.bottom + gap,
             left: rect.left + inset,
@@ -71,8 +73,6 @@ export default function SearchableSelect<T extends { name: string, id: number }>
                 closeDropdown();
             }
         }
-        // закрываем вместо репозиционирования при скролле, т.к. дропдаун
-        // теперь в портале и сам за скроллом не следит
         function handleScroll() {
             closeDropdown();
         }
@@ -102,7 +102,7 @@ export default function SearchableSelect<T extends { name: string, id: number }>
         item.name.toLowerCase().includes(query.toLowerCase())
     );
 
-    const showDropdown = isDropdownOpen && query.length >= 3;
+    const showDropdown = isDropdownOpen && query.length >= queryMinLength;
 
     return (
         <div ref={containerRef} className={styles.searchableSelect}>

@@ -1,16 +1,16 @@
-import { useState, type Dispatch, type SetStateAction } from "react"
+import { useMemo, useState } from "react"
 import styles from "../page.module.scss"
 import type { Exercise } from "../../../_types"
-import { capitalize } from "../../../lib"
-import { ChevronsUpDown, Pencil, Trash2 } from "lucide-react"
+import { capitalize, getExerciseById } from "../../../lib"
+import { ChevronDown, ChevronUp, ChevronsUpDown, Pencil, Trash2 } from "lucide-react"
 
 type Props = {
     exercises: Exercise[],
-    setExercises: Dispatch<SetStateAction<Exercise[]>>,
-    setDeleteIndex: (index: number) => void,
-    onEdit: (index: number) => void,
+    allExercises: Exercise[],
+    setDeleteId: (id: number) => void,
+    onEdit: (id: number) => void,
 }
-type SortableColumn = "name" | "category" | "muscleGroups" | "target";
+type SortableColumn = "name";
 
 type Header = {
     text: string,
@@ -18,16 +18,17 @@ type Header = {
 }
 const headers: Header[] = [
     { text: "Name", key: "name" },
-    { text: "Category", key: "category" },
-    { text: "Muscle groups", key: "muscleGroups" },
-    { text: "Target", key: "target" },
+    { text: "Parent", key: null },
+    { text: "Categories", key: null },
+    { text: "Muscle groups", key: null },
+    { text: "Target", key: null },
     { text: "Actions", key: null },
 ];
 
 type SortDirection = "asc" | "desc";
 
-export default function ExerciseTable({ exercises, setExercises, setDeleteIndex, onEdit }: Props) {
-    const [sortColumn, setSortColumn] = useState<SortableColumn | null>(null);
+export default function ExerciseTable({ exercises, allExercises, setDeleteId, onEdit }: Props) {
+    const [sortColumn, setSortColumn] = useState<SortableColumn | null>("name");
     const [sortDirection, setSortDirection] = useState<SortDirection>("asc");
 
     function handleSort(column: SortableColumn | null) {
@@ -38,16 +39,17 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex,
 
         setSortColumn(column);
         setSortDirection(nextDirection);
-        setExercises((currentExercises) =>
-            [...currentExercises].sort((firstExercise, secondExercise) => {
-                const firstValue = firstExercise[column];
-                const secondValue = secondExercise[column];
-                const comparison = String(firstValue).localeCompare(String(secondValue));
-
-                return nextDirection === "asc" ? comparison : -comparison;
-            })
-        );
     }
+
+    const sortedExercises = useMemo(() => {
+        const indexed = exercises.map((exercise, index) => ({ exercise, index }));
+        if (sortColumn !== "name") return indexed;
+
+        return indexed.sort((first, second) => {
+            const comparison = first.exercise.name.localeCompare(second.exercise.name);
+            return sortDirection === "asc" ? comparison : -comparison;
+        });
+    }, [exercises, sortColumn, sortDirection]);
 
     return (
         <table className={styles.exercises}>
@@ -56,44 +58,81 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex,
                 <col />
                 <col />
                 <col />
+                <col />
                 <col className={styles.actionColumn} />
             </colgroup>
             <thead>
                 <tr>
-                    {headers.map((header) => (
-                        <th key={header.text}>
-                            <span>{header.text}</span>
-                            {header.key && (
-                                <button
-                                    className={styles.sortButton}
-                                    type="button"
-                                    aria-label={`Sort by ${header.text}`}
-                                    onClick={() => handleSort(header.key)}
-                                >
-                                    <ChevronsUpDown size={14} aria-hidden="true" />
-                                </button>
-                            )}
-                        </th>
-                    ))}
+                    {headers.map((header) => {
+                        const isActive = header.key !== null && header.key === sortColumn;
+                        // Keep header text and sort state in sync for assistive tech.
+                        const ariaSort = isActive
+                            ? (sortDirection === "asc" ? "ascending" : "descending")
+                            : undefined;
+
+                        return (
+                            <th key={header.text} aria-sort={ariaSort}>
+                                <span>{header.text}</span>
+                                {header.key && (
+                                    <button
+                                        className={styles.sortButton}
+                                        type="button"
+                                        aria-label={`Sort by ${header.text}`}
+                                        onClick={() => handleSort(header.key)}
+                                    >
+                                        {isActive
+                                            ? (sortDirection === "asc"
+                                                ? <ChevronUp size={14} aria-hidden="true" />
+                                                : <ChevronDown size={14} aria-hidden="true" />)
+                                            : <ChevronsUpDown size={14} aria-hidden="true" />}
+                                    </button>
+                                )}
+                            </th>
+                        );
+                    })}
                 </tr>
             </thead>
             <tbody>
-                {exercises.map((exercise, index) => (
-                    <tr key={`${exercise.name}-${index}`}>
+                {sortedExercises.length === 0 && (
+                    <tr>
+                        <td colSpan={headers.length} className={styles.emptyState}>
+                            No exercises found
+                        </td>
+                    </tr>
+                )}
+                {sortedExercises.map(({ exercise, index }) => {
+                    const parentExercise = getExerciseById(allExercises, exercise.parent);
+
+                    return (
+                    <tr key={"exercise_" + exercise.id}>
                         <td>
                             {exercise.name}
                         </td>
+                            <td className={parentExercise ? "" : styles.exerciseParent}>
+                            {parentExercise?.name ?? "-"}
+                        </td>
                         <td>
-                            {capitalize(exercise.category)}
+                            <div className={styles.exerciseCategories}>
+                                {
+                                    exercise.categories.map(({ name, id }) => {
+                                        return (
+                                            <span className={styles.exerciseCategory}
+                                                key={"exercise_category_" + exercise.id + "_" + id}>
+                                                {capitalize(name)}
+                                            </span>
+                                        );
+                                    })
+                                }
+                            </div>
                         </td>
                         <td>
                             <div className={styles.exerciseMuscleGroups}>
                                 {
-                                    exercise.muscleGroups.map(group => {
+                                    exercise.muscleGroups.map(({ name, id }) => {
                                         return (
                                             <span className={styles.exerciseMuscleGroup}
-                                                key={"muscle_group_" + exercise.id + "_" + group.id}>
-                                                {capitalize(group.name)}
+                                                key={"muscle_group_" + exercise.id + "_" + id}>
+                                                {capitalize(name)}
                                             </span>
                                         );
                                     })
@@ -107,20 +146,25 @@ export default function ExerciseTable({ exercises, setExercises, setDeleteIndex,
                             <div className={styles.actions}>
                                 <button className={styles.editButton + " button-secondary"}
                                     type="button"
-                                    onClick={() => onEdit(index)}
+                                    disabled={exercise.isSystem}
+                                    title={exercise.isSystem ? "System exercises cannot be edited" : undefined}
+                                    onClick={() => onEdit(exercise.id)}
                                 >
                                     <Pencil size={16} />
                                 </button>
-                                <button className={styles.deleteButton+ " button-secondary"}
+                                <button className={styles.deleteButton + " button-secondary"}
                                     type="button"
-                                    onClick={() => setDeleteIndex(index)}
+                                    disabled={exercise.isSystem}
+                                    title={exercise.isSystem ? "System exercises cannot be deleted" : undefined}
+                                        onClick={() => setDeleteId(exercise.id)}
                                 >
                                     <Trash2 size={16} />
                                 </button>
                             </div>
                         </td>
                     </tr>
-                ))}
+                    );
+                })}
             </tbody>
         </table>
     )

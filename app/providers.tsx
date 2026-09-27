@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
-import { Exercise, MuscleGroup, Workout, PlannedSession, PerformedSession } from "../_types";
+import { Category, Exercise, MuscleGroup, Workout, PlannedSession, PerformedSession } from "../_types";
 
 type ExercisesContextType = {
     exercises: Exercise[];
@@ -21,6 +21,10 @@ type MuscleGroupContextType = {
     muscleGroups: MuscleGroup[];
     setMuscleGroups: Dispatch<SetStateAction<MuscleGroup[]>>;
 }
+type CategoriesContextType = {
+    categories: Category[];
+    setCategories: Dispatch<SetStateAction<Category[]>>;
+}
 type PerformedSessionContextType = {
     performedSessions: PerformedSession[];
     setPerformedSessions: Dispatch<SetStateAction<PerformedSession[]>>;
@@ -29,6 +33,7 @@ type PerformedSessionContextType = {
 const ExercisesContext = createContext<ExercisesContextType | undefined>(undefined);
 const WorkoutsContext = createContext<WorkoutsContextType | undefined>(undefined);
 const MuscleGroupsContext = createContext<MuscleGroupContextType | undefined>(undefined);
+const CategoriesContext = createContext<CategoriesContextType | undefined>(undefined);
 const PeformedSessionsContext = createContext<PerformedSessionContextType | undefined>(undefined);
 const PlannedSessionsContext = createContext<PlannedSessionContextType | undefined>(undefined);
 
@@ -37,7 +42,8 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
         {
             id: 1,
             name: "Push-ups",
-            category: "strength",
+            parent: null,
+            categories: [{ id: 1, name: "strength", parentId: null, isSystem: true }],
             muscleGroups: [
                 {
                     id: 1,
@@ -48,11 +54,13 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                 },
             ],
             target: "reps",
+            isSystem: true,
         },
         {
             id: 2,
             name: "Barbell squat",
-            category: "strength",
+            parent: null,
+            categories: [{ id: 1, name: "strength", parentId: null, isSystem: true }],
             muscleGroups: [
                 {
                     id: 6,
@@ -63,11 +71,13 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                 },
             ],
             target: "reps",
+            isSystem: true,
         },
         {
             id: 3,
             name: "Running",
-            category: "cardio",
+            parent: null,
+            categories: [{ id: 2, name: "cardio", parentId: null, isSystem: true }],
             muscleGroups: [
                 {
                     id: 6,
@@ -78,11 +88,13 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                 },
             ],
             target: "duration",
+            isSystem: true,
         },
         {
             id: 4,
             name: "Dumbbell row",
-            category: "strength",
+            parent: null,
+            categories: [{ id: 1, name: "strength", parentId: null, isSystem: true }],
             muscleGroups: [
                 {
                     id: 2,
@@ -93,11 +105,13 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                 },
             ],
             target: "reps",
+            isSystem: true,
         },
         {
             id: 5,
             name: "Plank",
-            category: "mobility",
+            parent: null,
+            categories: [{ id: 3, name: "mobility", parentId: null, isSystem: true }],
             muscleGroups: [
                 {
                     id: 5,
@@ -108,11 +122,13 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                 },
             ],
             target: "duration",
+            isSystem: true,
         },
         {
             id: 6,
             name: "Lunges",
-            category: "stretching",
+            parent: null,
+            categories: [{ id: 4, name: "stretching", parentId: null, isSystem: true }],
             muscleGroups: [
                 {
                     id: 6,
@@ -123,6 +139,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
                 },
             ],
             target: "reps",
+            isSystem: true,
         },
     ]);
 
@@ -406,6 +423,22 @@ export function MuscleGroupsProvider({ children }: { children: React.ReactNode }
     )
 }
 
+export function CategoriesProvider({ children }: { children: React.ReactNode }) {
+    const categoriesInitial: Category[] = [
+        { id: 1, name: "strength", parentId: null, isSystem: true },
+        { id: 2, name: "cardio", parentId: null, isSystem: true },
+        { id: 3, name: "mobility", parentId: null, isSystem: true },
+        { id: 4, name: "stretching", parentId: null, isSystem: true },
+    ];
+    const [categories, setCategories] = useState<Category[]>(categoriesInitial);
+
+    return (
+        <CategoriesContext.Provider value={{ categories, setCategories }}>
+            {children}
+        </CategoriesContext.Provider>
+    )
+}
+
 export function PeformedSessionsProvider({ children }: { children: React.ReactNode }) {
     const [performedSessions, setPerformedSessions] = useState<PerformedSession[]>([
         {
@@ -615,6 +648,14 @@ export function useMuscleGroupsContext() {
     const context = useContext(MuscleGroupsContext);
     if (!context) {
         throw new Error('useMuscleGroupsContext must be used within MuscleGroupsProvider')
+    }
+    return context;
+}
+
+export function useCategoriesContext() {
+    const context = useContext(CategoriesContext);
+    if (!context) {
+        throw new Error('useCategoriesContext must be used within CategoriesProvider')
     }
     return context;
 }

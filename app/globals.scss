@@ -23,11 +23,6 @@ main {
   border-bottom: 1px solid rgba(0, 0, 0, 0.4);
 }
 
-.page-title-section {
-  padding: 1rem 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-}
-
 header,
 footer {
   background-color: #e3e3e3;
@@ -82,12 +77,6 @@ nav {
     }
   }
 }
-
-.page-title {
-  font-size: 2rem;
-  font-weight: bold;
-}
-
 button {
     position: relative;
     padding: 0 0.625rem;
@@ -120,6 +109,15 @@ button {
       cursor: pointer;
     }
 
+    &:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+
+      &::after {
+        content: none;
+      }
+    }
+
     span {
         margin-right: 0.5rem;
         font-size: 1.5rem;
@@ -131,13 +129,22 @@ button {
     background-color: white;
     border: $border;
 }
+label {
+    display: grid;
+    gap: 0.25rem;
+    @include fontPrimary;
 
+    input, select {
+        width: 100%;
+    }
+}
 input, select {
     height: 36px;
     border: $border;
     border-radius: $borderRadius;
     @include fontPrimary;
     font-weight: 500;
+    background: $highlightBg;
 }
 input:not([type="checkbox"]),
 select {

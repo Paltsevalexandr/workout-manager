@@ -1,9 +1,10 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import TextField from './TextField';
+import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import styles from "./SearchableMultiSelect.module.scss";
+import { capitalize } from '@/lib';
 
 
 type Props<T extends { name: string, id: number }> = {
@@ -11,32 +12,76 @@ type Props<T extends { name: string, id: number }> = {
     name: string;
     label: string;
     selectedItems: T[];
+    queryMinLength?: number;
+    error?: string;
     setSelectedItems: Dispatch<SetStateAction<T[]>>
 }
+
+type Position = {
+    top: number;
+    left: number;
+    width: number;
+};
 
 export default function SearchableMultiSelect<T extends { name: string, id: number }>({
     items,
     name,
     label,
     selectedItems,
+    queryMinLength = 1,
+    error,
     setSelectedItems
 
 }: Props<T>) {
     const [query, setQuery] = useState<string>("");
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
+    const [mounted, setMounted] = useState<boolean>(false);
+    const [position, setPosition] = useState<Position | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
+    const fieldRef = useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLUListElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    useLayoutEffect(() => {
+        if (!isDropdownOpen || !fieldRef.current) return;
+
+        const gap = 1;
+        const rect = fieldRef.current.getBoundingClientRect();
+        const inset = rect.width * 0.015;
+        setPosition({
+            top: rect.bottom + gap,
+            left: rect.left + inset,
+            width: rect.width - inset * 2
+        });
+    }, [isDropdownOpen, selectedItems]);
 
     useEffect(() => {
         if (!isDropdownOpen) return;
 
         function handleOutsideClick(e: MouseEvent) {
-            if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+            const target = e.target as Node;
+            const insideField = containerRef.current?.contains(target);
+            const insideDropdown = dropdownRef.current?.contains(target);
+            if (!insideField && !insideDropdown) {
                 setIsDropdownOpen(false);
             }
         }
+        function handleScroll() {
+            setIsDropdownOpen(false);
+        }
 
         document.addEventListener('mousedown', handleOutsideClick);
-        return () => document.removeEventListener('mousedown', handleOutsideClick);
+        window.addEventListener('scroll', handleScroll, true);
+        window.addEventListener('resize', handleScroll);
+        return () => {
+            document.removeEventListener('mousedown', handleOutsideClick);
+            window.removeEventListener('scroll', handleScroll, true);
+            window.removeEventListener('resize', handleScroll);
+        };
     }, [isDropdownOpen]);
 
     function deleteItem(item: T) {
@@ -45,7 +90,8 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
 
     function handleSelectItem(item: T) {
         setSelectedItems(prev => [...prev, item]);
-        setIsDropdownOpen(true); // остаёмся открытыми, чтобы можно было выбрать ещё
+        setQuery("");
+        inputRef.current?.focus();
     }
 
     let filteredItems: T[] = [];
@@ -58,43 +104,45 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
         !selectedItems.find(selectedItem => selectedItem.id == item.id)
     );
 
-    const showDropdown = isDropdownOpen && query.length >= 3;
+    const showDropdown = isDropdownOpen && query.length >= queryMinLength;
 
     return (
         <div ref={containerRef}>
-            {
-                selectedItems.length > 0
-                && <ul className={styles.selectedItems}>
-                    {
-                        selectedItems.map(item => {
-                            return (
-                                <li className={styles.selectedItem}
-                                    key={name + "_selected_" + item.id}>
-                                    {item.name}
-                                    <button className={styles.selectedItemDelete}
-                                        type="button"
-                                        aria-label={`Remove ${item.name}`}
-                                        onClick={() => deleteItem(item)}>
-                                        <X size={16} />
-                                    </button>
-                                </li>
-                            )
-                        })
-                    }
-                </ul>
-            }
-            <div className={styles.multiSelect}>
-                <TextField
+            <label className={styles.label} htmlFor={name}>{label}</label>
+            <div ref={fieldRef} className={styles.multiSelect}>
+                {
+                    selectedItems.map(item => (
+                        <span className={styles.selectedItem} key={name + "_selected_" + item.id}>
+                            {capitalize(item.name)}
+                            <button
+                                className={styles.selectedItemDelete}
+                                type="button"
+                                aria-label={`Remove ${item.name}`}
+                                onClick={() => deleteItem(item)}
+                            >
+                                <X size={14} />
+                            </button>
+                        </span>
+                    ))
+                }
+                <input
+                    ref={inputRef}
+                    id={name}
                     name={name}
-                    label={label}
+                    className={styles.multiSelectInput}
                     value={query}
                     autoComplete="off"
                     onFocus={() => setIsDropdownOpen(true)}
-                    onChange={setQuery}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={"Search..."}
                 />
-                {
-                    showDropdown &&
-                    <ul className={styles.foundItems}>
+            </div>
+            {
+                mounted && showDropdown && position && createPortal(
+                    <ul
+                        ref={dropdownRef}
+                        className={styles.foundItems}
+                        style={{ top: position.top, left: position.left, width: position.width }}>
                         {
                             filteredItems.map(item => {
                                 return (
@@ -102,22 +150,24 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                                         className={styles.foundItem}>
                                         <button type="button"
                                             onClick={() => handleSelectItem(item)}>
-                                            {item.name}
+                                            {capitalize(item.name)}
                                         </button>
                                     </li>
                                 )
                             })
                         }
                         {
-                            !filteredItems.length && query.length >= 3 && (
+                            !filteredItems.length && query.length >= queryMinLength && (
                                 hasMatches
-                                    ? <li>All matches already added</li>
-                                    : <li>Not Found</li>
+                                    ? <li className={styles.foundItemEmpty}>All matches already added</li>
+                                    : <li className={styles.foundItemEmpty}>Not Found</li>
                             )
                         }
-                    </ul>
-                }
-            </div>
+                    </ul>,
+                    document.body
+                )
+            }
+            {error && <p className={styles.error}>{error}</p>}
         </div>
     )
 }

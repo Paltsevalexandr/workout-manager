@@ -57,7 +57,7 @@ $titleLineHeight: 1.1;
             background: transparent;
         }
         &::-webkit-scrollbar-thumb {
-            background-color: $secondaryBg;
+            background-color: $scrollBg;
             border-radius: $borderRadiusSmall;
         }
     }
