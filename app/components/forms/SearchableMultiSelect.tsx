@@ -91,7 +91,6 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
     function handleSelectItem(item: T) {
         setSelectedItems(prev => [...prev, item]);
         setQuery("");
-        setIsDropdownOpen(true);
         inputRef.current?.focus();
     }
 
@@ -109,7 +108,7 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
 
     return (
         <div ref={containerRef}>
-            <label className={styles.label}>{label}</label>
+            <label className={styles.label} htmlFor={name}>{label}</label>
             <div ref={fieldRef} className={styles.multiSelect}>
                 {
                     selectedItems.map(item => (
@@ -128,13 +127,14 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                 }
                 <input
                     ref={inputRef}
+                    id={name}
                     name={name}
                     className={styles.multiSelectInput}
                     value={query}
                     autoComplete="off"
                     onFocus={() => setIsDropdownOpen(true)}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder={selectedItems.length === 0 ? "Search..." : ""}
+                    placeholder={"Search..."}
                 />
             </div>
             {
@@ -171,199 +171,3 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
         </div>
     )
 }
-
-// "use client";
-
-// import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from 'react';
-// import { createPortal } from 'react-dom';
-// import TextField from './TextField';
-// import { X } from 'lucide-react';
-// import styles from "./SearchableMultiSelect.module.scss";
-
-
-// type Props<T extends { name: string, id: number }> = {
-//     items: T[];
-//     name: string;
-//     label: string;
-//     selectedItems: T[];
-//     queryMinLength?: number;
-//     error?: string;
-//     setSelectedItems: Dispatch<SetStateAction<T[]>>
-// }
-
-// type Position = {
-//     top: number;
-//     left: number;
-//     width: number;
-// };
-
-// export default function SearchableMultiSelect<T extends { name: string, id: number }>({
-//     items,
-//     name,
-//     label,
-//     selectedItems,
-//     queryMinLength = 1,
-//     error,
-//     setSelectedItems
-
-// }: Props<T>) {
-//     const [query, setQuery] = useState<string>("");
-//     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-//     const [mounted, setMounted] = useState<boolean>(false);
-//     const [position, setPosition] = useState<Position | null>(null);
-//     const containerRef = useRef<HTMLDivElement>(null);
-//     const fieldRef = useRef<HTMLDivElement>(null);
-//     const dropdownRef = useRef<HTMLUListElement>(null);
-
-//     useEffect(() => {
-//         setMounted(true);
-//     }, []);
-
-//     useLayoutEffect(() => {
-//         if (!isDropdownOpen || !fieldRef.current) return;
-
-//         const gap = 1;
-//         const rect = fieldRef.current.getBoundingClientRect();
-//         const inset = rect.width * 0.015; // same side gap as the old left:1.5%/width:97% CSS
-//         setPosition({
-//             top: rect.bottom + gap,
-//             left: rect.left + inset,
-//             width: rect.width - inset * 2
-//         });
-//     }, [isDropdownOpen, selectedItems]);
-
-//     useEffect(() => {
-//         if (!isDropdownOpen) return;
-
-//         function handleOutsideClick(e: MouseEvent) {
-//             const target = e.target as Node;
-//             const insideField = containerRef.current?.contains(target);
-//             const insideDropdown = dropdownRef.current?.contains(target);
-//             if (!insideField && !insideDropdown) {
-//                 setIsDropdownOpen(false);
-//             }
-//         }
-//         // close instead of repositioning on scroll, since the dropdown
-//         // now lives in a portal and doesn't track scroll on its own
-//         function handleScroll() {
-//             setIsDropdownOpen(false);
-//         }
-
-//         document.addEventListener('mousedown', handleOutsideClick);
-//         window.addEventListener('scroll', handleScroll, true);
-//         window.addEventListener('resize', handleScroll);
-//         return () => {
-//             document.removeEventListener('mousedown', handleOutsideClick);
-//             window.removeEventListener('scroll', handleScroll, true);
-//             window.removeEventListener('resize', handleScroll);
-//         };
-//     }, [isDropdownOpen]);
-
-//     function deleteItem(item: T) {
-//         setSelectedItems(prev => prev.filter(prevItem => prevItem.id != item.id));
-//     }
-
-//     function handleSelectItem(item: T) {
-//         setSelectedItems(prev => [...prev, item]);
-//         setIsDropdownOpen(true); // stays open so user can select more
-//     }
-
-//     let filteredItems: T[] = [];
-//     let hasMatches = false;
-//     const matches = items.filter(item =>
-//         item.name.toLowerCase().includes(query.toLowerCase())
-//     );
-//     hasMatches = matches.length > 0;
-//     filteredItems = matches.filter(item =>
-//         !selectedItems.find(selectedItem => selectedItem.id == item.id)
-//     );
-
-//     const showDropdown = isDropdownOpen && query.length >= queryMinLength;
-
-//     return (
-//         <div ref={containerRef}>
-//             {
-//                 selectedItems.length > 0
-//                 && <ul className={styles.selectedItems}>
-//                     {
-//                         selectedItems.map(item => {
-//                             return (
-//                                 <li className={styles.selectedItem}
-//                                     key={name + "_selected_" + item.id}>
-//                                     {item.name}
-//                                     <button className={styles.selectedItemDelete}
-//                                         type="button"
-//                                         aria-label={`Remove ${item.name}`}
-//                                         onClick={() => deleteItem(item)}>
-//                                         <X size={16} />
-//                                     </button>
-//                                 </li>
-//                             )
-//                         })
-//                     }
-//                 </ul>
-//             }
-//             <div ref={fieldRef} className={styles.multiSelect}>
-//                 <TextField
-//                     name={name}
-//                     label={label}
-//                     value={query}
-//                     autoComplete="off"
-//                     onFocus={() => setIsDropdownOpen(true)}
-//                     onChange={setQuery}
-//                 />
-//             </div>
-//             {/* {
-//                 <ul className={styles.selectedItems}>
-//                     {
-//                         selectedItems.map(item => {
-//                             return (
-//                                 <li className={styles.selectedItem}
-//                                     key={name + "_selected_" + item.id}>
-//                                     {item.name}
-//                                     <button className={styles.selectedItemDelete}
-//                                         type="button"
-//                                         aria-label={`Remove ${item.name}`}
-//                                         onClick={() => deleteItem(item)}>
-//                                         <X size={16} />
-//                                     </button>
-//                                 </li>
-//                             )
-//                         })
-//                     }
-//                 </ul>
-//             } */}
-//             {
-//                 mounted && showDropdown && position && createPortal(
-//                     <ul
-//                         ref={dropdownRef}
-//                         className={styles.foundItems}
-//                         style={{ top: position.top, left: position.left, width: position.width }}>
-//                         {
-//                             filteredItems.map(item => {
-//                                 return (
-//                                     <li key={name + "_filtered_" + item.id}
-//                                         className={styles.foundItem}>
-//                                         <button type="button"
-//                                             onClick={() => handleSelectItem(item)}>
-//                                             {item.name}
-//                                         </button>
-//                                     </li>
-//                                 )
-//                             })
-//                         }
-//                         {
-//                             !filteredItems.length && query.length >= queryMinLength && (
-//                                 hasMatches
-//                                     ? <li className={styles.foundItemEmpty}>All matches already added</li>
-//                                     : <li className={styles.foundItemEmpty}>Not Found</li>
-//                             )
-//                         }
-//                     </ul>,
-//                     document.body
-//                 )
-//             }
-//             {error && <p className={styles.error}>{error}</p>}
-//         </div>
-//     )
-// }

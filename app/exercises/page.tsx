@@ -15,6 +15,7 @@ import { generateID, getExerciseById } from "../../lib";
 import { Plus, Filter, ChevronDown, ChevronUp } from "lucide-react";
 import Dropdown from "../components/ui/Dropdown";
 import SearchableMultiSelect from "../components/forms/SearchableMultiSelect";
+import CheckboxField from "../components/forms/CheckboxField";
 
 type ExerciseDraft = {
     name: string;
@@ -37,13 +38,20 @@ function createEmptyExerciseDraft(): ExerciseDraft {
 type ModalMode = "none" | "create" | "edit";
 type Filters = {
     parents: Exercise[],
+    hasNoParent: boolean,
     muscleGroups: MuscleGroup[],
     categories: Category[]
 }
 
-function matchesFilter<T extends { id: number }>(itemIds: (number | null)[], filterItems: T[]): boolean {
+function matchesFilter<T extends { id: number }>(itemIds: number[], filterItems: T[]): boolean {
     if (filterItems.length === 0) return true;
     return filterItems.some(filterItem => itemIds.includes(filterItem.id));
+}
+
+function matchesParentFilter(exercise: Exercise, filters: Filters): boolean {
+    if (filters.parents.length === 0 && !filters.hasNoParent) return true;
+    if (exercise.parent === null) return filters.hasNoParent;
+    return filters.parents.some(parent => parent.id === exercise.parent);
 }
 
 export default function Page() {
@@ -59,7 +67,7 @@ export default function Page() {
     const [exerciseQuery, setExerciseQuery] = useState("");
     const [isDisplayFilters, setIsDisplayFilters] = useState(false);
     const [filters, setFilters] = useState<Filters>({
-        parents: [], muscleGroups: [], categories: []
+        parents: [], hasNoParent: false, muscleGroups: [], categories: []
     })
 
     const categoriesError = showValidation && exerciseDraft.categories.length === 0
@@ -159,9 +167,10 @@ export default function Page() {
         setDeleteId(null);
     }
 
-    const selectedFilters = Object.values(filters).reduce(
-        (sum, list) => sum + list.length, 0
-    );
+    const selectedFilters = filters.parents.length
+        + filters.categories.length
+        + filters.muscleGroups.length
+        + (filters.hasNoParent ? 1 : 0);
 
     let filteredExercises = exercises.filter(exercise => {
         return exercise.name.toLowerCase().includes(exerciseQuery.toLowerCase());
@@ -170,8 +179,18 @@ export default function Page() {
         filteredExercises = filteredExercises.filter(exercise =>
             matchesFilter(exercise.categories.map(c => c.id), filters.categories) &&
             matchesFilter(exercise.muscleGroups.map(m => m.id), filters.muscleGroups) &&
-            matchesFilter([exercise.parent], filters.parents)
+            matchesParentFilter(exercise, filters)
         );
+    }
+
+    function toggleNoParentFilter(hasNoParent: boolean) {
+        setFilters(prev => ({ ...prev, hasNoParent }));
+    }
+
+    function clearFilters() {
+        setFilters({
+            parents: [], hasNoParent: false, muscleGroups: [], categories: []
+        })
     }
 
 
@@ -202,6 +221,13 @@ export default function Page() {
                         </div>
                         <div className={styles.exercisesControlsActions}>
                             <button
+                                style={{ visibility: selectedFilters > 0 ? 'visible' : 'hidden' }}
+                                onClick={clearFilters}
+                                type="button"
+                            >
+                                Clear filters
+                            </button>
+                            <button
                                 className={"button-secondary"}
                                 type="button"
                                 onClick={() => setIsDisplayFilters(prev => !prev)}
@@ -227,18 +253,26 @@ export default function Page() {
                     </div>
                     <Dropdown isExpanded={isDisplayFilters}>
                         <div className={styles.exerciseFilters}>
-                            <SearchableMultiSelect
-                                label="Parents"
-                                name="parents"
-                                items={exercises}
-                                selectedItems={filters.parents}
-                                setSelectedItems={(update) =>
-                                    setFilters(prev => ({
-                                        ...prev,
-                                        parents: typeof update === "function" ? update(prev.parents) : update,
-                                    }))
-                                }
-                            />
+                            <div className={styles.parentsFilter}>
+                                <SearchableMultiSelect
+                                    label="Parents"
+                                    name="parents"
+                                    items={exercises}
+                                    selectedItems={filters.parents}
+                                    setSelectedItems={(update) =>
+                                        setFilters(prev => ({
+                                            ...prev,
+                                            parents: typeof update === "function" ? update(prev.parents) : update,
+                                        }))
+                                    }
+                                />
+                                <CheckboxField
+                                    label="No parent"
+                                    name="no-parent-filter"
+                                    checked={filters.hasNoParent}
+                                    onChange={toggleNoParentFilter}
+                                />
+                            </div>
                             <SearchableMultiSelect
                                 label="Categories"
                                 name="categories"
