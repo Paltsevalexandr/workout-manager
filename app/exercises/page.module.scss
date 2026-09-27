@@ -4,14 +4,25 @@ $maxWidth: 950px;
 .page {
     padding-top: 12px;
 }
+.exerciseFilters,
+.tableWrap,
+.exercisesControls {
+    max-width: $maxWidth;
+}
+.exerciseFilters {
+    margin-bottom: 0.5rem; 
+    padding: 0.75rem 1rem;
+    // @include flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.25rem;
+    background-color: $secondaryBg;
+    border-radius: $borderRadius;
+    border: $border;
+}
 .tableWrap {
     width: 100%;
-    max-width: $maxWidth;
     overflow-x: auto;
-}
-
-.addExerciseBtn {
-    margin-top: auto;
 }
 
 .exercises {
@@ -20,9 +31,14 @@ $maxWidth: 950px;
     table-layout: fixed;
 
     &Controls {
-        margin-bottom: 1rem;
-        max-width: $maxWidth;
+        margin-bottom: 0.75rem;
         @include flexSpaceBetween;
+
+        &Actions {
+            margin-top: auto;
+            @include flex;
+            gap: 0.5rem;
+        }
     }
     &Summary {
         margin-bottom: 0.5rem;

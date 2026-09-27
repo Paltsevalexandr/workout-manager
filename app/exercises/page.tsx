@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, type SubmitEvent } from "react"
-import { useExercisesContext } from '@/app/providers';
+import { useCategoriesContext, useExercisesContext, useMuscleGroupsContext } from '@/app/providers';
 import Content from "../components/layout/Content"
 import styles from "./page.module.scss"
 import { targets } from "../../_types"
@@ -12,7 +12,9 @@ import Modal from "../components/ui/Modal"
 import ModalForm from "../components/ui/ModalForm"
 import ConfirmDialog from "../components/ui/ConfirmDialog"
 import { generateID, getExerciseById } from "../../lib";
-import { Plus } from "lucide-react";
+import { Plus, Filter, ChevronDown, ChevronUp } from "lucide-react";
+import Dropdown from "../components/ui/Dropdown";
+import SearchableMultiSelect from "../components/forms/SearchableMultiSelect";
 
 type ExerciseDraft = {
     name: string;
@@ -33,9 +35,21 @@ function createEmptyExerciseDraft(): ExerciseDraft {
 }
 
 type ModalMode = "none" | "create" | "edit";
+type Filters = {
+    parents: Exercise[],
+    muscleGroups: MuscleGroup[],
+    categories: Category[]
+}
+
+function matchesFilter<T extends { id: number }>(itemIds: (number | null)[], filterItems: T[]): boolean {
+    if (filterItems.length === 0) return true;
+    return filterItems.some(filterItem => itemIds.includes(filterItem.id));
+}
 
 export default function Page() {
     const { exercises, setExercises } = useExercisesContext();
+    const { categories } = useCategoriesContext();
+    const { muscleGroups } = useMuscleGroupsContext();
 
     const [modalMode, setModalMode] = useState<ModalMode>("none");
     const [exerciseDraft, setExerciseDraft] = useState<ExerciseDraft>(createEmptyExerciseDraft);
@@ -43,6 +57,10 @@ export default function Page() {
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const [showValidation, setShowValidation] = useState(false);
     const [exerciseQuery, setExerciseQuery] = useState("");
+    const [isDisplayFilters, setIsDisplayFilters] = useState(false);
+    const [filters, setFilters] = useState<Filters>({
+        parents: [], muscleGroups: [], categories: []
+    })
 
     const categoriesError = showValidation && exerciseDraft.categories.length === 0
         ? "Select at least one category"
@@ -141,9 +159,21 @@ export default function Page() {
         setDeleteId(null);
     }
 
-    const filteredExercises = exercises.filter(exercise => {
+    const selectedFilters = Object.values(filters).reduce(
+        (sum, list) => sum + list.length, 0
+    );
+
+    let filteredExercises = exercises.filter(exercise => {
         return exercise.name.toLowerCase().includes(exerciseQuery.toLowerCase());
-    })
+    });
+    if (selectedFilters > 0) {
+        filteredExercises = filteredExercises.filter(exercise =>
+            matchesFilter(exercise.categories.map(c => c.id), filters.categories) &&
+            matchesFilter(exercise.muscleGroups.map(m => m.id), filters.muscleGroups) &&
+            matchesFilter([exercise.parent], filters.parents)
+        );
+    }
+
 
     return (
         <Content title="Exercises">
@@ -170,15 +200,72 @@ export default function Page() {
                                 }
                             </div>
                         </div>
-                        <button
-                            className={styles.addExerciseBtn + " button-secondary"}
-                            type="button"
-                            onClick={openCreateForm}
-                        >
-                            <Plus size={16} />
-                            Add Exercise
-                        </button>
+                        <div className={styles.exercisesControlsActions}>
+                            <button
+                                className={"button-secondary"}
+                                type="button"
+                                onClick={() => setIsDisplayFilters(prev => !prev)}
+                            >
+                                <Filter size={16} />
+
+                                {`Filters${selectedFilters > 0 ? ` (${selectedFilters})` : ""}`}
+                                {
+                                    isDisplayFilters
+                                        ? <ChevronUp size={16} />
+                                        : <ChevronDown size={16} />
+                                }
+                            </button>
+                            <button
+                                className={"button-secondary"}
+                                type="button"
+                                onClick={openCreateForm}
+                            >
+                                <Plus size={16} />
+                                Add Exercise
+                            </button>
+                        </div>
                     </div>
+                    <Dropdown isExpanded={isDisplayFilters}>
+                        <div className={styles.exerciseFilters}>
+                            <SearchableMultiSelect
+                                label="Parents"
+                                name="parents"
+                                items={exercises}
+                                selectedItems={filters.parents}
+                                setSelectedItems={(update) =>
+                                    setFilters(prev => ({
+                                        ...prev,
+                                        parents: typeof update === "function" ? update(prev.parents) : update,
+                                    }))
+                                }
+                            />
+                            <SearchableMultiSelect
+                                label="Categories"
+                                name="categories"
+                                items={categories}
+                                selectedItems={filters.categories}
+                                setSelectedItems={(update) =>
+                                    setFilters(prev => ({
+                                        ...prev,
+                                        categories: typeof update === "function" ? update(prev.categories) : update,
+                                    }))
+                                }
+                            />
+                            <SearchableMultiSelect
+                                label="Muscle Groups"
+                                name="muscle-groups"
+                                items={muscleGroups}
+                                selectedItems={filters.muscleGroups}
+                                setSelectedItems={(update) =>
+                                    setFilters(prev => ({
+                                        ...prev,
+                                        muscleGroups: typeof update === "function" ? update(prev.muscleGroups) : update,
+                                    }))
+                                }
+                            />
+                        </div>
+                    </Dropdown>
+
                     <div className={styles.tableWrap}>
                         <ExerciseTable
                             exercises={filteredExercises}

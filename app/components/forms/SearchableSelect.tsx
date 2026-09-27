@@ -52,9 +52,9 @@ export default function SearchableSelect<T extends { name: string, id: number }>
     useLayoutEffect(() => {
         if (!isDropdownOpen || !containerRef.current) return;
 
-        const gap = 4;
+        const gap = 1;
         const rect = containerRef.current.getBoundingClientRect();
-        const inset = rect.width * 0.015; // тот же зазор по бокам, что и раньше был через left:1.5%/width:97%
+        const inset = rect.width * 0.015; // same side gap as the old left:1.5%/width:97% CSS
         setPosition({
             top: rect.bottom + gap,
             left: rect.left + inset,

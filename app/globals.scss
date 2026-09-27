@@ -129,13 +129,22 @@ button {
     background-color: white;
     border: $border;
 }
+label {
+    display: grid;
+    gap: 0.25rem;
+    @include fontPrimary;
 
+    input, select {
+        width: 100%;
+    }
+}
 input, select {
     height: 36px;
     border: $border;
     border-radius: $borderRadius;
     @include fontPrimary;
     font-weight: 500;
+    background: $highlightBg;
 }
 input:not([type="checkbox"]),
 select {
