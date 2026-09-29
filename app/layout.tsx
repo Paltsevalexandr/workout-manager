@@ -4,7 +4,7 @@ import "./globals.css";
 import "./globals.scss";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
-import { CategoriesProvider, ExercisesProvider, MuscleGroupsProvider, PeformedSessionsProvider, PlannedSessionsProvider, WorkoutsProvider } from "./providers";
+import { AppProviders } from "./providers";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -35,19 +35,9 @@ export default function RootLayout({
             <body className="min-h-full flex flex-col">
                 <Header />
 
-                <WorkoutsProvider>
-                    <ExercisesProvider>
-                        <CategoriesProvider>
-                            <MuscleGroupsProvider>
-                                <PeformedSessionsProvider>
-                                    <PlannedSessionsProvider>
-                                        {children}
-                                    </PlannedSessionsProvider>
-                                </PeformedSessionsProvider>
-                            </MuscleGroupsProvider>
-                        </CategoriesProvider>
-                    </ExercisesProvider>
-                </WorkoutsProvider>
+                <AppProviders>
+                    {children}
+                </AppProviders>
 
                 <Footer />
             </body>
