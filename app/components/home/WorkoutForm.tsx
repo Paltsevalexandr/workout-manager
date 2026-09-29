@@ -12,6 +12,7 @@ type Props = {
     workoutName: string;
     exercises: Exercise[];
     workoutExercises: WorkoutExercise[];
+    workoutExercisesError?: string;
     handleCancelForm: () => void;
     handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
     setWorkoutName: (name: string) => void;
@@ -22,6 +23,7 @@ export default function WorkoutForm({
     editWorkout,
     exercises,
     workoutExercises,
+    workoutExercisesError,
     workoutName,
     handleCancelForm,
     handleSubmit,
@@ -101,6 +103,7 @@ export default function WorkoutForm({
                                     }
                                 </div>
                             </div>
+                            {workoutExercisesError && <p className={styles.error}>{workoutExercisesError}</p>}
                             <button
                                 className="button-secondary"
                                 type="button"

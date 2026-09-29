@@ -24,7 +24,7 @@ type Position = {
     right: number;
 };
 
-export default function KebabMenu({ items, triggerClass }: Props) {
+export default function KebabMenu({ items, triggerClass="" }: Props) {
     const [isOpen, setIsOpen] = useState<boolean>(false);
     const [mounted, setMounted] = useState<boolean>(false);
     const [position, setPosition] = useState<Position | null>(null);

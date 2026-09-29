@@ -202,7 +202,7 @@ export default function page({ }: Props) {
                             cancelForm={cancelNewSession}
                             setDate={setNewSessionDate}
                             toggleSessionFormSource={toggleSessionFormSource}
-                            handlePerformedExerciseChange={handleNewSessionExerciseChange}
+                            handleSessionExerciseChange={handleNewSessionExerciseChange}
                         />
                     }
                 </div>

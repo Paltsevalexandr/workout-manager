@@ -36,9 +36,9 @@ export {
     createSessionExercise,
     buildPerformedSession,
     buildPlannedSession,
+    getTargetLabel,
+    getLastSessionIcon,
+    getLastSessionClass,
+    getSessionRecency,
 } from "./session";
-
-export {
-    getStatusClass,
-} from "./components";
 

@@ -1,8 +1,8 @@
 import React from 'react';
-import { capitalize, formatRelativeDate, getExercisesLabel, getLastPlan } from '@/lib';
+import { capitalize, formatRelativeDate, getExercisesLabel, getLastPlan, getLastSessionClass, getLastSessionIcon } from '@/lib';
 import styles from "../../page.module.scss";
 import { Workout, PlannedSession, } from '@/_types';
-import { Clock, AlertCircle, CalendarCheck, Dumbbell, ListChecks } from 'lucide-react';
+import { CalendarCheck, ListChecks } from 'lucide-react';
 
 type Props = {
     selectedWorkout: Workout | null;
@@ -22,21 +22,8 @@ export default function WorkoutItem({
     savePerformedSession
 }: Props) {
     const lastRelativeDate: string = formatRelativeDate(lastSessionDate);
-    let iconSize = 16;
-    let lastSessionClass = "";
-    let lastSessionIcon = <Clock size={iconSize} />;
-    if (lastSessionDate != null) {
-        const week = 1000 * 60 * 60 * 24 * 7;
-
-        if (lastSessionDate + week < Date.now()) { // long time ago
-            lastSessionIcon = <AlertCircle size={iconSize} />
-            lastSessionClass = styles.workoutLastDateLongAgo;
-        }
-        else {
-            lastSessionIcon = <Dumbbell size={iconSize} />
-            lastSessionClass = styles.workoutLastDateRecent;
-        }
-    }
+    const lastSessionClass = getLastSessionClass(lastSessionDate, styles);
+    const lastSessionIcon = getLastSessionIcon(lastSessionDate);
     const exercisesAmount = workout.workoutExercises.length;
     const hasPlan: PlannedSession | null = getLastPlan(workout.id, plannedSessions);
     return (

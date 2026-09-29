@@ -4,6 +4,7 @@ type Props = {
     label: string;
     name: string;
     value: number;
+    min?: number;
     required?: boolean;
     autoFocus?: boolean;
     className?: string;
@@ -14,6 +15,7 @@ export default function NumberField({
     label,
     name,
     value,
+    min = 0,
     required = false,
     autoFocus = false,
     className = "",
@@ -26,10 +28,11 @@ export default function NumberField({
                 className={className}
                 type="number"
                 name={name}
+                min={min}
                 required={required}
                 autoFocus={autoFocus}
                 value={value}
-                onChange={(event) => onChange(Number(event.target.value))}
+                onChange={(event) => onChange(Math.max(min, Number(event.target.value)))}
             />
         </label>
     )

@@ -1,7 +1,7 @@
 import React from 'react';
 import { PerformedExercise, Workout } from '@/_types';
 import { useExercisesContext } from '@/app/providers';
-import { getExerciseById, getWorkoutExercise } from '@/lib';
+import { getExerciseById, getTargetLabel, getWorkoutExercise } from '@/lib';
 import styles from './ByDate.module.scss';
 
 
@@ -26,7 +26,8 @@ export default function PerformedExerciseItem({
         return null;
     }
     const { sets, target, weight, rest } = performedExercise;
-    const targetLabel = exercise.target === "duration" ? `${target}s` : `${target}`;
+    // const targetLabel = exercise.target === "duration" ? `${target}s` : `${target}`;
+    const targetLabel = `${target}${getTargetLabel(exercise)}`;
 
     return (
         <li className={styles.performedSessionExercise}>

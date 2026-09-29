@@ -45,7 +45,7 @@ export default function WorkoutsList({
                 return 1;
             }
 
-            return lastPrevSession.date - lastCurrentSession.date; // сравнение по дате в обычном порядке (см. ниже)
+            return lastPrevSession.date - lastCurrentSession.date;
         });
     }
 
@@ -63,9 +63,9 @@ export default function WorkoutsList({
             <div className={styles.sidebarListWrap}>
                 <ul className={styles.sidebarList}>
                     {
-                        sortWorkouts(workouts).map((workout, index) => {
+                        sortWorkouts(workouts).map((workout) => {
                             return <WorkoutItem
-                                key={`workout_item_${index}`}
+                                key={`workout_item_${workout.id}`}
                                 workout={workout}
                                 plannedSessions={plannedSessions}
                                 selectedWorkout={selectedWorkout}

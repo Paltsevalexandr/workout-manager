@@ -53,9 +53,7 @@
 }
 
 .error {
-    margin: 0.25rem 0 0;
-    color: $red;
-    font-size: 0.85rem;
+    @include error;
 }
 
 .foundItem {

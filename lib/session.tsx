@@ -5,8 +5,10 @@ import {
     Workout,
     PlannedSession,
     PerformedSession,
+    Exercise,
 } from "../_types";
 import { generateID, getLastSession, getLatestPerformedExercise, getPlannedExercise, getLastPlan, isPlannedSession, isPerformedSession } from "./data";
+import { Clock, AlertCircle, Dumbbell } from "lucide-react";
 
 export function getAllPerformedExercises(sessions: PerformedSession[]): PerformedExercise[] {
     return sessions.flatMap(session => session.performedExercises);
@@ -131,4 +133,37 @@ export function createSessionExercise(
         weight: sourceExercise?.weight ?? 0,
         rest: sourceExercise?.rest ?? 1,
     };
+}
+
+export function getTargetLabel(exercise: Exercise | undefined) {
+    return exercise?.target === "duration" ? "s" : "";
+}
+
+export type SessionRecency = "none" | "recent" | "longAgo";
+
+export function getSessionRecency(lastSessionDate: number | null): SessionRecency {
+    if (lastSessionDate == null) {
+        return "none";
+    }
+
+    const week = 1000 * 60 * 60 * 24 * 7;
+    return lastSessionDate + week < Date.now() ? "longAgo" : "recent";
+}
+
+export function getLastSessionIcon(lastSessionDate: number | null, size: number = 16) {
+    switch (getSessionRecency(lastSessionDate)) {
+        case "none": return <Clock size={size} />;
+        case "longAgo": return <AlertCircle size={size} />;
+        case "recent": return <Dumbbell size={size} />;
+    }
+}
+
+export function getLastSessionClass(
+    lastSessionDate: number | null, styles: { readonly [key: string]: string; }
+) {
+    switch (getSessionRecency(lastSessionDate)) {
+        case "none": return "";
+        case "longAgo": return styles.workoutLastDateLongAgo;
+        case "recent": return styles.workoutLastDateRecent;
+    }
 }
