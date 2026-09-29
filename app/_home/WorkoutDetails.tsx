@@ -1,8 +1,8 @@
-import styles from "../../page.module.scss";
+import styles from "../page.module.scss";
 import { Workout, PerformedSession, Exercise, Category, MuscleGroup } from '@/_types';
 import ExerciseList from './ExerciseList';
 import { formatRelativeDate, getExercisesLabel, getLastPlan, getLastSession, getLastSessionDate, getLastSessionClass, formatFullDate, capitalize } from '@/lib';
-import KebabMenu, { MenuItem } from '../ui/KebabMenu';
+import KebabMenu, { MenuItem } from '../components/ui/KebabMenu';
 import { ListChecks } from "lucide-react";
 import { useExercisesContext, usePlannedSessionsContext } from "@/app/providers";
 import { useEffect, useState } from "react";

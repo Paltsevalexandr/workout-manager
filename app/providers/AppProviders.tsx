@@ -4,7 +4,7 @@ import { WorkoutsProvider } from "./workouts";
 import { ExercisesProvider } from "./exercises";
 import { CategoriesProvider } from "./categories";
 import { MuscleGroupsProvider } from "./muscleGroups";
-import { PeformedSessionsProvider } from "./performedSessions";
+import { PerformedSessionsProvider } from "./performedSessions";
 import { PlannedSessionsProvider } from "./plannedSessions";
 
 export default function AppProviders({ children }: { children: React.ReactNode }) {
@@ -13,11 +13,11 @@ export default function AppProviders({ children }: { children: React.ReactNode }
             <ExercisesProvider>
                 <CategoriesProvider>
                     <MuscleGroupsProvider>
-                        <PeformedSessionsProvider>
+                        <PerformedSessionsProvider>
                             <PlannedSessionsProvider>
                                 {children}
                             </PlannedSessionsProvider>
-                        </PeformedSessionsProvider>
+                        </PerformedSessionsProvider>
                     </MuscleGroupsProvider>
                 </CategoriesProvider>
             </ExercisesProvider>

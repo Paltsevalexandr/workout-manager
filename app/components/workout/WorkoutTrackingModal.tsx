@@ -1,4 +1,4 @@
-import React, { type SubmitEvent } from 'react';
+import { type SubmitEvent } from 'react';
 import ModalForm from '../ui/ModalForm';
 import Modal from '../ui/Modal';
 import NumberField from '../forms/NumberField';

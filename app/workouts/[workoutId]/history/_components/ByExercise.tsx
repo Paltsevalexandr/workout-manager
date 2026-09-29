@@ -1,20 +1,17 @@
-import { Exercise, Workout, WorkoutExercise, PerformedSession, PerformedExercise, Target } from '@/_types';
-import SelectField from '@/app/components/forms/SelectField';
+import { PerformedSession, PerformedExercise } from '@/_types';
 import { useExercisesContext } from '@/app/providers';
 import { capitalize, formatFullDate, getTargetLabel } from '@/lib';
-import { useState } from 'react'
 import styles from './ByExercise.module.scss';
 import { TrackedWorkoutExercise } from '../page';
 
 type Props = {
-    workout: Workout;
     performedSessions: PerformedSession[];
     selectedExerciseId: number | null;
     workoutExercises: TrackedWorkoutExercise[];
 }
 
 export default function ByExercise({
-    workout, performedSessions,
+    performedSessions,
     selectedExerciseId, workoutExercises
 }: Props) {
     const { exercises } = useExercisesContext();
@@ -167,9 +164,6 @@ export default function ByExercise({
                     <div className={styles.rowRest}>Rest</div>
                 </li>
                 {sessionEntries.map(({ session, performedExercise }) => {
-                    // const targetLabel = exercise?.target === "duration"
-                    //     ? `${performedExercise.target}s`
-                    //     : `${performedExercise.target}`;
                     const targetLabel = `${performedExercise.target}${getTargetLabel(exercise)}`;
                     return (
                         <li className={styles.row} key={`${session.id}_${performedExercise.id}`}>

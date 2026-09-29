@@ -1,6 +1,5 @@
-import React from 'react';
 import { capitalize, formatRelativeDate, getExercisesLabel, getLastPlan, getLastSessionClass, getLastSessionIcon } from '@/lib';
-import styles from "../../page.module.scss";
+import styles from "../page.module.scss";
 import { Workout, PlannedSession, } from '@/_types';
 import { CalendarCheck, ListChecks } from 'lucide-react';
 

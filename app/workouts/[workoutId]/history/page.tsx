@@ -180,7 +180,6 @@ export default function page({ }: Props) {
                                             performedSessions={workoutPerformedSessions}
                                         />
                                         : <ByExercise
-                                            workout={workout}
                                             performedSessions={workoutPerformedSessions}
                                             selectedExerciseId={selectedExerciseId}
                                             workoutExercises={workoutExercises}

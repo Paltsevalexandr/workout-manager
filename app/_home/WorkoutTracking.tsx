@@ -1,14 +1,14 @@
 "use client";
 
-import React, {
+import {
     useState,
     type SubmitEvent
 } from 'react';
-import styles from "../../page.module.scss";
+import styles from "../page.module.scss";
 import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from '@/app/providers';
-import WorkoutsList from "./WorkoutList";
+import WorkoutsList from "./WorkoutsList";
 import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, Workout, WorkoutExercise, PlannedSession, PerformedSession } from '@/_types';
-import WorkoutTrackingModal from '../workout/WorkoutTrackingModal';
+import WorkoutTrackingModal from '../components/workout/WorkoutTrackingModal';
 import {
     buildPerformedSession,
     buildPlannedSession,
@@ -16,8 +16,8 @@ import {
 } from '@/lib';
 import WorkoutDetails from './WorkoutDetails';
 import WorkoutForm from './WorkoutForm';
-import { MenuItem } from '../ui/KebabMenu';
-import ConfirmDialog from '../ui/ConfirmDialog';
+import { MenuItem } from '../components/ui/KebabMenu';
+import ConfirmDialog from '../components/ui/ConfirmDialog';
 
 type Props = {}
 

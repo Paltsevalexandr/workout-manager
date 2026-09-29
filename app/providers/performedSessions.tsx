@@ -8,9 +8,9 @@ type PerformedSessionContextType = {
     setPerformedSessions: Dispatch<SetStateAction<PerformedSession[]>>;
 }
 
-const PeformedSessionsContext = createContext<PerformedSessionContextType | undefined>(undefined);
+const PerformedSessionsContext = createContext<PerformedSessionContextType | undefined>(undefined);
 
-export function PeformedSessionsProvider({ children }: { children: React.ReactNode }) {
+export function PerformedSessionsProvider({ children }: { children: React.ReactNode }) {
     const [performedSessions, setPerformedSessions] = useState<PerformedSession[]>([
         {
             date: 1788894136955 - (1000 * 60 * 60 * 24 * 14),
@@ -169,16 +169,16 @@ export function PeformedSessionsProvider({ children }: { children: React.ReactNo
     ]);
 
     return (
-        <PeformedSessionsContext.Provider value={{ performedSessions, setPerformedSessions }}>
+        <PerformedSessionsContext.Provider value={{ performedSessions, setPerformedSessions }}>
             {children}
-        </PeformedSessionsContext.Provider>
+        </PerformedSessionsContext.Provider>
     );
 }
 
 export function usePerformedSessionsContext() {
-    const context = useContext(PeformedSessionsContext);
+    const context = useContext(PerformedSessionsContext);
     if (!context) {
-        throw new Error('usePerformedSessionsContext must be used within PeformedSessionsProvider')
+        throw new Error('usePerformedSessionsContext must be used within PerformedSessionsProvider')
     }
     return context;
 }
