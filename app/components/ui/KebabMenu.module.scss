@@ -46,8 +46,7 @@
     height: 100%;
     @include flex;
     justify-content: center;
-    line-height: 1;
-    color: $primaryColor;
+    @include tightLineHeight;
     border: none;
     border-radius: 0;
     background-color: transparent;

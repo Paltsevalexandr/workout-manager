@@ -52,10 +52,10 @@ export default function WorkoutsList({
     return (
         <div className={styles.sidebar}>
             <div className={styles.sidebarHeader}>
-                <h2 className={styles.sidebarTitle}>
+                <h2>
                     Workouts
                 </h2>
-                <button className={styles.sidebarAddWorkoutBtn + " button-secondary"}
+                <button className={styles.sidebarAddWorkoutBtn}
                     onClick={openCreateWorkoutModal}>
                     <Plus size={16} /> Add Workout
                 </button>

@@ -131,7 +131,7 @@ export default function ByExercise({
                         showVolume &&
                         <li className={styles.exerciseStat} key="volume">
                             <p className={styles.exerciseStatFieldName}>Volume</p>
-                            <h2 className={styles.exerciseStatCurrent}>{volumeSummary.current}{getVolumeUnit()}</h2>
+                            <p className={styles.exerciseStatCurrent}>{volumeSummary.current}{getVolumeUnit()}</p>
                             {renderDelta(volumeSummary.current, volumeSummary.first, volumeSummary.best, volumeSummary.isAtBest, getVolumeUnit(), true)}
                         </li>
                     }
@@ -149,7 +149,7 @@ export default function ByExercise({
                                     <p className={styles.exerciseStatFieldName}>
                                         {capitalize(field == "target" ? (exercise?.target == "reps" ? "Reps" : "Duration") : field)}
                                     </p>
-                                    <h2 className={styles.exerciseStatCurrent}>{current}{getFieldUnit(field)}</h2>
+                                    <p className={styles.exerciseStatCurrent}>{current}{getFieldUnit(field)}</p>
                                     {renderDelta(current, first, best, isAtBest, getFieldUnit(field), higherIsBetter[field])}
                                 </li>
                             )

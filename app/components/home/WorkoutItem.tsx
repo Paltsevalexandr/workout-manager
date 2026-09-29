@@ -38,7 +38,7 @@ export default function WorkoutItem({
                         hasPlan && <CalendarCheck size={16} />
                     }
                 </div>
-                <button className={styles.workoutTrackProgressBtn + " button-secondary"}
+                <button className={styles.workoutTrackProgressBtn}
                     onClick={(e) => {
                         e.stopPropagation();
                         savePerformedSession();

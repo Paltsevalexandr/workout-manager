@@ -2,17 +2,22 @@ $primaryColor: rgb(34, 33, 33);
 $secondaryColor: rgb(100, 100, 100);
 
 $primaryBg: rgb(235, 235, 235);
-$highlightBg: rgb(255, 255, 255);
 $secondaryBg: rgb(247, 247, 247);
 $scrollBg: rgb(220, 220, 220);
+$highlightBg: rgb(255, 255, 255);
 $darkHighlightBg: rgba(212, 212, 212);
 $buttonOverlay: rgba(0, 0, 0, 0.15);
 
 $red: rgb(165, 0, 0);
 $green: darkgreen;
 
-$border: 1px solid rgba(0, 0, 0, 0.25);
-$borderLight: 1px solid rgba(0, 0, 0, 0.1);
+$titleFontSize: 1.5rem;
+$titleFontSizeSm: 1.25rem;
+$fontSizeSm: 0.8125rem;
+$fontSizeMd: 1rem;
+$titleLineHeight: 1.1;
+$border: 1px solid rgb(191, 191, 191);
+$borderLight: 1px solid rgb(230, 230, 230);
 $borderDark: #444;
 $borderRadiusBig: 12px;
 $borderRadius: 8px;
@@ -65,18 +70,48 @@ $footerHeight: 104px;
 }
 
 // fonts
-@mixin pageTitle {
+@mixin colorPrimary {
     color: $primaryColor;
+}
+@mixin colorSecondary {
+    color: $secondaryColor;
+}
+
+@mixin pageTitle {
+    @include colorPrimary;
     font-size: 2rem;
     font-weight: bold;
 }
+@mixin sectionTitle {
+    @include colorPrimary;
+    font-size: $titleFontSize;
+    line-height: $titleLineHeight;
+    font-weight: bold;
+}
+@mixin titleSmall {
+    @include colorPrimary;
+    font-size: $titleFontSizeSm;
+    font-weight: bold;
+}
 @mixin fontPrimary {
-    font-size: 1rem;
-    color: $primaryColor;
+    @include colorPrimary;
+    font-size: $fontSizeMd;
+}
+@mixin fontPrimaryBold {
+    @include fontPrimary;
+    font-weight: 500;
+}
+@mixin fontPrimarySm {
+    @include colorPrimary;
+    font-size: $fontSizeSm;
 }
 @mixin fontSecondary {
-    font-size: 0.8125rem;
-    color: $secondaryColor;
+    @include colorSecondary;
+    font-size: $fontSizeSm;
+}
+@mixin fontSecondaryBig {
+    @include fontSecondary;
+    font-size: $fontSizeMd;
 }
 @mixin headingSecondarySmall {
     @include fontSecondary;
@@ -84,12 +119,15 @@ $footerHeight: 104px;
 }
 @mixin headingSecondaryMed {
     @include headingSecondarySmall;
-    font-size: 1rem;
+    font-size: $fontSizeMd;
 }
 @mixin error {
     margin: 0.25rem 0 0;
     color: $red;
-    font-size: 1rem;
+    font-size: $fontSizeMd;
+}
+@mixin tightLineHeight {
+    line-height: 1;
 }
 // fonts end
 
@@ -105,9 +143,11 @@ $footerHeight: 104px;
 
 @mixin buttonSm {
     height: 28px;
+    @include fontPrimarySm;
+    border-radius: $borderRadiusSmall;
 }
 
-@mixin iconButton($size: 16px) {
+@mixin iconButton($size: 16px, $transparent: false) {
     padding: 0;
     width: $size;
     min-width: $size;
@@ -115,7 +155,12 @@ $footerHeight: 104px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    background-color: transparent;
+    background-color: $secondaryBg;
     border-radius: $borderRadiusSmall;
     color: $primaryColor;
+
+    @if $transparent {
+        background-color: transparent;
+        border: none;
+    }
 }

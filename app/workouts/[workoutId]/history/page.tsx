@@ -6,7 +6,7 @@ import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsCon
 import { useParams } from 'next/navigation';
 import { Exercise, PerformedExercise, SessionFormSource, Workout, WorkoutExercise, PerformedSession } from '@/_types';
 import { buildPerformedSession, generateID } from '@/lib';
-import WorkoutTrackingModal from '@/app/components/WorkoutTrackingModal';
+import WorkoutTrackingModal from '@/app/components/workout/WorkoutTrackingModal';
 
 import styles from "./page.module.scss";
 import ByDate from './_components/ByDate';
@@ -127,7 +127,7 @@ export default function page({ }: Props) {
                     <div className={styles.controls}>
                         {workout && workoutPerformedSessions.length > 0
                             && <button
-                                className={`${styles.controlsBtn} button-secondary ${viewMode == "byDate" ? styles.active : ""}`}
+                                className={`${styles.controlsBtn} ${viewMode == "byDate" ? styles.active : ""}`}
                                 onClick={() => setViewMode("byDate")}
                             >
                                 By Date
@@ -136,7 +136,7 @@ export default function page({ }: Props) {
                         {
                             workout && workoutPerformedSessions.length > 0
                             && <button
-                                className={`${styles.controlsBtn} button-secondary ${viewMode == "byExercise" ? styles.active : ""}`}
+                                className={`${styles.controlsBtn} ${viewMode == "byExercise" ? styles.active : ""}`}
                                 onClick={() => setViewMode("byExercise")}
                             >
                                 By Exercise
@@ -145,7 +145,7 @@ export default function page({ }: Props) {
                             workout && viewMode == "byDate"
                             &&
                             <button
-                                className={`${styles.controlsBtn} button-secondary ${styles.controlsBtnAddSession}`}
+                                className={`${styles.controlsBtn} ${styles.controlsBtnAddSession}`}
                                 onClick={createNewSession}
                             >
                                 Add Session

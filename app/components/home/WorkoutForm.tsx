@@ -105,7 +105,6 @@ export default function WorkoutForm({
                             </div>
                             {workoutExercisesError && <p className={styles.error}>{workoutExercisesError}</p>}
                             <button
-                                className="button-secondary"
                                 type="button"
                                 onClick={
                                     () => setWorkoutExercises([

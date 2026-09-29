@@ -4,7 +4,7 @@ import { generateID } from '@/lib';
 import styles from "./ByDate.module.scss";
 import PeformedSession from './PeformedSession';
 import ConfirmDialog from '@/app/components/ui/ConfirmDialog';
-import WorkoutTrackingModal from '@/app/components/WorkoutTrackingModal';
+import WorkoutTrackingModal from '@/app/components/workout/WorkoutTrackingModal';
 import { usePerformedSessionsContext } from '@/app/providers';
 
 type Props = {

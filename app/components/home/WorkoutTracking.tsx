@@ -8,7 +8,7 @@ import styles from "../../page.module.scss";
 import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from '@/app/providers';
 import WorkoutsList from "./WorkoutList";
 import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, Workout, WorkoutExercise, PlannedSession, PerformedSession } from '@/_types';
-import WorkoutTrackingModal from '../WorkoutTrackingModal';
+import WorkoutTrackingModal from '../workout/WorkoutTrackingModal';
 import {
     buildPerformedSession,
     buildPlannedSession,

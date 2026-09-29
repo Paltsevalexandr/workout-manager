@@ -1,8 +1,8 @@
 import React, { type SubmitEvent } from 'react';
-import ModalForm from './ui/ModalForm';
-import Modal from './ui/Modal';
-import NumberField from './forms/NumberField';
-import DateField from './forms/DateField';
+import ModalForm from '../ui/ModalForm';
+import Modal from '../ui/Modal';
+import NumberField from '../forms/NumberField';
+import DateField from '../forms/DateField';
 import { getExerciseById, getFormattedDate, getLastSession, getLastPlan, getSourceExercises } from '@/lib';
 import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, WorkoutExercise, PlannedSession, PerformedSession } from '@/_types';
 import styles from "./WorkoutTrackingModal.module.scss";
@@ -67,14 +67,14 @@ export default function WorkoutTrackingModal({
             <button onClick={() => toggleSessionFormSource("prevSession", workoutId)}
                 type="button"
                 className={
-                    `${styles.workoutSessionFormSource} ${sessionFormSource == "prevSession" ? styles.active : ""} button-secondary`
+                    `${styles.workoutSessionFormSource} ${sessionFormSource == "prevSession" ? styles.active : ""}`
                 }>
                 Last Session
             </button>
             <button onClick={() => toggleSessionFormSource("plan", workoutId)}
                 type="button"
                 className={
-                    `${styles.workoutSessionFormSource} ${sessionFormSource == "plan" ? styles.active : ""} button-secondary`
+                    `${styles.workoutSessionFormSource} ${sessionFormSource == "plan" ? styles.active : ""}`
                 }>
                 Plan
             </button>

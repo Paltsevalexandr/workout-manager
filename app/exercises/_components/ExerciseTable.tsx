@@ -144,7 +144,7 @@ export default function ExerciseTable({ exercises, allExercises, setDeleteId, on
                         </td>
                         <td className={styles.actionCell}>
                             <div className={styles.actions}>
-                                <button className={styles.editButton + " button-secondary"}
+                                <button className={styles.editButton}
                                     type="button"
                                     disabled={exercise.isSystem}
                                     title={exercise.isSystem ? "System exercises cannot be edited" : undefined}
@@ -152,7 +152,7 @@ export default function ExerciseTable({ exercises, allExercises, setDeleteId, on
                                 >
                                     <Pencil size={16} />
                                 </button>
-                                <button className={styles.deleteButton + " button-secondary"}
+                                <button className={styles.deleteButton}
                                     type="button"
                                     disabled={exercise.isSystem}
                                     title={exercise.isSystem ? "System exercises cannot be deleted" : undefined}
