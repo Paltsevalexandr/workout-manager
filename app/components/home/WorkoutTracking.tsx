@@ -42,11 +42,26 @@ export default function WorkoutTracking({ }: Props) {
     const [selectedWorkoutId, setSelectedWorkoutId] = useState<number | null>(null);
     const selectedWorkout = workouts.find(workout => workout.id === selectedWorkoutId) ?? null;
     const [sessionFormSource, setSessionFormSource] = useState<SessionFormSource>("none");
-    const [deleteWorkoutId, setDeletedWorkoutId] = useState<number | null>(null);
+    const [deleteWorkoutId, setDeleteWorkoutId] = useState<number | null>(null);
     const [archiveWorkoutId, setArchiveWorkoutId] = useState<number | null>(null);
+    const [showWorkoutValidation, setShowWorkoutValidation] = useState(false);
+
+    const isWorkoutExercisesValid = workoutExercises.length > 0
+        && workoutExercises.every((we) => we.exerciseId !== 0);
+    const workoutExercisesError = !showWorkoutValidation
+        ? undefined
+        : workoutExercises.length === 0
+            ? "Add at least one exercise"
+            : !isWorkoutExercisesValid
+                ? "Select an exercise for every row"
+                : undefined;
 
     function createWorkout(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (!isWorkoutExercisesValid) {
+            setShowWorkoutValidation(true);
+            return;
+        }
         // TODO - send to server new workout and get the ID
         const newWorkoutId = generateID(workouts);
         const allWorkoutExercises: WorkoutExercise[] = workouts.flatMap(w => w.workoutExercises);
@@ -70,11 +85,16 @@ export default function WorkoutTracking({ }: Props) {
             { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1 }
         ]);
         setWorkoutName("");
+        setShowWorkoutValidation(false);
         setIsCreateWorkoutFormOpen(false);
     }
 
     function editWorkout(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
+        if (!isWorkoutExercisesValid) {
+            setShowWorkoutValidation(true);
+            return;
+        }
         // TODO - send to server
         setWorkouts((currentWorkouts) => {
             return currentWorkouts.map((workout) => {
@@ -108,6 +128,7 @@ export default function WorkoutTracking({ }: Props) {
             { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1 }
         ]);
         setWorkoutName("");
+        setShowWorkoutValidation(false);
         setIsEditWorkoutFormOpen(false);
     }
 
@@ -116,6 +137,7 @@ export default function WorkoutTracking({ }: Props) {
             { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1 }
         ]);
         setWorkoutName("");
+        setShowWorkoutValidation(false);
         setIsCreateWorkoutFormOpen(false);
         setIsEditWorkoutFormOpen(false);
         setWorkoutToEdit(null);
@@ -225,7 +247,7 @@ export default function WorkoutTracking({ }: Props) {
             });
         }
     }
-    function handlePerformedExerciseChange(
+    function handleSessionExerciseChange(
         value: number,
         workoutExerciseId: number,
         field: keyof PerformedExercise | keyof PlannedExercise
@@ -284,12 +306,12 @@ export default function WorkoutTracking({ }: Props) {
         }
     }
     function deleteWorkout(workout: Workout | null) {
-        setDeletedWorkoutId(workout?.id ?? null);
+        setDeleteWorkoutId(workout?.id ?? null);
     }
     function handleDeleteWorkout() {
         setWorkouts(prev => prev.filter(w => w.id != deleteWorkoutId));
         setSelectedWorkoutId(null);
-        setDeletedWorkoutId(null);
+        setDeleteWorkoutId(null);
     }
     function archiveWorkout(workout: Workout | null) {
         setArchiveWorkoutId(workout?.id ?? null);
@@ -366,7 +388,7 @@ export default function WorkoutTracking({ }: Props) {
                             saveSession={saveSession}
                             cancelForm={cancelForm}
                             toggleSessionFormSource={toggleSessionFormSource}
-                            handlePerformedExerciseChange={handlePerformedExerciseChange}
+                            handleSessionExerciseChange={handleSessionExerciseChange}
                         />
                     }
                     {
@@ -379,6 +401,7 @@ export default function WorkoutTracking({ }: Props) {
                             setWorkoutName={setWorkoutName}
                             workoutExercises={workoutExercises}
                             setWorkoutExercises={setWorkoutExercises}
+                            workoutExercisesError={workoutExercisesError}
                         />
                     }
                     {
@@ -392,13 +415,14 @@ export default function WorkoutTracking({ }: Props) {
                             setWorkoutName={setWorkoutName}
                             workoutExercises={workoutExercises}
                             setWorkoutExercises={setWorkoutExercises}
+                            workoutExercisesError={workoutExercisesError}
                         />
                     }
                     {deleteWorkoutId !== null && (
                         <ConfirmDialog
                             title="Delete Workout?"
                             onConfirm={handleDeleteWorkout}
-                            onCancel={() => setDeletedWorkoutId(null)}
+                            onCancel={() => setDeleteWorkoutId(null)}
                         >
                             <p>Are you sure you want to delete "{workouts.find((workout) => workout.id === deleteWorkoutId)?.name}"?</p>
                         </ConfirmDialog>

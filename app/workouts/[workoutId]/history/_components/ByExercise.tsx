@@ -1,7 +1,7 @@
 import { Exercise, Workout, WorkoutExercise, PerformedSession, PerformedExercise, Target } from '@/_types';
 import SelectField from '@/app/components/forms/SelectField';
 import { useExercisesContext } from '@/app/providers';
-import { capitalize, formatFullDate } from '@/lib';
+import { capitalize, formatFullDate, getTargetLabel } from '@/lib';
 import { useState } from 'react'
 import styles from './ByExercise.module.scss';
 import { TrackedWorkoutExercise } from '../page';
@@ -167,9 +167,10 @@ export default function ByExercise({
                     <div className={styles.rowRest}>Rest</div>
                 </li>
                 {sessionEntries.map(({ session, performedExercise }) => {
-                    const targetLabel = exercise?.target === "duration"
-                        ? `${performedExercise.target}s`
-                        : `${performedExercise.target}`;
+                    // const targetLabel = exercise?.target === "duration"
+                    //     ? `${performedExercise.target}s`
+                    //     : `${performedExercise.target}`;
+                    const targetLabel = `${performedExercise.target}${getTargetLabel(exercise)}`;
                     return (
                         <li className={styles.row} key={`${session.id}_${performedExercise.id}`}>
                             <div className={styles.rowDate}>{formatFullDate(session.date)}</div>

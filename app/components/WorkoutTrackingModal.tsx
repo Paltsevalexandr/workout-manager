@@ -20,7 +20,7 @@ type Props = {
     cancelForm: () => void;
     toggleSessionFormSource?: (source: SessionFormSource, workoutId: number) => void;
     setDate: (date: number) => void;
-    handlePerformedExerciseChange: (value: number, workoutExerciseId: number, field: keyof PerformedExercise) => void;
+    handleSessionExerciseChange: (value: number, workoutExerciseId: number, field: keyof PerformedExercise) => void;
 }
 
 export default function WorkoutTrackingModal({
@@ -35,7 +35,7 @@ export default function WorkoutTrackingModal({
     cancelForm,
     setDate,
     toggleSessionFormSource = () => { },
-    handlePerformedExerciseChange
+    handleSessionExerciseChange
 }: Props) {
     const { exercises } = useExercisesContext();
     const { workouts } = useWorkoutsContext();
@@ -67,18 +67,14 @@ export default function WorkoutTrackingModal({
             <button onClick={() => toggleSessionFormSource("prevSession", workoutId)}
                 type="button"
                 className={
-                    `${styles.workoutSessionFormSource} 
-                ${sessionFormSource == "prevSession" ? styles.active : ""} 
-                button-secondary`
+                    `${styles.workoutSessionFormSource} ${sessionFormSource == "prevSession" ? styles.active : ""} button-secondary`
                 }>
                 Last Session
             </button>
             <button onClick={() => toggleSessionFormSource("plan", workoutId)}
                 type="button"
                 className={
-                    `${styles.workoutSessionFormSource} 
-                    ${sessionFormSource == "plan" ? styles.active : ""} 
-                    button-secondary`
+                    `${styles.workoutSessionFormSource} ${sessionFormSource == "plan" ? styles.active : ""} button-secondary`
                 }>
                 Plan
             </button>
@@ -136,25 +132,25 @@ export default function WorkoutTrackingModal({
                                             label=""
                                             name="workout-exercise-target"
                                             value={sessionExercise.target}
-                                            onChange={(value) => handlePerformedExerciseChange(value, sessionExercise.workoutExerciseId, "target")}
+                                            onChange={(value) => handleSessionExerciseChange(value, sessionExercise.workoutExerciseId, "target")}
                                         />
                                         <NumberField
                                             label=""
                                             name="workout-exercise-sets"
                                             value={sessionExercise.sets}
-                                            onChange={(value) => handlePerformedExerciseChange(value, sessionExercise.workoutExerciseId, "sets")}
+                                            onChange={(value) => handleSessionExerciseChange(value, sessionExercise.workoutExerciseId, "sets")}
                                         />
                                         <NumberField
                                             label=""
                                             name="workout-exercise-rest"
                                             value={sessionExercise.rest}
-                                            onChange={(value) => handlePerformedExerciseChange(value, sessionExercise.workoutExerciseId, "rest")}
+                                            onChange={(value) => handleSessionExerciseChange(value, sessionExercise.workoutExerciseId, "rest")}
                                         />
                                         <NumberField
                                             label=""
                                             name="workout-exercise-weight"
                                             value={sessionExercise.weight}
-                                            onChange={(value) => handlePerformedExerciseChange(value, sessionExercise.workoutExerciseId, "weight")}
+                                            onChange={(value) => handleSessionExerciseChange(value, sessionExercise.workoutExerciseId, "weight")}
                                         />
                                     </div>
                                 )

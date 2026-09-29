@@ -1,4 +1,4 @@
-@import "./variables";
+@use "./variables" as *;
 
 $columnPadding: 1rem;
 $titleFontSize: 1.5rem;
@@ -21,7 +21,7 @@ $titleLineHeight: 1.1;
 .workoutColumns {
     display: flex;
     justify-content: space-between;
-    background-color: rgb(250, 250, 250);
+    background-color: $secondaryBg;
     border: $border;
     border-radius: $borderRadiusBig;
 }
@@ -45,7 +45,7 @@ $titleLineHeight: 1.1;
     }
 
     &ListWrap {
-        max-height: calc(100vh - $headerHeight - $footerHeight - ($columnPadding * 2) - ($titleFontSize * $titleLineHeight));
+        max-height: calc(100vh - $headerHeight - $footerHeight - ($columnPadding * 2) - ($titleFontSize * $titleLineHeight) - 1rem);
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: thin;
@@ -78,7 +78,7 @@ $titleLineHeight: 1.1;
 
     &.active {
         background-color: $highlightBg;
-        border-color: #444;
+        border-color: $borderDark;
         cursor: auto;
     }
 
@@ -115,7 +115,6 @@ $titleLineHeight: 1.1;
         @include fontSecondary;
     }
     &LastDate {
-        display: flex;
         flex: 1;
         min-width: 0;
         @include metadata;
@@ -129,15 +128,6 @@ $titleLineHeight: 1.1;
     }
     &LastDateLongAgo{
         color: $red;
-    }
-    
-    &Controls {
-        margin-top: 0.5rem;
-
-        button {
-            height: 30px;
-            font-size: 0.875rem;
-        }
     }
 }
 .details {
@@ -159,9 +149,15 @@ $titleLineHeight: 1.1;
             flex-shrink: 0;
         }
     }
+    &SourceWrap {
+        @include flexSpaceBetween;
+    }
+    &SessionDate {
+        @include headingSecondaryMed;
+    }
     &SourceControls {
         margin-bottom: 1rem;
-        max-width: 950px;
+        // max-width: 950px;
         display: flex;
         align-items: center;
         gap: 10px;
@@ -205,22 +201,29 @@ $titleLineHeight: 1.1;
     &ExercisesHeader,
     &Exercise {
         padding: 0.5rem;
-        display: flex;
-        justify-content: space-between;
+        display: grid;
+        grid-template-columns: 1fr auto;
         border-bottom: $border;
 
+        &Info {
+            display: grid;
+            grid-template-columns: minmax(0, 140px) minmax(0, 120px);
+            gap: 1rem;
 
-        // &:first-child {
-        //     border-top: $border;
-        // }
-
+            &.hasWeight {
+                grid-template-columns: minmax(0, 120px) minmax(0, 140px) minmax(0, 120px);
+            }
+        }
         &Name {
             @include fontPrimary;
             font-weight: 500;
         }
-        &Volume {
+        &Volume,
+        &Weight,
+        &Rest {
             @include fontSecondary;
             font-size: 1rem;
+            text-align: center;
         }
     }
     &ExercisesHeader {

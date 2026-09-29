@@ -45,7 +45,7 @@ export default function WorkoutsList({
                 return 1;
             }
 
-            return lastPrevSession.date - lastCurrentSession.date; // сравнение по дате в обычном порядке (см. ниже)
+            return lastPrevSession.date - lastCurrentSession.date;
         });
     }
 

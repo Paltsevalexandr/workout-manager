@@ -26,7 +26,7 @@ export function getFormattedDate(timestamp: number) {
 export function formatFullDate(timestamp: number): string {
     const date = new Date(timestamp);
     return date.toLocaleDateString("en-US", {
-        month: "long",
+        month: "short",
         day: "numeric",
         year: "numeric",
     });

@@ -156,7 +156,7 @@ export default function ByDate({
                     saveSession={saveEditSession}
                     cancelForm={() => setEditSession(null)}
                     setDate={setEditSessionDate}
-                    handlePerformedExerciseChange={handlePerformedExerciseChange}
+                    handleSessionExerciseChange={handlePerformedExerciseChange}
                 />
             }
             {
@@ -172,7 +172,7 @@ export default function ByDate({
                     saveSession={saveDuplicateSession}
                     cancelForm={() => setDuplicateSession(null)}
                     setDate={setDuplicateSessionDate}
-                    handlePerformedExerciseChange={handleDuplicateExerciseChange}
+                    handleSessionExerciseChange={handleDuplicateExerciseChange}
                 />
             }
         </>

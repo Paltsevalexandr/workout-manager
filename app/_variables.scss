@@ -13,6 +13,7 @@ $green: darkgreen;
 
 $border: 1px solid rgba(0, 0, 0, 0.25);
 $borderLight: 1px solid rgba(0, 0, 0, 0.1);
+$borderDark: #444;
 $borderRadiusBig: 12px;
 $borderRadius: 8px;
 $borderRadiusSmall: 4px;
@@ -83,6 +84,11 @@ $footerHeight: 104px;
 }
 @mixin headingSecondaryMed {
     @include headingSecondarySmall;
+    font-size: 1rem;
+}
+@mixin error {
+    margin: 0.25rem 0 0;
+    color: $red;
     font-size: 1rem;
 }
 // fonts end
