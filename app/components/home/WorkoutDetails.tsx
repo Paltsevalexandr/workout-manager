@@ -1,17 +1,16 @@
 import styles from "../../page.module.scss";
-import { Workout, PerformedSession } from '@/_types';
+import { Workout, PerformedSession, Exercise, Category, MuscleGroup } from '@/_types';
 import ExerciseList from './ExerciseList';
-import { formatRelativeDate, getExercisesLabel, getLastPlan, getLastSession, getLastSessionDate, getLastSessionClass, formatFullDate } from '@/lib';
+import { formatRelativeDate, getExercisesLabel, getLastPlan, getLastSession, getLastSessionDate, getLastSessionClass, formatFullDate, capitalize } from '@/lib';
 import KebabMenu, { MenuItem } from '../ui/KebabMenu';
 import { ListChecks } from "lucide-react";
-import { usePlannedSessionsContext } from "@/app/providers";
+import { useExercisesContext, usePlannedSessionsContext } from "@/app/providers";
 import { useEffect, useState } from "react";
 
 type Props = {
     workout: Workout;
     performedSessions: PerformedSession[];
     savePerformedSession: (workoutId: number) => void;
-    createNextSessionPlan: (workoutId: number) => void;
     menuItems: MenuItem[];
 }
 
@@ -22,6 +21,7 @@ export default function WorkoutDetails({
     savePerformedSession,
 }: Props) {
     type ViewMode = "session" | "plan" | null;
+    const { exercises } = useExercisesContext();
     const { plannedSessions } = usePlannedSessionsContext();
     const lastSession = getLastSession(workout.id, performedSessions);
     const lastPlan = getLastPlan(workout.id, plannedSessions)
@@ -47,8 +47,39 @@ export default function WorkoutDetails({
                 : lastSession ? "session"
                     : lastPlan ? "plan"
                         : null;
-    const session = effectiveMode == "session" ? lastSession : effectiveMode == "plan" ? lastPlan : null;
 
+    const muscleGroupClassMap: Record<string, string> = {
+        "Legs": "muscleGroupLegs",
+        "Chest": "muscleGroupChest",
+        "Back": "muscleGroupBack",
+        "Shoulders": "muscleGroupShoulders",
+        "Arms": "muscleGroupArms",
+        "Core": "muscleGroupCore",
+    };
+    const categoryClassMap: Record<string, string> = {
+        "strength": "categoryStrength",
+        "cardio": "categoryCardio",
+        "mobility": "categoryMobility",
+        "stretching": "categoryStretching",
+        "stamina": "categoryStamina",
+        "recovery": "categoryRecovery",
+        "balance": "categoryBalance",
+        "plyometric": "categoryPlyometric",
+    };
+    function getWorkoutCategories(workout: Workout, exercises: Exercise[]): Category[] {
+        const ids = new Set(workout.workoutExercises.map(we => we.exerciseId)); // get Set of exercise ids in workout
+        const cats = exercises.filter(e => ids.has(e.id)).flatMap(e => e.categories); // get array of categories
+        return [...new Map(cats.map(cat => [cat.id, cat])).values()]; // remove id duplication
+    }
+
+    function getWorkoutMuscleGroups(workout: Workout, exercises: Exercise[]): MuscleGroup[] {
+        const ids = new Set(workout.workoutExercises.map(we => we.exerciseId));
+        const groups = exercises.filter(e => ids.has(e.id) && e.parent === null).flatMap(e => e.muscleGroups);
+        return [...new Map(groups.map(g => [g.id, g])).values()]; // remove id duplication
+    }
+    const session = effectiveMode == "session" ? lastSession : effectiveMode == "plan" ? lastPlan : null;
+    const workoutCategories = getWorkoutCategories(workout, exercises);
+    const workoutMuscleGroups = getWorkoutMuscleGroups(workout, exercises);
     return (
         <div className={styles.details}>
             <div className={styles.detailsHeader}>
@@ -63,6 +94,7 @@ export default function WorkoutDetails({
                         <span>&bull;</span>
                         <span>{getExercisesLabel(workout.workoutExercises.length)}</span>
                     </p>
+
                 </div>
                 <div className={styles.detailsHeaderRight}>
                     <button type="button"
@@ -73,6 +105,42 @@ export default function WorkoutDetails({
                     <div className={styles.detailsMenuWrap}>
                         <KebabMenu items={menuItems} />
                     </div>
+                </div>
+            </div>
+            <div className={styles.detailsWorkoutCategoriesWrap}>
+                <h3 className={styles.detailsWorkoutCategoriesTitle}>
+                    Categories
+                </h3>
+                <div className={styles.detailsWorkoutCategories}>
+                    {
+                        workoutCategories.map(cat => {
+                            const colorClass = styles[categoryClassMap[cat.name]] ?? "";
+                            return (
+                                <span key={`workout_cat_${cat.id}`}
+                                    className={`${styles.detailsWorkoutCategory} ${colorClass}`}>
+                                    {capitalize(cat.name)}
+                                </span>
+                            )
+                        })
+                    }
+                </div>
+            </div>
+            <div className={styles.detailsWorkoutMuscleGroupsWrap}>
+                <h3 className={styles.detailsWorkoutMuscleGroupsTitle}>
+                    Muscle Groups
+                </h3>
+                <div className={styles.detailsWorkoutMuscleGroups}>
+                    {
+                        workoutMuscleGroups.map(group => {
+                            const colorClass = styles[muscleGroupClassMap[group.name]] ?? "";
+                            return (
+                                <span key={`workout_muscle_group_${group.id}`}
+                                    className={`${styles.detailsWorkoutMuscleGroup} ${colorClass}`}>
+                                    {capitalize(group.name)}
+                                </span>
+                            )
+                        })
+                    }
                 </div>
             </div>
             <div className={styles.detailsSourceWrap}>

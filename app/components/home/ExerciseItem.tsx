@@ -32,7 +32,7 @@ export default function ExerciseItem({
                     <span className={styles.detailsExerciseWeight}>
                         {
                             sessionExercise
-                                ? sessionExercise.weight > 0 && `${sessionExercise.weight}kg`
+                                ? sessionExercise.weight > 0 ? `${sessionExercise.weight}kg` : "\u2014"
                                 : "\u2014"
                         }
                     </span>

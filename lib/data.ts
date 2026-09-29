@@ -22,8 +22,8 @@ export function getLastSessionDate(templateId: number, sessions: PerformedSessio
 }
 
 export function getLastSession(workoutId: number, sessions: PerformedSession[]): PerformedSession | null {
-    const templateSessions = sessions.filter(s => s.workoutId === workoutId);
-    return templateSessions.reduce((prev, current) => {
+    const workoutSessions = sessions.filter(s => s.workoutId === workoutId);
+    return workoutSessions.reduce((prev, current) => {
         if (!prev || current.date > prev.date) {
             return current;
         }
@@ -32,7 +32,13 @@ export function getLastSession(workoutId: number, sessions: PerformedSession[]):
 }
 
 export function getLastPlan(workoutId: number, plans: PlannedSession[]): PlannedSession | null {
-    return plans.find(plan => plan.workoutId === workoutId) ?? null;
+    const workoutSessions = plans.filter(p => p.workoutId === workoutId);
+    return workoutSessions.reduce((prev, current) => {
+        if (!prev || current.date > prev.date) {
+            return current;
+        }
+        return prev;
+    }, null as PlannedSession | null)
 }
 
 export function isPerformedSession(

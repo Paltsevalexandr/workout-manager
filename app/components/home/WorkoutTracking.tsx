@@ -28,7 +28,7 @@ export default function WorkoutTracking({ }: Props) {
     const [workoutToEdit, setWorkoutToEdit] = useState<Workout | null>(null);
     const [workoutName, setWorkoutName] = useState<string>("");
     const [workoutExercises, setWorkoutExercises] = useState<WorkoutExercise[]>([
-        { id: null, workoutTemplateId: null, exerciseId: exercises[0].id }
+        { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1 }
     ]);
     const [isCreateWorkoutFormOpen, setIsCreateWorkoutFormOpen] = useState(false);
     const [isEditWorkoutFormOpen, setIsEditWorkoutFormOpen] = useState(false);
@@ -370,7 +370,6 @@ export default function WorkoutTracking({ }: Props) {
                                 performedSessions={performedSessions}
                                 menuItems={getMenuItems(selectedWorkout)}
                                 savePerformedSession={savePerformedSession}
-                                createNextSessionPlan={() => createNextSessionPlan(selectedWorkout)}
                             />
                         }
                     </div>

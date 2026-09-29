@@ -429,6 +429,10 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
         { id: 2, name: "cardio", parentId: null, isSystem: true },
         { id: 3, name: "mobility", parentId: null, isSystem: true },
         { id: 4, name: "stretching", parentId: null, isSystem: true },
+        { id: 5, name: "stamina", parentId: null, isSystem: true },
+        { id: 6, name: "recovery", parentId: null, isSystem: true },
+        { id: 7, name: "balance", parentId: null, isSystem: true },
+        { id: 8, name: "plyometric", parentId: null, isSystem: true },
     ];
     const [categories, setCategories] = useState<Category[]>(categoriesInitial);
 

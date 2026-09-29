@@ -149,15 +149,61 @@ $titleLineHeight: 1.1;
             flex-shrink: 0;
         }
     }
+    &MenuWrap {
+        position: absolute;
+        top: -14px;
+        right: -14px;
+    }
+
+    &Title{
+        margin-bottom: 1rem;
+        @include sectionTitle;
+    }
+    
+    &MetaData {
+        @include metadata;
+        line-height: 1;
+    }
+    &MetaData,
+    &WorkoutCategoriesWrap {
+        margin-bottom: 0.625rem;
+    }
+    &WorkoutMuscleGroupsWrap {
+        margin-bottom: 1rem;
+    }
+    &WorkoutCategoriesWrap,
+    &WorkoutMuscleGroupsWrap {
+        display: grid;
+        grid-template-columns: 8rem auto;
+    }
+    &WorkoutCategories,
+    &WorkoutMuscleGroups {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    &WorkoutMuscleGroup,
+    &WorkoutCategory {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 5px;
+        background-color: rgba(0,0,0,0.1);
+        border-radius: $borderRadiusSmall;
+        @include fontSecondary;
+        line-height: 1
+    }
+    &WorkoutCategoriesTitle,
+    &WorkoutMuscleGroupsTitle {
+        @include headingSecondaryMed;
+    }
     &SourceWrap {
+        margin-bottom: 1rem;
         @include flexSpaceBetween;
     }
     &SessionDate {
         @include headingSecondaryMed;
     }
     &SourceControls {
-        margin-bottom: 1rem;
-        // max-width: 950px;
         display: flex;
         align-items: center;
         gap: 10px;
@@ -178,22 +224,6 @@ $titleLineHeight: 1.1;
     }
     &NoDataMsg {
         @include headingSecondaryMed;
-    }
-    &MenuWrap {
-        position: absolute;
-        top: -14px;
-        right: -14px;
-    }
-
-    &Title{
-        margin-bottom: 1rem;
-        @include sectionTitle;
-    }
-    
-    &MetaData {
-        margin-bottom: 1rem;
-        @include metadata;
-        line-height: 1;
     }
     &Exercises {
         @include column;
@@ -230,4 +260,62 @@ $titleLineHeight: 1.1;
         border-top: $border;
         background-color: $primaryBg;
     }
+}
+
+.muscleGroupLegs {
+    background-color: rgba(46, 125, 50, 0.15);
+    color: #2e7d32;
+}
+.muscleGroupChest {
+    background-color: rgba(25, 118, 210, 0.15);
+    color: #1976d2;
+}
+.muscleGroupBack {
+    background-color: rgba(123, 31, 162, 0.15);
+    color: #7b1fa2;
+}
+.muscleGroupShoulders {
+    background-color: rgba(245, 124, 0, 0.15);
+    color: #f57c00;
+}
+.muscleGroupArms {
+    background-color: rgba(216, 67, 21, 0.15);
+    color: #d84315;
+}
+.muscleGroupCore {
+    background-color: rgba(216, 27, 96, 0.15);
+    color: #d81b60;
+}
+
+.categoryStrength {
+    background-color: rgba(57, 73, 171, 0.15);
+    color: #3949ab;
+}
+.categoryCardio {
+    background-color: rgba(229, 57, 53, 0.15);
+    color: #e53935;
+}
+.categoryMobility {
+    background-color: rgba(0, 137, 123, 0.15);
+    color: #00897b;
+}
+.categoryStretching {
+    background-color: rgba(158, 157, 36, 0.15);
+    color: #9e9d24;
+}
+.categoryStamina {
+    background-color: rgba(0, 172, 193, 0.15);
+    color: #00acc1;
+}
+.categoryRecovery {
+    background-color: rgba(2, 136, 209, 0.15);
+    color: #0288d1;
+}
+.categoryBalance {
+    background-color: rgba(141, 110, 99, 0.15);
+    color: #8d6e63;
+}
+.categoryPlyometric {
+    background-color: rgba(251, 140, 0, 0.15);
+    color: #fb8c00;
 }
