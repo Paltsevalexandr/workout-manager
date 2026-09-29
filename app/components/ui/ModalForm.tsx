@@ -29,10 +29,10 @@ export default function ModalForm({
             }
             {children}
             <div className={styles.formActions}>
-                <button type="button" className="button-secondary" onClick={onCancel}>
+                <button type="button" onClick={onCancel}>
                     Cancel
                 </button>
-                <button type="submit">{submitText}</button>
+                <button type="submit" className="button-primary">{submitText}</button>
             </div>
         </form>
     )

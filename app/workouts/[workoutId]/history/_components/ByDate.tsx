@@ -2,9 +2,9 @@ import { useState, type SubmitEvent } from 'react'
 import { PerformedExercise, Workout, PerformedSession } from '@/_types';
 import { generateID } from '@/lib';
 import styles from "./ByDate.module.scss";
-import PeformedSession from './PeformedSession';
+import PerformedSessionItem from './PerformedSessionItem';
 import ConfirmDialog from '@/app/components/ui/ConfirmDialog';
-import WorkoutTrackingModal from '@/app/components/WorkoutTrackingModal';
+import WorkoutTrackingModal from '@/app/components/workout/WorkoutTrackingModal';
 import { usePerformedSessionsContext } from '@/app/providers';
 
 type Props = {
@@ -116,7 +116,7 @@ export default function ByDate({
                 {
                     sortedPerformedSessions.map(session => {
                         return (
-                            <PeformedSession
+                            <PerformedSessionItem
                                 key={`session_${session.id}`}
                                 workout={workout}
                                 session={session}

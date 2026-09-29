@@ -1,4 +1,4 @@
-@use "../../variables" as *;
+@use "../variables" as *;
 
 .newWorkout {
     color: $primaryColor;
@@ -29,13 +29,11 @@
         gap: 8px;
     }
     &DeleteExercise {
+        @include iconButton(36px);
         margin-left: auto;
-        min-width: 36px;
-        width: 36px;
-        height: 36px;
-        background-color: $red;
+        color: $red;
         border: $border;
-        border-radius: $borderRadius;
+        border-color: $red;
     }
 }
 

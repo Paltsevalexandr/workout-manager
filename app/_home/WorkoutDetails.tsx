@@ -1,8 +1,8 @@
-import styles from "../../page.module.scss";
+import styles from "../page.module.scss";
 import { Workout, PerformedSession, Exercise, Category, MuscleGroup } from '@/_types';
 import ExerciseList from './ExerciseList';
 import { formatRelativeDate, getExercisesLabel, getLastPlan, getLastSession, getLastSessionDate, getLastSessionClass, formatFullDate, capitalize } from '@/lib';
-import KebabMenu, { MenuItem } from '../ui/KebabMenu';
+import KebabMenu, { MenuItem } from '../components/ui/KebabMenu';
 import { ListChecks } from "lucide-react";
 import { useExercisesContext, usePlannedSessionsContext } from "@/app/providers";
 import { useEffect, useState } from "react";
@@ -98,7 +98,6 @@ export default function WorkoutDetails({
                 </div>
                 <div className={styles.detailsHeaderRight}>
                     <button type="button"
-                        className={`button-secondary`}
                         onClick={() => savePerformedSession(workout.id)}>
                         <ListChecks size={16} />Track Progress
                     </button>
@@ -143,44 +142,47 @@ export default function WorkoutDetails({
                     }
                 </div>
             </div>
-            <div className={styles.detailsSourceWrap}>
-                {
-                    (lastSession && lastPlan) ?
-                        <div className={styles.detailsSourceControls} role="group" aria-label="Data source">
-                            <button type="button"
-                                aria-pressed={effectiveMode == "session"}
-                                className={
-                                    `${styles.detailsSourceControlsBtn} button-secondary ${effectiveMode == "session" ? styles.active : ""}`
-                                }
-                                onClick={() => setViewMode("session")}
-                            >
-                                Last Session
-                            </button>
-                            <button type="button"
-                                aria-pressed={effectiveMode == "plan"}
-                                className={
-                                    `${styles.detailsSourceControlsBtn} button-secondary ${effectiveMode == "plan" ? styles.active : ""}`
-                                }
-                                onClick={() => setViewMode("plan")}
-                            >
-                                Plan
-                            </button>
-                        </div>
-                        :
-                        (lastSession || lastPlan)
-                            ?
-                            <p className={styles.detailsSource}>
-                                Showing: {lastSession ? "Last Session" : "Last Plan"}
-                            </p>
-                            : null
-                }
-                {
-                    session &&
-                    <p className={styles.detailsSessionDate}>
-                        {`${effectiveMode == "session" ? "Last session" : "Planned for"}: ${formatFullDate(session.date)}`}
-                    </p>
-                }
-            </div>
+            {
+                session &&
+                <div className={styles.detailsSourceWrap}>
+                    {
+                        (lastSession && lastPlan) ?
+                            <div className={styles.detailsSourceControls} role="group" aria-label="Data source">
+                                <button type="button"
+                                    aria-pressed={effectiveMode == "session"}
+                                    className={
+                                        `${styles.detailsSourceControlsBtn} ${effectiveMode == "session" ? styles.active : ""}`
+                                    }
+                                    onClick={() => setViewMode("session")}
+                                >
+                                    Last Session
+                                </button>
+                                <button type="button"
+                                    aria-pressed={effectiveMode == "plan"}
+                                    className={
+                                        `${styles.detailsSourceControlsBtn} ${effectiveMode == "plan" ? styles.active : ""}`
+                                    }
+                                    onClick={() => setViewMode("plan")}
+                                >
+                                    Plan
+                                </button>
+                            </div>
+                            :
+                            (lastSession || lastPlan)
+                                ?
+                                <p className={styles.detailsSource}>
+                                    Showing: {lastSession ? "Last Session" : "Last Plan"}
+                                </p>
+                                : null
+                    }
+                    {
+                        session &&
+                        <p className={styles.detailsSessionDate}>
+                            {`${effectiveMode == "session" ? "Last session" : "Planned for"}: ${formatFullDate(session.date)}`}
+                        </p>
+                    }
+                </div>
+            }
             {
                 session
                     ? <ExerciseList

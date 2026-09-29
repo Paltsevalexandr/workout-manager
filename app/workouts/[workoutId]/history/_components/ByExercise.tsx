@@ -1,20 +1,17 @@
-import { Exercise, Workout, WorkoutExercise, PerformedSession, PerformedExercise, Target } from '@/_types';
-import SelectField from '@/app/components/forms/SelectField';
+import { PerformedSession, PerformedExercise } from '@/_types';
 import { useExercisesContext } from '@/app/providers';
 import { capitalize, formatFullDate, getTargetLabel } from '@/lib';
-import { useState } from 'react'
 import styles from './ByExercise.module.scss';
 import { TrackedWorkoutExercise } from '../page';
 
 type Props = {
-    workout: Workout;
     performedSessions: PerformedSession[];
     selectedExerciseId: number | null;
     workoutExercises: TrackedWorkoutExercise[];
 }
 
 export default function ByExercise({
-    workout, performedSessions,
+    performedSessions,
     selectedExerciseId, workoutExercises
 }: Props) {
     const { exercises } = useExercisesContext();
@@ -131,7 +128,7 @@ export default function ByExercise({
                         showVolume &&
                         <li className={styles.exerciseStat} key="volume">
                             <p className={styles.exerciseStatFieldName}>Volume</p>
-                            <h2 className={styles.exerciseStatCurrent}>{volumeSummary.current}{getVolumeUnit()}</h2>
+                            <p className={styles.exerciseStatCurrent}>{volumeSummary.current}{getVolumeUnit()}</p>
                             {renderDelta(volumeSummary.current, volumeSummary.first, volumeSummary.best, volumeSummary.isAtBest, getVolumeUnit(), true)}
                         </li>
                     }
@@ -149,7 +146,7 @@ export default function ByExercise({
                                     <p className={styles.exerciseStatFieldName}>
                                         {capitalize(field == "target" ? (exercise?.target == "reps" ? "Reps" : "Duration") : field)}
                                     </p>
-                                    <h2 className={styles.exerciseStatCurrent}>{current}{getFieldUnit(field)}</h2>
+                                    <p className={styles.exerciseStatCurrent}>{current}{getFieldUnit(field)}</p>
                                     {renderDelta(current, first, best, isAtBest, getFieldUnit(field), higherIsBetter[field])}
                                 </li>
                             )
@@ -167,9 +164,6 @@ export default function ByExercise({
                     <div className={styles.rowRest}>Rest</div>
                 </li>
                 {sessionEntries.map(({ session, performedExercise }) => {
-                    // const targetLabel = exercise?.target === "duration"
-                    //     ? `${performedExercise.target}s`
-                    //     : `${performedExercise.target}`;
                     const targetLabel = `${performedExercise.target}${getTargetLabel(exercise)}`;
                     return (
                         <li className={styles.row} key={`${session.id}_${performedExercise.id}`}>

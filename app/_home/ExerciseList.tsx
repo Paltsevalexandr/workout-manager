@@ -1,5 +1,4 @@
-import React from 'react';
-import styles from "../../page.module.scss";
+import styles from "../page.module.scss";
 import { Workout, PerformedSession, PlannedSession } from '@/_types';
 import ExerciseItem from './ExerciseItem';
 import { getSourceExercises } from '@/lib';

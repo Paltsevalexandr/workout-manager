@@ -86,7 +86,7 @@ export default function KebabMenu({ items, triggerClass="" }: Props) {
 
     return (
         <div ref={wrapRef} className={styles.wrap}>
-            <button className={`button-secondary ${styles.trigger} ${triggerClass}`}
+            <button className={`${styles.trigger} ${triggerClass}`}
                 onClick={(e) => {
                     e.stopPropagation();
                     setIsOpen(prev => !prev);

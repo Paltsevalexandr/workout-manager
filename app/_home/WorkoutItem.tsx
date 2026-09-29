@@ -1,6 +1,5 @@
-import React from 'react';
 import { capitalize, formatRelativeDate, getExercisesLabel, getLastPlan, getLastSessionClass, getLastSessionIcon } from '@/lib';
-import styles from "../../page.module.scss";
+import styles from "../page.module.scss";
 import { Workout, PlannedSession, } from '@/_types';
 import { CalendarCheck, ListChecks } from 'lucide-react';
 
@@ -38,7 +37,7 @@ export default function WorkoutItem({
                         hasPlan && <CalendarCheck size={16} />
                     }
                 </div>
-                <button className={styles.workoutTrackProgressBtn + " button-secondary"}
+                <button className={styles.workoutTrackProgressBtn}
                     onClick={(e) => {
                         e.stopPropagation();
                         savePerformedSession();

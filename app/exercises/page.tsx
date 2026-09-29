@@ -221,6 +221,7 @@ export default function Page() {
                         </div>
                         <div className={styles.exercisesControlsActions}>
                             <button
+                                className="button-primary"
                                 style={{ visibility: selectedFilters > 0 ? 'visible' : 'hidden' }}
                                 onClick={clearFilters}
                                 type="button"
@@ -228,7 +229,6 @@ export default function Page() {
                                 Clear filters
                             </button>
                             <button
-                                className={"button-secondary"}
                                 type="button"
                                 onClick={() => setIsDisplayFilters(prev => !prev)}
                             >
@@ -242,7 +242,6 @@ export default function Page() {
                                 }
                             </button>
                             <button
-                                className={"button-secondary"}
                                 type="button"
                                 onClick={openCreateForm}
                             >

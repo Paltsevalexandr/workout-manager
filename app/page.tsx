@@ -1,4 +1,4 @@
-import WorkoutTracking from "./components/home/WorkoutTracking";
+import WorkoutTracking from "./_home/WorkoutTracking";
 
 
 export default function Home() {

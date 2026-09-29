@@ -15,8 +15,7 @@ body {
 }
 
 h2 {
-    font-size: 1.375rem;
-    font-weight: bold;
+    @include sectionTitle;
 }
 main {
   border-top: 1px solid rgba(0, 0, 0, 0.4);
@@ -88,8 +87,8 @@ button {
     justify-content: center;
     gap: 8px;
     @include fontPrimary;
-    color: white;
-    background-color: rgb(17, 17, 17);
+    background-color: $highlightBg;
+    border: $border;
     border-radius: $borderRadius;
     cursor: pointer;
 
@@ -124,10 +123,10 @@ button {
     }
 }
 
-.button-secondary {
-    color: $primaryColor;
-    background-color: white;
-    border: $border;
+.button-primary {
+    color: white;
+    background-color: rgb(17, 17, 17);
+    border: none;
 }
 label {
     display: grid;
@@ -142,8 +141,7 @@ input, select {
     height: 36px;
     border: $border;
     border-radius: $borderRadius;
-    @include fontPrimary;
-    font-weight: 500;
+    @include fontPrimaryBold;
     background: $highlightBg;
 }
 input:not([type="checkbox"]),

@@ -1,4 +1,3 @@
-import React from 'react';
 import { PerformedExercise, Workout } from '@/_types';
 import { useExercisesContext } from '@/app/providers';
 import { getExerciseById, getTargetLabel, getWorkoutExercise } from '@/lib';
@@ -26,7 +25,6 @@ export default function PerformedExerciseItem({
         return null;
     }
     const { sets, target, weight, rest } = performedExercise;
-    // const targetLabel = exercise.target === "duration" ? `${target}s` : `${target}`;
     const targetLabel = `${target}${getTargetLabel(exercise)}`;
 
     return (

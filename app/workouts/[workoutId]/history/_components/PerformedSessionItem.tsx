@@ -1,4 +1,3 @@
-import React from 'react';
 import { formatFullDate } from '@/lib';
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Dropdown from '@/app/components/ui/Dropdown';
@@ -17,7 +16,7 @@ type Props = {
     showDuplicateModal: () => void;
 }
 
-export default function PeformedSession({
+export default function PerformedSessionItem({
     workout,
     isExpanded,
     session,

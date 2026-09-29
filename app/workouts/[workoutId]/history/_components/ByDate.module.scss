@@ -38,9 +38,7 @@
         }
     }
     &DetailsBtn {
-        @include iconButton;
-        width: 24px;
-        height: 24px;
+        @include iconButton(24px);
     }
     &ExerciseList {
         margin-top: 0.75rem;

@@ -1,6 +1,5 @@
-import React from 'react'
 import { PerformedExercise, WorkoutExercise, PlannedExercise } from '@/_types';
-import styles from "../../page.module.scss";
+import styles from "../page.module.scss";
 import { useExercisesContext } from '@/app/providers';
 import { getTargetLabel } from '@/lib';
 
