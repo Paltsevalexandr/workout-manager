@@ -7,6 +7,7 @@ type Props = {
     className?: string;
     title?: string;
     submitText: string;
+    submitDisabled?: boolean;
     onSubmit: (event: SubmitEvent<HTMLFormElement>) => void;
     onCancel: () => void;
 }
@@ -17,6 +18,7 @@ export default function ModalForm({
     className,
     title,
     submitText,
+    submitDisabled = false,
     onSubmit,
     onCancel,
 }: Props) {
@@ -27,12 +29,14 @@ export default function ModalForm({
                     ? header
                     : <h2>{title}</h2>
             }
-            {children}
+            <div className={styles.formContent}>
+                {children}
+            </div>
             <div className={styles.formActions}>
                 <button type="button" onClick={onCancel}>
                     Cancel
                 </button>
-                <button type="submit" className="button-primary">{submitText}</button>
+                <button type="submit" className="button-primary" disabled={submitDisabled}>{submitText}</button>
             </div>
         </form>
     )

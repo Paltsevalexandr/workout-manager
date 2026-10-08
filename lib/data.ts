@@ -80,7 +80,7 @@ export function getWorkoutExercises(workout: Workout, exercises: Exercise[]): Ex
     return workout.workoutExercises
         .filter(we => !we.isDeleted)
         .map(we => getExerciseById(exercises, we.exerciseId))
-        .filter((exercise): exercise is Exercise => exercise !== undefined);
+        .filter((exercise): exercise is Exercise => exercise !== undefined && !exercise.isDeleted);
 }
 export function getPlannedExercise(plan: PlannedSession | null, workoutExerciseId: number): PlannedExercise | null {
     return plan?.plannedExercises.find(

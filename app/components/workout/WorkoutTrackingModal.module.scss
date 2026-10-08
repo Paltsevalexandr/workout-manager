@@ -20,6 +20,9 @@
             background: $darkHighlightBg;
         }
     }
+    &NoExercises {
+        @include headingSecondaryMed;
+    }
     &Exercises {
         &Header,
         &Item {

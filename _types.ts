@@ -15,6 +15,7 @@ export type Exercise = {
     muscleGroups: MuscleGroup[];
     target: Target;
     isSystem: boolean;
+    isDeleted: boolean;
 };
 
 export type MuscleGroup = {

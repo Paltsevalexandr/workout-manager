@@ -5,7 +5,7 @@ import styles from "./ByDate.module.scss";
 import PerformedSessionItem from './PerformedSessionItem';
 import ConfirmDialog from '@/app/components/ui/ConfirmDialog';
 import WorkoutTrackingModal from '@/app/components/workout/WorkoutTrackingModal';
-import { usePerformedSessionsContext } from '@/app/providers';
+import { useExercisesContext, usePerformedSessionsContext } from '@/app/providers';
 
 type Props = {
     workout: Workout;
@@ -17,6 +17,7 @@ export default function ByDate({
     performedSessions
 }: Props) {
     const [expandedSessions, setExpandedSessions] = useState<number[]>([1]);
+    const { exercises } = useExercisesContext();
     const { setPerformedSessions } = usePerformedSessionsContext();
     const [deleteSession, setDeleteSession] = useState<PerformedSession | null>(null);
     const [editSession, setEditSession] = useState<PerformedSession | null>(null);
@@ -68,7 +69,7 @@ export default function ByDate({
             date: Date.now(),
             // rows come from the workout's currently active exercises,
             // the picked session only supplies the values (sets/target/weight/rest)
-            performedExercises: createSessionExercises(workout, session, firstExerciseId) as PerformedExercise[],
+            performedExercises: createSessionExercises(workout, session, firstExerciseId, exercises) as PerformedExercise[],
         });
     }
 

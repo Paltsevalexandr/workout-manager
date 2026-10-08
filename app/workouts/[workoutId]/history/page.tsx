@@ -43,7 +43,7 @@ export default function page({ }: Props) {
     function createNewSession() {
         if (!workout) return;
 
-        const { session, sessionFormSource } = buildPerformedSession(workout, performedSessions, plannedSessions);
+        const { session, sessionFormSource } = buildPerformedSession(workout, performedSessions, plannedSessions, exercises);
         setSessionFormSource(sessionFormSource);
         setNewSession(session);
     }
@@ -52,7 +52,7 @@ export default function page({ }: Props) {
         if (!workout || source === sessionFormSource) return;
 
         const { session } = buildPerformedSession(
-            workout, performedSessions, plannedSessions,
+            workout, performedSessions, plannedSessions, exercises,
             { source, date: newSession?.date }
         );
         setSessionFormSource(source);

@@ -43,7 +43,7 @@ export default function ExerciseForm({
     const { muscleGroups } = useMuscleGroupsContext();
     const { categories } = useCategoriesContext();
     const { exercises } = useExercisesContext();
-    const parentOptions = exercises.filter((exercise) => exercise.id !== excludeExerciseId);
+    const parentOptions = exercises.filter((exercise) => exercise.id !== excludeExerciseId && !exercise.isDeleted);
 
     return (
         <>

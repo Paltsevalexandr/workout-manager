@@ -28,7 +28,7 @@ export default function WorkoutTracking({ }: Props) {
     const [workoutToEdit, setWorkoutToEdit] = useState<Workout | null>(null);
     const [workoutName, setWorkoutName] = useState<string>("");
     const [workoutExercises, setWorkoutExercises] = useState<WorkoutExercise[]>([
-        { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1, isDeleted: false }
+        { id: null, workoutTemplateId: null, exerciseId: exercises.find(e => !e.isDeleted)?.id ?? -1, isDeleted: false }
     ]);
     const [isCreateWorkoutFormOpen, setIsCreateWorkoutFormOpen] = useState(false);
     const [isEditWorkoutFormOpen, setIsEditWorkoutFormOpen] = useState(false);
@@ -47,10 +47,10 @@ export default function WorkoutTracking({ }: Props) {
     const [showWorkoutValidation, setShowWorkoutValidation] = useState(false);
 
     // exerciseId !== 0 catches an unselected row; the exercises.some(...) check catches
-    // a row whose exercise was deleted from the catalog (exerciseId no longer resolves)
-    // AFTER exercise was selected in the form
+    // a row whose exercise was deleted from the catalog (exerciseId no longer resolves,
+    // or now resolves to a soft-deleted exercise) AFTER exercise was selected in the form
     const isWorkoutExercisesValid = workoutExercises.length > 0
-        && workoutExercises.every((we) => we.exerciseId !== 0 && exercises.some(e => e.id === we.exerciseId));
+        && workoutExercises.every((we) => we.exerciseId !== 0 && exercises.some(e => e.id === we.exerciseId && !e.isDeleted));
     const workoutExercisesError = !showWorkoutValidation
         ? undefined
         : workoutExercises.length === 0
@@ -86,7 +86,7 @@ export default function WorkoutTracking({ }: Props) {
             },
         ]);
         setWorkoutExercises([
-            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1, isDeleted: false }
+            { id: null, workoutTemplateId: null, exerciseId: exercises.find(e => !e.isDeleted)?.id ?? -1, isDeleted: false }
         ]);
         setWorkoutName("");
         setShowWorkoutValidation(false);
@@ -138,7 +138,7 @@ export default function WorkoutTracking({ }: Props) {
         });
         setWorkoutToEdit(null);
         setWorkoutExercises([
-            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1, isDeleted: false }
+            { id: null, workoutTemplateId: null, exerciseId: exercises.find(e => !e.isDeleted)?.id ?? -1, isDeleted: false }
         ]);
         setWorkoutName("");
         setShowWorkoutValidation(false);
@@ -147,7 +147,7 @@ export default function WorkoutTracking({ }: Props) {
 
     function handleCancelForm() {
         setWorkoutExercises([
-            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1, isDeleted: false }
+            { id: null, workoutTemplateId: null, exerciseId: exercises.find(e => !e.isDeleted)?.id ?? -1, isDeleted: false }
         ]);
         setWorkoutName("");
         setShowWorkoutValidation(false);
@@ -178,7 +178,7 @@ export default function WorkoutTracking({ }: Props) {
     function createNextSessionPlan(workout: Workout | null) {
         if (!workout) return;
 
-        const { plan, sessionFormSource } = buildPlannedSession(workout, performedSessions, plannedSessions);
+        const { plan, sessionFormSource } = buildPlannedSession(workout, performedSessions, plannedSessions, exercises);
         setSessionFormSource(sessionFormSource);
         setPlannedSession(plan);
         setModalType("plan");
@@ -190,7 +190,7 @@ export default function WorkoutTracking({ }: Props) {
         if (!workout) return;
 
         const { session, sessionFormSource } = buildPerformedSession(
-            workout, performedSessions, plannedSessions,
+            workout, performedSessions, plannedSessions, exercises,
             { source, date: performedSession?.date }
         );
         setSessionFormSource(sessionFormSource);

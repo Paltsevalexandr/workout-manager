@@ -67,14 +67,12 @@ export default function WorkoutDetails({
         "plyometric": "categoryPlyometric",
     };
     function getWorkoutCategories(workout: Workout, exercises: Exercise[]): Category[] {
-        const ids = new Set(workout.workoutExercises.filter(we => !we.isDeleted).map(we => we.exerciseId)); // get Set of exercise ids in workout
-        const cats = exercises.filter(e => ids.has(e.id)).flatMap(e => e.categories); // get array of categories
+        const cats = getWorkoutExercises(workout, exercises).flatMap(e => e.categories);
         return [...new Map(cats.map(cat => [cat.id, cat])).values()]; // remove id duplication
     }
 
     function getWorkoutMuscleGroups(workout: Workout, exercises: Exercise[]): MuscleGroup[] {
-        const ids = new Set(workout.workoutExercises.filter(we => !we.isDeleted).map(we => we.exerciseId));
-        const groups = exercises.filter(e => ids.has(e.id) && e.parent === null).flatMap(e => e.muscleGroups);
+        const groups = getWorkoutExercises(workout, exercises).filter(e => e.parent === null).flatMap(e => e.muscleGroups);
         return [...new Map(groups.map(g => [g.id, g])).values()]; // remove id duplication
     }
     const session = effectiveMode == "session" ? lastSession : effectiveMode == "plan" ? lastPlan : null;
