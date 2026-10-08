@@ -24,6 +24,7 @@ export {
     getPlannedExercise,
     getMuscleGroupById,
     getWorkoutExercise,
+    getWorkoutExercises,
     getSourceExercises,
 
 } from "./data";

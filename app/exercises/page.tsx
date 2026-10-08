@@ -87,7 +87,7 @@ export default function Page() {
 
     function handleEdit(id: number) {
         const exercise = getExercise(id);
-        if (!exercise || exercise.isSystem) return;
+        if (!exercise || exercise.isSystem || exercise.isDeleted) return;
 
         setExerciseDraft({
             name: exercise.name,
@@ -128,6 +128,7 @@ export default function Page() {
                     muscleGroups: [...exerciseDraft.muscleGroups],
                     target: exerciseDraft.target,
                     isSystem: false,
+                    isDeleted: false,
                 },
             ]);
         } else if (modalMode === "edit" && editId !== null && getExercise(editId)?.isSystem === false) {
@@ -152,27 +153,34 @@ export default function Page() {
 
     function requestDelete(id: number) {
         const exercise = getExercise(id);
-        if (!exercise || exercise.isSystem) return;
+        if (!exercise || exercise.isSystem || exercise.isDeleted) return;
         setDeleteId(id);
     }
 
     function handleDelete() {
-        if (deleteId === null || getExercise(deleteId)?.isSystem) {
+        const exercise = deleteId !== null ? getExercise(deleteId) : undefined;
+        if (!exercise || exercise.isSystem) {
             return;
         }
 
+        // keep the exercise around (soft delete) so WorkoutExercise rows,
+        // and the history that references them, can still resolve its name
         setExercises((currentExercises) =>
-            currentExercises.filter((ex) => ex.id !== deleteId)
+            currentExercises.map((ex) =>
+                ex.id === deleteId ? { ...ex, isDeleted: true } : ex
+            )
         );
         setDeleteId(null);
     }
+
+    const activeExercises = exercises.filter(exercise => !exercise.isDeleted);
 
     const selectedFilters = filters.parents.length
         + filters.categories.length
         + filters.muscleGroups.length
         + (filters.hasNoParent ? 1 : 0);
 
-    let filteredExercises = exercises.filter(exercise => {
+    let filteredExercises = activeExercises.filter(exercise => {
         return exercise.name.toLowerCase().includes(exerciseQuery.toLowerCase());
     });
     if (selectedFilters > 0) {
@@ -201,7 +209,7 @@ export default function Page() {
                     <div className={styles.exercisesControls}>
                         <div>
                             <p className={styles.exercisesSummary}>
-                                {exercises.length} exercises in your library
+                                {activeExercises.length} exercises in your library
                             </p>
                             <div className={styles.exercisesSearchWrap}>
                                 <input
@@ -256,7 +264,7 @@ export default function Page() {
                                 <SearchableMultiSelect
                                     label="Parents"
                                     name="parents"
-                                    items={exercises}
+                                    items={activeExercises}
                                     selectedItems={filters.parents}
                                     setSelectedItems={(update) =>
                                         setFilters(prev => ({

@@ -1,4 +1,4 @@
-import { formatFullDate } from '@/lib';
+import { formatFullDate, getExercisesLabel } from '@/lib';
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Dropdown from '@/app/components/ui/Dropdown';
 import KebabMenu from '@/app/components/ui/KebabMenu';
@@ -26,7 +26,7 @@ export default function PerformedSessionItem({
     showDuplicateModal
 
 }: Props) {
-    const exercisesAmount = workout.workoutExercises.length;
+    const exercisesAmount = session.performedExercises.length;
     return (
         <li className={styles.performedSession + " " + (isExpanded ? "active" : "")}>
             <h3 className={styles.performedSessionHeader}
@@ -34,7 +34,7 @@ export default function PerformedSessionItem({
                 <span>{formatFullDate(session.date)}</span>
                 <div className={styles.performedSessionHeaderRight}>
                     <span>
-                        {`${workout.workoutExercises.length} exercise${exercisesAmount > 1 ? 's' : ''}`}
+                        {getExercisesLabel(exercisesAmount)}
                     </span>
                     {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                     <KebabMenu items={[

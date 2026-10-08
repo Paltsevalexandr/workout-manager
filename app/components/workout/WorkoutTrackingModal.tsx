@@ -82,6 +82,7 @@ export default function WorkoutTrackingModal({
     </div>;
 
     let sourceExercises: PerformedExercise[] | PlannedExercise[] = getSourceExercises(session);
+    const hasNoActiveExercises = sourceExercises.length === 0;
 
     return (
         <Modal
@@ -91,6 +92,7 @@ export default function WorkoutTrackingModal({
                 header={showSourceToggle ? header : undefined}
                 title={!showSourceToggle ? headerText : undefined}
                 submitText={submitText}
+                submitDisabled={hasNoActiveExercises}
                 onSubmit={saveSession}
                 onCancel={cancelForm}
             >
@@ -106,7 +108,14 @@ export default function WorkoutTrackingModal({
                     />
                 }
                 {
-                    session &&
+                    session && hasNoActiveExercises &&
+                    <p className={styles.workoutSessionFormNoExercises}>
+                        This workout has no active exercises right now — edit
+                        the workout to add one.
+                    </p>
+                }
+                {
+                    session && !hasNoActiveExercises &&
                     <div className={styles.workoutSessionFormExercises}>
                         <div className={styles.workoutSessionFormExercisesHeader}>
                             <div>Exercise Name</div>

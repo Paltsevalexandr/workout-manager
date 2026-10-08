@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
 import Modal from '../components/ui/Modal';
 import ModalForm from '../components/ui/ModalForm';
 import { Exercise, Workout, WorkoutExercise } from '../../_types';
@@ -31,6 +31,21 @@ export default function WorkoutForm({
     setWorkoutExercises,
 
 }: Props) {
+    const activeExercises = exercises.filter(exercise => !exercise.isDeleted);
+    const exercisesListRef = useRef<HTMLDivElement>(null);
+    const prevExercisesCountRef = useRef(workoutExercises.length);
+
+    useEffect(() => {
+        // only scroll down when a row was added (not on delete),
+        // so the newly added row is visible right away
+        if (workoutExercises.length > prevExercisesCountRef.current) {
+            const list = exercisesListRef.current;
+            if (list) {
+                list.scrollTop = list.scrollHeight;
+            }
+        }
+        prevExercisesCountRef.current = workoutExercises.length;
+    }, [workoutExercises.length]);
 
     function deleteExercise(index: number) {
         setWorkoutExercises((currentExercises) => {
@@ -48,7 +63,7 @@ export default function WorkoutForm({
                 onCancel={handleCancelForm}
             >
                 {
-                    exercises.length
+                    activeExercises.length
                         ? <>
                             <TextField
                                 autoFocus={true}
@@ -63,40 +78,47 @@ export default function WorkoutForm({
                                     <div>Exercise</div>
                                     <div>Delete</div>
                                 </div>
-                                <div className={styles.newWorkoutExercises}>
+                                <div className={styles.newWorkoutExercises} ref={exercisesListRef}>
                                     {
                                         workoutExercises.map((workoutExercise, index) => {
                                             const selectedExercise = exercises.find(
                                                 exercise => exercise.id === workoutExercise.exerciseId
                                             ) ?? null;
                                             return (
-                                                <div className={styles.newWorkoutExercise}
-                                                    key={"form_workout_exercise_" + index}>
-                                                    <SearchableSelect
-                                                        label=""
-                                                        name="workout_exercise[]"
-                                                        items={exercises}
-                                                        selectedItem={selectedExercise}
-                                                        setSelectedItem={(value) => setWorkoutExercises((currentWorkoutExercises) => {
-                                                            return currentWorkoutExercises.map((workoutExercise, i) => {
-                                                                if (i != index) {
-                                                                    return workoutExercise;
-                                                                }
-                                                                const nextExercise = typeof value === "function"
-                                                                    ? value(selectedExercise)
-                                                                    : value;
-                                                                return {
-                                                                    ...workoutExercise,
-                                                                    exerciseId: nextExercise?.id ?? 0
-                                                                };
-                                                            });
-                                                        })}
-                                                    />
-                                                    <button type="button"
-                                                        onClick={() => deleteExercise(index)}
-                                                        className={styles.newWorkoutDeleteExercise}>
-                                                        <Trash2 size={16} />
-                                                    </button>
+                                                <div key={"form_workout_exercise_" + index}>
+                                                    <div className={styles.newWorkoutExercise}>
+                                                        <SearchableSelect
+                                                            label=""
+                                                            name="workout_exercise[]"
+                                                            items={activeExercises}
+                                                            selectedItem={selectedExercise}
+                                                            setSelectedItem={(value) => setWorkoutExercises((currentWorkoutExercises) => {
+                                                                return currentWorkoutExercises.map((workoutExercise, i) => {
+                                                                    if (i != index) {
+                                                                        return workoutExercise;
+                                                                    }
+                                                                    const nextExercise = typeof value === "function"
+                                                                        ? value(selectedExercise)
+                                                                        : value;
+                                                                    return {
+                                                                        ...workoutExercise,
+                                                                        exerciseId: nextExercise?.id ?? 0
+                                                                    };
+                                                                });
+                                                            })}
+                                                        />
+                                                        <button type="button"
+                                                            onClick={() => deleteExercise(index)}
+                                                            className={styles.newWorkoutDeleteExercise}>
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    </div>
+                                                    {
+                                                        selectedExercise?.isDeleted &&
+                                                        <p className={styles.error}>
+                                                            This exercise was removed from the catalog — please choose another
+                                                        </p>
+                                                    }
                                                 </div>
                                             )
                                         })
@@ -112,7 +134,8 @@ export default function WorkoutForm({
                                         {
                                             id: null,
                                             workoutTemplateId: editWorkout?.id ?? null,
-                                            exerciseId: 0
+                                            exerciseId: 0,
+                                            isDeleted: false,
                                         }
                                     ])
                                 }

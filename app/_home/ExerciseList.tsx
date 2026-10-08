@@ -33,10 +33,10 @@ export default function ExerciseList({ workout, session }: Props) {
                 </div>
             </li>
             {
-                workout.workoutExercises.map((workoutExercise) => {
-                    return <ExerciseItem key={`workout_exercise_${workoutExercise.id}`}
-                        workoutExercise={workoutExercise}
-                        sourceExercises={sourceExercises}
+                sourceExercises.map((sourceExercise) => {
+                    return <ExerciseItem key={`source_exercise_${sourceExercise.id}`}
+                        workout={workout}
+                        sourceExercise={sourceExercise}
                         hasWeight={hasWeight}
                     />
                 })

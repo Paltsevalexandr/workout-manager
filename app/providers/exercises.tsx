@@ -28,6 +28,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             ],
             target: "reps",
             isSystem: true,
+            isDeleted: false,
         },
         {
             id: 2,
@@ -45,6 +46,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             ],
             target: "reps",
             isSystem: true,
+            isDeleted: false,
         },
         {
             id: 3,
@@ -62,6 +64,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             ],
             target: "duration",
             isSystem: true,
+            isDeleted: false,
         },
         {
             id: 4,
@@ -79,6 +82,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             ],
             target: "reps",
             isSystem: true,
+            isDeleted: false,
         },
         {
             id: 5,
@@ -96,6 +100,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             ],
             target: "duration",
             isSystem: true,
+            isDeleted: false,
         },
         {
             id: 6,
@@ -113,6 +118,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             ],
             target: "reps",
             isSystem: true,
+            isDeleted: false,
         },
     ]);
 

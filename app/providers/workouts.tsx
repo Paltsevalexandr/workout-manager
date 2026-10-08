@@ -18,31 +18,37 @@ export function WorkoutsProvider({ children }: { children: React.ReactNode }) {
                     id: 0,
                     workoutTemplateId: 1,
                     exerciseId: 4,
+                    isDeleted: false,
                 },
                 {
                     id: 1,
                     workoutTemplateId: 1,
-                    exerciseId: 5
+                    exerciseId: 5,
+                    isDeleted: false,
                 },
                 {
                     id: 2,
                     workoutTemplateId: 1,
-                    exerciseId: 2
+                    exerciseId: 2,
+                    isDeleted: false,
                 },
                 {
                     id: 3,
                     workoutTemplateId: 1,
-                    exerciseId: 1
+                    exerciseId: 1,
+                    isDeleted: false,
                 },
                 {
                     id: 4,
                     workoutTemplateId: 1,
-                    exerciseId: 3
+                    exerciseId: 3,
+                    isDeleted: false,
                 },
                 {
                     id: 5,
                     workoutTemplateId: 1,
-                    exerciseId: 6
+                    exerciseId: 6,
+                    isDeleted: false,
                 }
             ]
         },
@@ -51,22 +57,26 @@ export function WorkoutsProvider({ children }: { children: React.ReactNode }) {
                 {
                     id: 6,
                     workoutTemplateId: 2,
-                    exerciseId: 2
+                    exerciseId: 2,
+                    isDeleted: false,
                 },
                 {
                     id: 7,
                     workoutTemplateId: 2,
-                    exerciseId: 4
+                    exerciseId: 4,
+                    isDeleted: false,
                 },
                 {
                     id: 8,
                     workoutTemplateId: 2,
-                    exerciseId: 5
+                    exerciseId: 5,
+                    isDeleted: false,
                 },
                 {
                     id: 9,
                     workoutTemplateId: 2,
-                    exerciseId: 5
+                    exerciseId: 5,
+                    isDeleted: false,
                 }
             ]
         },
@@ -74,14 +84,16 @@ export function WorkoutsProvider({ children }: { children: React.ReactNode }) {
             id: 3, name: 'Workout 3', status: "active", workoutExercises: [{
                 id: 10,
                 workoutTemplateId: 3,
-                exerciseId: 2
+                exerciseId: 2,
+                isDeleted: false,
             },]
         },
         {
             id: 4, name: 'Workout 4', status: "active", workoutExercises: [{
                 id: 11,
                 workoutTemplateId: 4,
-                exerciseId: 2
+                exerciseId: 2,
+                isDeleted: false,
             },]
         },
         {
@@ -89,7 +101,8 @@ export function WorkoutsProvider({ children }: { children: React.ReactNode }) {
                 {
                     id: 12,
                     workoutTemplateId: 5,
-                    exerciseId: 2
+                    exerciseId: 2,
+                    isDeleted: false,
                 },
             ]
         }

@@ -1,7 +1,8 @@
-import { capitalize, formatRelativeDate, getExercisesLabel, getLastPlan, getLastSessionClass, getLastSessionIcon } from '@/lib';
+import { capitalize, formatRelativeDate, getExercisesLabel, getLastPlan, getLastSessionClass, getLastSessionIcon, getWorkoutExercises } from '@/lib';
 import styles from "../page.module.scss";
 import { Workout, PlannedSession, } from '@/_types';
 import { CalendarCheck, ListChecks } from 'lucide-react';
+import { useExercisesContext } from '@/app/providers';
 
 type Props = {
     selectedWorkout: Workout | null;
@@ -20,10 +21,11 @@ export default function WorkoutItem({
     setSelectedWorkout,
     savePerformedSession
 }: Props) {
+    const { exercises } = useExercisesContext();
     const lastRelativeDate: string = formatRelativeDate(lastSessionDate);
     const lastSessionClass = getLastSessionClass(lastSessionDate, styles);
     const lastSessionIcon = getLastSessionIcon(lastSessionDate);
-    const exercisesAmount = workout.workoutExercises.length;
+    const exercisesAmount = getWorkoutExercises(workout, exercises).length;
     const hasPlan: PlannedSession | null = getLastPlan(workout.id, plannedSessions);
     return (
         <li className={`${styles.workout} ${selectedWorkout?.id == workout.id ? styles.active : ""}`}

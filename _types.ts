@@ -15,6 +15,7 @@ export type Exercise = {
     muscleGroups: MuscleGroup[];
     target: Target;
     isSystem: boolean;
+    isDeleted: boolean;
 };
 
 export type MuscleGroup = {
@@ -45,6 +46,7 @@ export type WorkoutExercise = {
     id: number | null;
     workoutTemplateId: Workout['id'] | null;
     exerciseId: Exercise['id'];
+    isDeleted: boolean;
 }
 
 export type PerformedSession = {
