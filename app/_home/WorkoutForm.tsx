@@ -112,7 +112,8 @@ export default function WorkoutForm({
                                         {
                                             id: null,
                                             workoutTemplateId: editWorkout?.id ?? null,
-                                            exerciseId: 0
+                                            exerciseId: 0,
+                                            isDeleted: false,
                                         }
                                     ])
                                 }

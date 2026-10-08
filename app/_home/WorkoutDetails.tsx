@@ -1,7 +1,7 @@
 import styles from "../page.module.scss";
 import { Workout, PerformedSession, Exercise, Category, MuscleGroup } from '@/_types';
 import ExerciseList from './ExerciseList';
-import { formatRelativeDate, getExercisesLabel, getLastPlan, getLastSession, getLastSessionDate, getLastSessionClass, formatFullDate, capitalize } from '@/lib';
+import { formatRelativeDate, getExercisesLabel, getLastPlan, getLastSession, getLastSessionDate, getLastSessionClass, getWorkoutExercises, formatFullDate, capitalize } from '@/lib';
 import KebabMenu, { MenuItem } from '../components/ui/KebabMenu';
 import { ListChecks } from "lucide-react";
 import { useExercisesContext, usePlannedSessionsContext } from "@/app/providers";
@@ -67,17 +67,18 @@ export default function WorkoutDetails({
         "plyometric": "categoryPlyometric",
     };
     function getWorkoutCategories(workout: Workout, exercises: Exercise[]): Category[] {
-        const ids = new Set(workout.workoutExercises.map(we => we.exerciseId)); // get Set of exercise ids in workout
+        const ids = new Set(workout.workoutExercises.filter(we => !we.isDeleted).map(we => we.exerciseId)); // get Set of exercise ids in workout
         const cats = exercises.filter(e => ids.has(e.id)).flatMap(e => e.categories); // get array of categories
         return [...new Map(cats.map(cat => [cat.id, cat])).values()]; // remove id duplication
     }
 
     function getWorkoutMuscleGroups(workout: Workout, exercises: Exercise[]): MuscleGroup[] {
-        const ids = new Set(workout.workoutExercises.map(we => we.exerciseId));
+        const ids = new Set(workout.workoutExercises.filter(we => !we.isDeleted).map(we => we.exerciseId));
         const groups = exercises.filter(e => ids.has(e.id) && e.parent === null).flatMap(e => e.muscleGroups);
         return [...new Map(groups.map(g => [g.id, g])).values()]; // remove id duplication
     }
     const session = effectiveMode == "session" ? lastSession : effectiveMode == "plan" ? lastPlan : null;
+    const workoutExercisesList = getWorkoutExercises(workout, exercises);
     const workoutCategories = getWorkoutCategories(workout, exercises);
     const workoutMuscleGroups = getWorkoutMuscleGroups(workout, exercises);
     return (
@@ -92,7 +93,7 @@ export default function WorkoutDetails({
                             {lastRelativeDate}
                         </span>
                         <span>&bull;</span>
-                        <span>{getExercisesLabel(workout.workoutExercises.length)}</span>
+                        <span>{getExercisesLabel(workoutExercisesList.length)}</span>
                     </p>
 
                 </div>
@@ -104,6 +105,21 @@ export default function WorkoutDetails({
                     <div className={styles.detailsMenuWrap}>
                         <KebabMenu items={menuItems} />
                     </div>
+                </div>
+            </div>
+            <div className={styles.detailsWorkoutExercisesWrap}>
+                <h3 className={styles.detailsWorkoutExercisesTitle}>
+                    Exercises
+                </h3>
+                <div className={styles.detailsWorkoutExercises}>
+                    {
+                        workoutExercisesList.map((exercise, index) => (
+                            <span key={`workout_exercise_${exercise.id}_${index}`}
+                                className={styles.detailsWorkoutExercise}>
+                                {exercise.name}
+                            </span>
+                        ))
+                    }
                 </div>
             </div>
             <div className={styles.detailsWorkoutCategoriesWrap}>

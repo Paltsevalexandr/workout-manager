@@ -1,22 +1,23 @@
-import { PerformedExercise, WorkoutExercise, PlannedExercise } from '@/_types';
+import { PerformedExercise, PlannedExercise, Workout } from '@/_types';
 import styles from "../page.module.scss";
 import { useExercisesContext } from '@/app/providers';
-import { getTargetLabel } from '@/lib';
+import { getExerciseById, getTargetLabel, getWorkoutExercise } from '@/lib';
 
 type Props = {
-    workoutExercise: WorkoutExercise;
+    workout: Workout;
+    sourceExercise: PerformedExercise | PlannedExercise;
     hasWeight: boolean;
-    sourceExercises: (PlannedExercise | PerformedExercise)[];
 }
 
 export default function ExerciseItem({
-    workoutExercise, hasWeight, sourceExercises
+    workout, sourceExercise, hasWeight
 }: Props) {
     const { exercises } = useExercisesContext();
-    let exerciseData = exercises.find(ex => ex.id == workoutExercise.exerciseId);
-    let sessionExercise = sourceExercises.find(
-        (exercise) => workoutExercise.id == exercise.workoutExerciseId
-    );
+    const workoutExercise = getWorkoutExercise(sourceExercise.workoutExerciseId, workout);
+    if (!workoutExercise) {
+        return null;
+    }
+    const exerciseData = getExerciseById(exercises, workoutExercise.exerciseId);
     if (!exerciseData) {
         return null;
     }
@@ -29,26 +30,14 @@ export default function ExerciseItem({
                 {
                     hasWeight &&
                     <span className={styles.detailsExerciseWeight}>
-                        {
-                            sessionExercise
-                                ? sessionExercise.weight > 0 ? `${sessionExercise.weight}kg` : "\u2014"
-                                : "\u2014"
-                        }
+                        {sourceExercise.weight > 0 ? `${sourceExercise.weight}kg` : "—"}
                     </span>
                 }
                 <span className={styles.detailsExerciseVolume}>
-                    {
-                        sessionExercise
-                            ? `${sessionExercise.sets}\u00D7${sessionExercise.target}${getTargetLabel(exerciseData)}`
-                            : "\u2014"
-                    }
+                    {`${sourceExercise.sets}×${sourceExercise.target}${getTargetLabel(exerciseData)}`}
                 </span>
                 <span className={styles.detailsExerciseRest}>
-                    {
-                        sessionExercise
-                            ? `${sessionExercise.rest}s`
-                            : "\u2014"
-                    }
+                    {`${sourceExercise.rest}s`}
                 </span>
             </div>
         </li>

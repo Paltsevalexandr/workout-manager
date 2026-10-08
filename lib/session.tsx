@@ -39,7 +39,7 @@ export function createSessionExercises(
     const sessionExercises: (PerformedExercise | PlannedExercise)[] = [];
 
     workout.workoutExercises.forEach((workoutExercise, index) => {
-        if (workoutExercise.id !== null) {
+        if (workoutExercise.id !== null && !workoutExercise.isDeleted) {
             sessionExercises.push(
                 createSessionExercise(sourceSession, newSessionExerciseId + index, workoutExercise.id)
             );

@@ -28,7 +28,7 @@ export default function WorkoutTracking({ }: Props) {
     const [workoutToEdit, setWorkoutToEdit] = useState<Workout | null>(null);
     const [workoutName, setWorkoutName] = useState<string>("");
     const [workoutExercises, setWorkoutExercises] = useState<WorkoutExercise[]>([
-        { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1 }
+        { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1, isDeleted: false }
     ]);
     const [isCreateWorkoutFormOpen, setIsCreateWorkoutFormOpen] = useState(false);
     const [isEditWorkoutFormOpen, setIsEditWorkoutFormOpen] = useState(false);
@@ -46,8 +46,11 @@ export default function WorkoutTracking({ }: Props) {
     const [archiveWorkoutId, setArchiveWorkoutId] = useState<number | null>(null);
     const [showWorkoutValidation, setShowWorkoutValidation] = useState(false);
 
+    // exerciseId !== 0 catches an unselected row; the exercises.some(...) check catches
+    // a row whose exercise was deleted from the catalog (exerciseId no longer resolves)
+    // AFTER exercise was selected in the form
     const isWorkoutExercisesValid = workoutExercises.length > 0
-        && workoutExercises.every((we) => we.exerciseId !== 0);
+        && workoutExercises.every((we) => we.exerciseId !== 0 && exercises.some(e => e.id === we.exerciseId));
     const workoutExercisesError = !showWorkoutValidation
         ? undefined
         : workoutExercises.length === 0
@@ -70,6 +73,7 @@ export default function WorkoutTracking({ }: Props) {
             id: generateID(allWorkoutExercises) + i,
             workoutTemplateId: newWorkoutId,
             exerciseId: we.exerciseId,
+            isDeleted: false,
         }));
 
         setWorkouts((currentWorkouts) => [
@@ -82,7 +86,7 @@ export default function WorkoutTracking({ }: Props) {
             },
         ]);
         setWorkoutExercises([
-            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1 }
+            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1, isDeleted: false }
         ]);
         setWorkoutName("");
         setShowWorkoutValidation(false);
@@ -104,28 +108,37 @@ export default function WorkoutTracking({ }: Props) {
 
                 const allWorkoutExercises: WorkoutExercise[] = currentWorkouts.flatMap(w => w.workoutExercises);
 
-                const updatedWorkoutExercises: WorkoutExercise[] = workoutExercises.map((we) => {
+                const activeWorkoutExercises: WorkoutExercise[] = workoutExercises.map((we) => {
                     if (we.id !== null) {
-                        return { ...we, workoutTemplateId: workout.id };
+                        return { ...we, workoutTemplateId: workout.id, isDeleted: false };
                     }
                     return {
                         id: generateID(allWorkoutExercises),
                         workoutTemplateId: workout.id,
                         exerciseId: we.exerciseId,
+                        isDeleted: false,
                     };
                 });
+
+                // exercises removed from the form aren't dropped — they're kept
+                // (soft-deleted) so past performed/planned sessions can still
+                // resolve them by workoutExerciseId
+                const activeIds = new Set(activeWorkoutExercises.map(we => we.id));
+                const softDeletedWorkoutExercises: WorkoutExercise[] = workout.workoutExercises
+                    .filter(we => !activeIds.has(we.id))
+                    .map(we => ({ ...we, isDeleted: true }));
 
                 return {
                     id: workout.id,
                     name: workoutName,
                     status: workout.status,
-                    workoutExercises: updatedWorkoutExercises,
+                    workoutExercises: [...activeWorkoutExercises, ...softDeletedWorkoutExercises],
                 };
             });
         });
         setWorkoutToEdit(null);
         setWorkoutExercises([
-            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1 }
+            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1, isDeleted: false }
         ]);
         setWorkoutName("");
         setShowWorkoutValidation(false);
@@ -134,7 +147,7 @@ export default function WorkoutTracking({ }: Props) {
 
     function handleCancelForm() {
         setWorkoutExercises([
-            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1 }
+            { id: null, workoutTemplateId: null, exerciseId: exercises[0]?.id ?? -1, isDeleted: false }
         ]);
         setWorkoutName("");
         setShowWorkoutValidation(false);
@@ -149,7 +162,7 @@ export default function WorkoutTracking({ }: Props) {
         }
         setWorkoutToEdit(workout);
         setWorkoutName(workout.name);
-        setWorkoutExercises([...workout.workoutExercises]);
+        setWorkoutExercises(workout.workoutExercises.filter(we => !we.isDeleted))
         setIsEditWorkoutFormOpen(true);
     }
 

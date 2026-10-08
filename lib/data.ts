@@ -76,6 +76,12 @@ export function getLatestPerformedExercise(lastSession: PerformedSession | null,
 export function getWorkoutExercise(id: WorkoutExercise["id"], workout: Workout): WorkoutExercise | null {
     return workout.workoutExercises.find(exercise => exercise.id == id) ?? null;
 }
+export function getWorkoutExercises(workout: Workout, exercises: Exercise[]): Exercise[] {
+    return workout.workoutExercises
+        .filter(we => !we.isDeleted)
+        .map(we => getExerciseById(exercises, we.exerciseId))
+        .filter((exercise): exercise is Exercise => exercise !== undefined);
+}
 export function getPlannedExercise(plan: PlannedSession | null, workoutExerciseId: number): PlannedExercise | null {
     return plan?.plannedExercises.find(
         ex => ex.workoutExerciseId === workoutExerciseId
