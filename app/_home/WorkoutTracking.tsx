@@ -13,6 +13,7 @@ import {
     buildPerformedSession,
     buildPlannedSession,
     generateID,
+    getLastPlan,
 } from '@/lib';
 import WorkoutDetails from './WorkoutDetails';
 import WorkoutForm from './WorkoutForm';
@@ -179,8 +180,9 @@ export default function WorkoutTracking({ }: Props) {
         if (!workout) return;
 
         const { plan, sessionFormSource } = buildPlannedSession(workout, performedSessions, plannedSessions, exercises);
+        const existingPlan = getLastPlan(workout.id, plannedSessions);
         setSessionFormSource(sessionFormSource);
-        setPlannedSession(plan);
+        setPlannedSession(existingPlan ?? plan);
         setModalType("plan");
         setSelectedWorkoutName(workout.name);
     }
@@ -206,13 +208,19 @@ export default function WorkoutTracking({ }: Props) {
     function saveSession(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         if (modalType == "plan" && plannedSession) {
-            setPlannedSessions(prevSessions => [
-                ...prevSessions,
-                {
-                    ...plannedSession,
-                    id: generateID(plannedSessions)
+            setPlannedSessions(prevSessions => {
+                const existing = prevSessions.find(p => p.workoutId === plannedSession.workoutId);
+                if (existing) {
+                    return prevSessions.map(p => p.id === existing.id ? { ...plannedSession, id: existing.id } : p);
                 }
-            ]);
+                return [
+                    ...prevSessions,
+                    {
+                        ...plannedSession,
+                        id: generateID(plannedSessions)
+                    }
+                ];
+            });
         }
         else if (modalType == "session" && performedSession) {
             setPerformedSessions(prevSessions => [
@@ -340,7 +348,7 @@ export default function WorkoutTracking({ }: Props) {
     function getMenuItems(workout: Workout | null): MenuItem[] {
         return [
             {
-                label: "Plan Next Session",
+                label: workout && getLastPlan(workout.id, plannedSessions) ? "Edit Plan" : "Plan Next Session",
                 onClick: () => createNextSessionPlan(workout)
             },
             {
