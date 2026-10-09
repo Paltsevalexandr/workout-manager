@@ -1,10 +1,12 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Dispatch, KeyboardEvent, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import TextField from './TextField';
 import { X } from 'lucide-react';
 import styles from "./SearchableSelect.module.scss";
+import dropdownStyles from "./SearchableDropdown.module.scss";
+import { capitalize } from '@/lib';
 
 type Props<T extends { name: string, id: number }> = {
     items: T[];
@@ -21,24 +23,32 @@ type Position = {
     width: number;
 };
 
+// Text shown in the input for the selected item
+function getItemLabel(item: { name: string } | null) {
+    return item ? capitalize(item.name) : "";
+}
+
 export default function SearchableSelect<T extends { name: string, id: number }>({
     items,
     name,
     label,
     selectedItem,
-    queryMinLength = 1,
+    queryMinLength = 0,
     setSelectedItem,
 }: Props<T>) {
-    const [query, setQuery] = useState<string>(selectedItem?.name ?? "");
+    const [query, setQuery] = useState<string>(getItemLabel(selectedItem));
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
     const [mounted, setMounted] = useState<boolean>(false);
     const [position, setPosition] = useState<Position | null>(null);
+    // Index of the item highlighted via keyboard/mouse, -1 means none
+    const [activeIndex, setActiveIndex] = useState<number>(-1);
     const containerRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLUListElement>(null);
 
     function closeDropdown() {
         setIsDropdownOpen(false);
-        setQuery(selectedItem?.name ?? "");
+        setActiveIndex(-1);
+        setQuery(getItemLabel(selectedItem));
     }
 
     useEffect(() => {
@@ -46,7 +56,7 @@ export default function SearchableSelect<T extends { name: string, id: number }>
     }, []);
 
     useEffect(() => {
-        setQuery(selectedItem?.name ?? "");
+        setQuery(getItemLabel(selectedItem));
     }, [selectedItem]);
 
     useLayoutEffect(() => {
@@ -73,23 +83,29 @@ export default function SearchableSelect<T extends { name: string, id: number }>
                 closeDropdown();
             }
         }
-        function handleScroll() {
+        function handleScroll(e: Event) {
+            // Ignore scrolling inside the dropdown list itself
+            if (dropdownRef.current?.contains(e.target as Node)) return;
+            closeDropdown();
+        }
+        function handleResize() {
             closeDropdown();
         }
 
         document.addEventListener('mousedown', handleOutsideClick);
         window.addEventListener('scroll', handleScroll, true);
-        window.addEventListener('resize', handleScroll);
+        window.addEventListener('resize', handleResize);
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
             window.removeEventListener('scroll', handleScroll, true);
-            window.removeEventListener('resize', handleScroll);
+            window.removeEventListener('resize', handleResize);
         };
     }, [isDropdownOpen, selectedItem]);
 
     function handleSelectItem(item: T) {
         setSelectedItem(item);
-        setQuery(item.name);
+        setQuery(getItemLabel(item));
+        setActiveIndex(-1);
         setIsDropdownOpen(false);
     }
 
@@ -98,11 +114,50 @@ export default function SearchableSelect<T extends { name: string, id: number }>
         setQuery("");
     }
 
-    const filteredItems = items.filter(item =>
-        item.name.toLowerCase().includes(query.toLowerCase())
-    );
+    function handleQueryChange(value: string) {
+        setQuery(value);
+        setActiveIndex(-1);
+        setIsDropdownOpen(true);
+    }
+
+    function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+        switch (e.key) {
+            case "ArrowDown":
+                if (!showDropdown || !filteredItems.length) return;
+                e.preventDefault();
+                setActiveIndex(prev => (prev + 1) % filteredItems.length);
+                break;
+            case "ArrowUp":
+                if (!showDropdown || !filteredItems.length) return;
+                e.preventDefault();
+                setActiveIndex(prev => (prev <= 0 ? filteredItems.length - 1 : prev - 1));
+                break;
+            case "Enter": {
+                if (!showDropdown) return;
+                // Don't submit the parent form while the dropdown is open
+                e.preventDefault();
+                const activeItem = filteredItems[activeIndex];
+                if (activeItem) handleSelectItem(activeItem);
+                break;
+            }
+            case "Escape":
+                closeDropdown();
+                break;
+        }
+    }
+
+    const filteredItems = items
+        .filter(item => item.name.toLowerCase().includes(query.toLowerCase()))
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
 
     const showDropdown = isDropdownOpen && query.length >= queryMinLength;
+
+    // Keep the highlighted item visible when navigating with arrows
+    useEffect(() => {
+        if (activeIndex < 0 || !dropdownRef.current) return;
+        const activeElement = dropdownRef.current.children[activeIndex] as HTMLElement | undefined;
+        activeElement?.scrollIntoView({ block: "nearest" });
+    }, [activeIndex]);
 
     return (
         <div ref={containerRef} className={styles.searchableSelect}>
@@ -114,7 +169,9 @@ export default function SearchableSelect<T extends { name: string, id: number }>
                     autoComplete="off"
                     className={selectedItem ? styles.searchInput : ""}
                     onFocus={() => setIsDropdownOpen(true)}
-                    onChange={setQuery}
+                    onChange={handleQueryChange}
+                    onKeyDown={handleKeyDown}
+                    placeholder={"Search..."}
                 />
                 {
                     selectedItem &&
@@ -130,16 +187,18 @@ export default function SearchableSelect<T extends { name: string, id: number }>
                 mounted && showDropdown && position && createPortal(
                     <ul
                         ref={dropdownRef}
-                        className={styles.foundItems}
+                        className={dropdownStyles.foundItems}
                         style={{ top: position.top, left: position.left, width: position.width }}>
                         {
-                            filteredItems.map(item => {
+                            filteredItems.map((item, index) => {
                                 return (
                                     <li key={name + "_filtered_" + item.id}
-                                        className={styles.foundItem}>
+                                        className={`${dropdownStyles.foundItem} ${index === activeIndex ? dropdownStyles.foundItemActive : ""}`}
+                                        onMouseEnter={() => setActiveIndex(index)}>
                                         <button type="button"
+                                            tabIndex={-1}
                                             onClick={() => handleSelectItem(item)}>
-                                            {item.name}
+                                            {capitalize(item.name)}
                                         </button>
                                     </li>
                                 )
@@ -147,7 +206,7 @@ export default function SearchableSelect<T extends { name: string, id: number }>
                         }
                         {
                             !filteredItems.length &&
-                            <li className={styles.foundItemEmpty}>Not Found</li>
+                            <li className={dropdownStyles.foundItemEmpty}>Not Found</li>
                         }
                     </ul>,
                     document.body

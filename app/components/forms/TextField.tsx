@@ -1,3 +1,5 @@
+import { KeyboardEvent } from 'react';
+
 type Props = {
     label: string;
     name: string;
@@ -5,9 +7,11 @@ type Props = {
     required?: boolean;
     autoFocus?: boolean;
     autoComplete?: string;
+    placeholder?: string;
     className?: string;
     onChange: (value: string) => void;
     onFocus?: () => void;
+    onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export default function TextField({
@@ -17,9 +21,11 @@ export default function TextField({
     required = false,
     autoFocus = false,
     autoComplete,
+    placeholder,
     className,
     onChange,
     onFocus,
+    onKeyDown,
 }: Props) {
     return (
         <label>
@@ -30,9 +36,11 @@ export default function TextField({
                 required={required}
                 autoFocus={autoFocus}
                 autoComplete={autoComplete}
+                placeholder={placeholder}
                 value={value}
                 onChange={(event) => onChange(event.target.value)}
                 onFocus={onFocus}
+                onKeyDown={onKeyDown}
             />
         </label>
     )

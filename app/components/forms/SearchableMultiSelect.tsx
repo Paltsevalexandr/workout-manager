@@ -1,9 +1,10 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { Dispatch, KeyboardEvent, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 import styles from "./SearchableMultiSelect.module.scss";
+import dropdownStyles from "./SearchableDropdown.module.scss";
 import { capitalize } from '@/lib';
 
 
@@ -28,7 +29,7 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
     name,
     label,
     selectedItems,
-    queryMinLength = 1,
+    queryMinLength = 0,
     error,
     setSelectedItems
 
@@ -37,6 +38,8 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
     const [mounted, setMounted] = useState<boolean>(false);
     const [position, setPosition] = useState<Position | null>(null);
+    // Index of the item highlighted via keyboard/mouse, -1 means none
+    const [activeIndex, setActiveIndex] = useState<number>(-1);
     const containerRef = useRef<HTMLDivElement>(null);
     const fieldRef = useRef<HTMLDivElement>(null);
     const dropdownRef = useRef<HTMLUListElement>(null);
@@ -70,17 +73,22 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                 setIsDropdownOpen(false);
             }
         }
-        function handleScroll() {
+        function handleScroll(e: Event) {
+            // Ignore scrolling inside the dropdown list itself
+            if (dropdownRef.current?.contains(e.target as Node)) return;
+            setIsDropdownOpen(false);
+        }
+        function handleResize() {
             setIsDropdownOpen(false);
         }
 
         document.addEventListener('mousedown', handleOutsideClick);
         window.addEventListener('scroll', handleScroll, true);
-        window.addEventListener('resize', handleScroll);
+        window.addEventListener('resize', handleResize);
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
             window.removeEventListener('scroll', handleScroll, true);
-            window.removeEventListener('resize', handleScroll);
+            window.removeEventListener('resize', handleResize);
         };
     }, [isDropdownOpen]);
 
@@ -91,7 +99,41 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
     function handleSelectItem(item: T) {
         setSelectedItems(prev => [...prev, item]);
         setQuery("");
+        setActiveIndex(-1);
         inputRef.current?.focus();
+    }
+
+    function handleQueryChange(value: string) {
+        setQuery(value);
+        setActiveIndex(-1);
+        setIsDropdownOpen(true);
+    }
+
+    function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+        switch (e.key) {
+            case "ArrowDown":
+                if (!showDropdown || !filteredItems.length) return;
+                e.preventDefault();
+                setActiveIndex(prev => (prev + 1) % filteredItems.length);
+                break;
+            case "ArrowUp":
+                if (!showDropdown || !filteredItems.length) return;
+                e.preventDefault();
+                setActiveIndex(prev => (prev <= 0 ? filteredItems.length - 1 : prev - 1));
+                break;
+            case "Enter": {
+                if (!showDropdown) return;
+                // Don't submit the parent form while the dropdown is open
+                e.preventDefault();
+                const activeItem = filteredItems[activeIndex];
+                if (activeItem) handleSelectItem(activeItem);
+                break;
+            }
+            case "Escape":
+                setIsDropdownOpen(false);
+                setActiveIndex(-1);
+                break;
+        }
     }
 
     let filteredItems: T[] = [];
@@ -100,11 +142,19 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
         item.name.toLowerCase().includes(query.toLowerCase())
     );
     hasMatches = matches.length > 0;
-    filteredItems = matches.filter(item =>
-        !selectedItems.find(selectedItem => selectedItem.id == item.id)
-    );
+    filteredItems = matches
+        .filter(item => !selectedItems.find(selectedItem => selectedItem.id == item.id))
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+
 
     const showDropdown = isDropdownOpen && query.length >= queryMinLength;
+
+    // Keep the highlighted item visible when navigating with arrows
+    useEffect(() => {
+        if (activeIndex < 0 || !dropdownRef.current) return;
+        const activeElement = dropdownRef.current.children[activeIndex] as HTMLElement | undefined;
+        activeElement?.scrollIntoView({ block: "nearest" });
+    }, [activeIndex]);
 
     return (
         <div ref={containerRef}>
@@ -133,7 +183,8 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                     value={query}
                     autoComplete="off"
                     onFocus={() => setIsDropdownOpen(true)}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e) => handleQueryChange(e.target.value)}
+                    onKeyDown={handleKeyDown}
                     placeholder={"Search..."}
                 />
             </div>
@@ -141,14 +192,16 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                 mounted && showDropdown && position && createPortal(
                     <ul
                         ref={dropdownRef}
-                        className={styles.foundItems}
+                        className={dropdownStyles.foundItems}
                         style={{ top: position.top, left: position.left, width: position.width }}>
                         {
-                            filteredItems.map(item => {
+                            filteredItems.map((item, index) => {
                                 return (
                                     <li key={name + "_filtered_" + item.id}
-                                        className={styles.foundItem}>
+                                        className={`${dropdownStyles.foundItem} ${index === activeIndex ? dropdownStyles.foundItemActive : ""}`}
+                                        onMouseEnter={() => setActiveIndex(index)}>
                                         <button type="button"
+                                            tabIndex={-1}
                                             onClick={() => handleSelectItem(item)}>
                                             {capitalize(item.name)}
                                         </button>
@@ -159,8 +212,8 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                         {
                             !filteredItems.length && query.length >= queryMinLength && (
                                 hasMatches
-                                    ? <li className={styles.foundItemEmpty}>All matches already added</li>
-                                    : <li className={styles.foundItemEmpty}>Not Found</li>
+                                    ? <li className={dropdownStyles.foundItemEmpty}>All matches already added</li>
+                                    : <li className={dropdownStyles.foundItemEmpty}>Not Found</li>
                             )
                         }
                     </ul>,
