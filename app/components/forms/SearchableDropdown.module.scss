@@ -1,0 +1,62 @@
+@use "../../variables" as *;
+
+// Shared dropdown styles for SearchableSelect and SearchableMultiSelect
+
+$foundItemHeight: 2rem;
+
+.foundItems {
+    position: fixed;
+    z-index: 101;
+    margin: 0;
+    padding: 0;
+    max-width: 400px;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    background-color: $primaryBg;
+    border: $border;
+    // Show at most 4 rows, scroll the rest
+    max-height: calc(4 * #{$foundItemHeight});
+    overflow-y: auto;
+}
+
+.foundItem {
+    height: $foundItemHeight;
+    // Prevent flex from squeezing rows when max-height kicks in
+    flex-shrink: 0;
+
+    &:not(:last-child) {
+        border-bottom: $border;
+    }
+
+    button {
+        padding: 0.25rem 0.5rem;
+        width: 100%;
+        height: 100%;
+        min-width: 0;
+        justify-content: flex-start;
+        background-color: $primaryBg;
+        border: none;
+        color: $primaryColor;
+        border-radius: 0;
+    }
+
+    // Highlight is driven only by activeIndex (mouse sets it via onMouseEnter),
+    // so hover and keyboard never highlight two rows at once
+    button:hover::after {
+        background-color: transparent;
+    }
+
+    &Active button::after,
+    &Active button:hover::after {
+        background-color: $buttonOverlay;
+    }
+}
+
+.foundItemEmpty {
+    height: $foundItemHeight;
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 0.5rem;
+    color: $secondaryColor;
+}
