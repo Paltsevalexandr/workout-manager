@@ -23,10 +23,10 @@ export function getFormattedDate(timestamp: number) {
     return `${year}-${month}-${day}`;
 }
 
-export function formatFullDate(timestamp: number): string {
+export function formatFullDate(timestamp: number, fullMonth?: boolean): string {
     const date = new Date(timestamp);
     return date.toLocaleDateString("en-US", {
-        month: "short",
+        month: fullMonth ? "long" : "short",
         day: "numeric",
         year: "numeric",
     });
@@ -34,7 +34,10 @@ export function formatFullDate(timestamp: number): string {
 
 export function dateStringToDateObj(datestr: string) {
     const [year, month, day] = datestr.split('-').map(Number);
-    return new Date(year, month - 1, day);
+    const date = new Date(year, month - 1, day);
+    // new Date() maps years 0-99 to 1900-1999, setFullYear keeps the year as is
+    date.setFullYear(year);
+    return date;
 }
 
 export function formatRelativeDate(timestamp: number | null): string {

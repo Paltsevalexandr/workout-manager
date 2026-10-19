@@ -1,6 +1,6 @@
 import { useState, type SubmitEvent } from 'react'
 import { PerformedExercise, Workout, PerformedSession } from '@/_types';
-import { createSessionExercises, generateID } from '@/lib';
+import { createSessionExercises, formatFullDate, generateID, getAllPerformedExercises, getLastSession } from '@/lib';
 import styles from "./ByDate.module.scss";
 import PerformedSessionItem from './PerformedSessionItem';
 import ConfirmDialog from '@/app/components/ui/ConfirmDialog';
@@ -16,13 +16,16 @@ export default function ByDate({
     workout,
     performedSessions
 }: Props) {
-    const [expandedSessions, setExpandedSessions] = useState<number[]>([1]);
+    const [expandedSessions, setExpandedSessions] = useState<number[]>(() => {
+        const lastSession = getLastSession(workout.id, performedSessions);
+        return lastSession !== null && lastSession.id !== null ? [lastSession.id] : []
+    });
     const { exercises } = useExercisesContext();
-    const { setPerformedSessions } = usePerformedSessionsContext();
+    const { performedSessions: allPerformedSessions, setPerformedSessions } = usePerformedSessionsContext();
     const [deleteSession, setDeleteSession] = useState<PerformedSession | null>(null);
     const [editSession, setEditSession] = useState<PerformedSession | null>(null);
     const [duplicateSession, setDuplicateSession] = useState<PerformedSession | null>(null);
-    const sortedPerformedSessions = performedSessions.sort((a, b) => b.date - a.date);
+    const sortedPerformedSessions = [...performedSessions].sort((a, b) => b.date - a.date);
 
     function toggleSessionDropdown(id: number) {
         if (expandedSessions.includes(id)) {
@@ -59,10 +62,8 @@ export default function ByDate({
     }
 
     function duplicateSessionForCreating(session: PerformedSession) {
-        const performedExerciseIds = performedSessions.flatMap(
-            currentSession => currentSession.performedExercises
-        );
-        const firstExerciseId = generateID(performedExerciseIds);
+        // ids are unique across all workouts, not just this one
+        const firstExerciseId = generateID(getAllPerformedExercises(allPerformedSessions));
         setDuplicateSession({
             ...session,
             id: null,
@@ -140,7 +141,7 @@ export default function ByDate({
                     }}
                     onCancel={() => setDeleteSession(null)}
                 >
-                    <p>Are you sure you want to delete session from { }?</p>
+                    <p>Are you sure you want to delete session from {formatFullDate(deleteSession.date, true)}?</p>
                 </ConfirmDialog>
             }
             {

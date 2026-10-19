@@ -140,12 +140,14 @@ export default function WorkoutTrackingModal({
                                         <NumberField
                                             label=""
                                             name="workout-exercise-target"
+                                            min={1}
                                             value={sessionExercise.target}
                                             onChange={(value) => handleSessionExerciseChange(value, sessionExercise.workoutExerciseId, "target")}
                                         />
                                         <NumberField
                                             label=""
                                             name="workout-exercise-sets"
+                                            min={1}
                                             value={sessionExercise.sets}
                                             onChange={(value) => handleSessionExerciseChange(value, sessionExercise.workoutExerciseId, "sets")}
                                         />
@@ -158,6 +160,7 @@ export default function WorkoutTrackingModal({
                                         <NumberField
                                             label=""
                                             name="workout-exercise-weight"
+                                            step="any"
                                             value={sessionExercise.weight}
                                             onChange={(value) => handleSessionExerciseChange(value, sessionExercise.workoutExerciseId, "weight")}
                                         />

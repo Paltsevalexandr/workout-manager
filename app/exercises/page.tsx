@@ -77,6 +77,22 @@ export default function Page() {
         ? "Select at least one muscle group"
         : undefined;
 
+    // Names are compared case-insensitively among active exercises,
+    // a soft-deleted exercise's name can be reused.
+    // TODO - the backend must enforce this as well (unique index)
+    const normalizedName = exerciseDraft.name.trim().toLowerCase();
+    const isNameTaken = exercises.some(
+        e => !e.isDeleted && e.id !== editId && e.name.trim().toLowerCase() === normalizedName
+    );
+    const nameError = showValidation && isNameTaken
+        ? "An exercise with this name already exists"
+        : undefined;
+    // Shown right away (not only after submit), like a removed exercise in the workout form
+    const isParentDeleted = exerciseDraft.parent?.isDeleted === true;
+    const parentError = isParentDeleted
+        ? "This exercise was removed from the catalog — please choose another"
+        : undefined;
+
     const getExercise = (id: number) => getExerciseById(exercises, id);
 
     function openCreateForm() {
@@ -111,7 +127,10 @@ export default function Page() {
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
 
-        const isValid = exerciseDraft.categories.length > 0 && exerciseDraft.muscleGroups.length > 0;
+        const isValid = exerciseDraft.categories.length > 0
+            && exerciseDraft.muscleGroups.length > 0
+            && !isNameTaken
+            && !isParentDeleted;
         if (!isValid) {
             setShowValidation(true);
             return;
@@ -333,6 +352,8 @@ export default function Page() {
                             draftMuscleGroups={exerciseDraft.muscleGroups}
                             draftParent={exerciseDraft.parent}
                             excludeExerciseId={editId !== null ? editId : undefined}
+                            nameError={nameError}
+                            parentError={parentError}
                             categoriesError={categoriesError}
                             muscleGroupsError={muscleGroupsError}
                             onNameChange={(name) => setExerciseDraft(prev => ({ ...prev, name }))}

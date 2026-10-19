@@ -13,6 +13,7 @@ type Props<T extends { name: string, id: number }> = {
     name: string;
     label: string;
     selectedItem: T | null;
+    error?: string;
     queryMinLength?: number;
     setSelectedItem: Dispatch<SetStateAction<T | null>>
 }
@@ -33,6 +34,7 @@ export default function SearchableSelect<T extends { name: string, id: number }>
     name,
     label,
     selectedItem,
+    error,
     queryMinLength = 0,
     setSelectedItem,
 }: Props<T>) {
@@ -183,6 +185,7 @@ export default function SearchableSelect<T extends { name: string, id: number }>
                     </button>
                 }
             </div>
+            {error && <p className={styles.error}>{error}</p>}
             {
                 mounted && showDropdown && position && createPortal(
                     <ul

@@ -33,9 +33,14 @@ export default function page({ }: Props) {
     if (workout) {
         workoutExercises = getTrackedWorkoutExercises(workout, performedSessions);
     }
-    const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(
-        workoutExercises[0]?.id ?? null
-    );
+    const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null);
+
+    // fall back to the first tracked exercise when nothing is selected yet
+    // or the selected one is no longer tracked (e.g. its sessions were deleted)
+    const effectiveSelectedExerciseId =
+        workoutExercises.some(we => we.id === selectedExerciseId)
+            ? selectedExerciseId
+            : workoutExercises[0]?.id ?? null;
 
     const workoutPerformedSessions = performedSessions
         .filter(session => session.workoutId == workout?.id);
@@ -153,13 +158,13 @@ export default function page({ }: Props) {
                         }
                         {
                             workout && viewMode == "byExercise"
-                            && selectedExerciseId !== null &&
+                            && effectiveSelectedExerciseId !== null &&
                             <div className={styles.exerciseSelect}>
                                 <SelectField
                                     label=""
                                     name="exercise"
                                     parseValue={Number}
-                                    value={selectedExerciseId}
+                                    value={effectiveSelectedExerciseId}
                                     options={workoutExercises.map(ex => ex.id)}
                                     optionsNames={workoutExercises.map(ex => getExerciseSelectLabel(ex, workout, exercises))}
                                     onChange={(id: number) => setSelectedExerciseId(id)}
@@ -181,7 +186,7 @@ export default function page({ }: Props) {
                                         />
                                         : <ByExercise
                                             performedSessions={workoutPerformedSessions}
-                                            selectedExerciseId={selectedExerciseId}
+                                            selectedExerciseId={effectiveSelectedExerciseId}
                                             workoutExercises={workoutExercises}
                                         />
                                     }
