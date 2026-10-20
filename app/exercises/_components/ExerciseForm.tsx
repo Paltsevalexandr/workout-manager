@@ -16,6 +16,8 @@ type Props = {
     draftMuscleGroups: MuscleGroup[];
     draftParent: Exercise | null;
     excludeExerciseId?: number;
+    nameError?: string;
+    parentError?: string;
     categoriesError?: string;
     muscleGroupsError?: string;
     onNameChange: (name: string) => void;
@@ -32,6 +34,8 @@ export default function ExerciseForm({
     draftMuscleGroups,
     draftParent,
     excludeExerciseId,
+    nameError,
+    parentError,
     categoriesError,
     muscleGroupsError,
     onNameChange,
@@ -43,7 +47,19 @@ export default function ExerciseForm({
     const { muscleGroups } = useMuscleGroupsContext();
     const { categories } = useCategoriesContext();
     const { exercises } = useExercisesContext();
-    const parentOptions = exercises.filter((exercise) => exercise.id !== excludeExerciseId && !exercise.isDeleted);
+    // An exercise can't be its own ancestor: skip the edited 
+    // exercise and all its descendants
+    const isSelfOrDescendant = (exercise: Exercise) => {
+        const visited = new Set<number>();
+        let current: Exercise | undefined = exercise;
+        while (current && !visited.has(current.id)) {
+            if (current.id === excludeExerciseId) return true;
+            visited.add(current.id);
+            current = exercises.find((e) => e.id === current!.parent);
+        }
+        return false;
+    };
+    const parentOptions = exercises.filter((exercise) => !exercise.isDeleted && !isSelfOrDescendant(exercise));
 
     return (
         <>
@@ -51,6 +67,8 @@ export default function ExerciseForm({
                 label="Name"
                 name="name"
                 value={name}
+                error={nameError}
+                autoComplete="off"
                 required
                 autoFocus
                 onChange={onNameChange}
@@ -60,6 +78,7 @@ export default function ExerciseForm({
                 name="parent"
                 items={parentOptions}
                 selectedItem={draftParent}
+                error={parentError}
                 setSelectedItem={setDraftParent}
             />
             <SearchableMultiSelect<MuscleGroup>

@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
-import Modal from '../components/ui/Modal';
-import ModalForm from '../components/ui/ModalForm';
-import { Exercise, Workout, WorkoutExercise } from '../../_types';
-import TextField from '../components/forms/TextField';
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import Modal from "../components/ui/Modal";
+import ModalForm from "../components/ui/ModalForm";
+import { Exercise, Workout, WorkoutExercise } from "../../_types";
+import TextField from "../components/forms/TextField";
 import { Trash2, Plus } from "lucide-react"
 import styles from "./WorkoutForm.module.scss";
-import SearchableSelect from '../components/forms/SearchableSelect';
+import SearchableSelect from "../components/forms/SearchableSelect";
 
 type Props = {
     editWorkout?: Workout | null;
@@ -13,6 +13,7 @@ type Props = {
     exercises: Exercise[];
     workoutExercises: WorkoutExercise[];
     workoutExercisesError?: string;
+    workoutNameError?: string;
     handleCancelForm: () => void;
     handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
     setWorkoutName: (name: string) => void;
@@ -24,6 +25,7 @@ export default function WorkoutForm({
     exercises,
     workoutExercises,
     workoutExercisesError,
+    workoutNameError,
     workoutName,
     handleCancelForm,
     handleSubmit,
@@ -59,6 +61,7 @@ export default function WorkoutForm({
                 className={styles.newWorkout}
                 title={`${editWorkout ? "Edit" : "Create"} Workout`}
                 submitText={`${editWorkout ? "Edit" : "Add"} Workout`}
+                submitDisabled={activeExercises.length === 0}
                 onSubmit={handleSubmit}
                 onCancel={handleCancelForm}
             >
@@ -70,6 +73,8 @@ export default function WorkoutForm({
                                 label="Workout Name"
                                 name="workout-name"
                                 value={workoutName}
+                                error={workoutNameError}
+                                autoComplete="off"
                                 required={true}
                                 onChange={setWorkoutName}
                             />

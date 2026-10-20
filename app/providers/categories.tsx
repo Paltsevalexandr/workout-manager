@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
+import { createContext, useContext, useState, Dispatch, SetStateAction } from "react";
 import { Category } from "@/_types";
 
 type CategoriesContextType = {
@@ -33,7 +33,7 @@ export function CategoriesProvider({ children }: { children: React.ReactNode }) 
 export function useCategoriesContext() {
     const context = useContext(CategoriesContext);
     if (!context) {
-        throw new Error('useCategoriesContext must be used within CategoriesProvider')
+        throw new Error("useCategoriesContext must be used within CategoriesProvider")
     }
     return context;
 }

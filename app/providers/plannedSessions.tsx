@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
+import { createContext, useContext, useState, Dispatch, SetStateAction } from "react";
 import { PlannedSession } from "@/_types";
 
 type PlannedSessionContextType = {
@@ -11,7 +11,8 @@ type PlannedSessionContextType = {
 const PlannedSessionsContext = createContext<PlannedSessionContextType | undefined>(undefined);
 
 export function PlannedSessionsProvider({ children }: { children: React.ReactNode }) {
-    const [plannedSessions, setPlannedSessions] = useState<PlannedSession[]>([
+    // lazy initializer: the seed reads the clock once, not on every render
+    const [plannedSessions, setPlannedSessions] = useState<PlannedSession[]>(() => [
         {
             id: 1,
             workoutId: 1,
@@ -37,7 +38,7 @@ export function PlannedSessionsProvider({ children }: { children: React.ReactNod
 export function usePlannedSessionsContext() {
     const context = useContext(PlannedSessionsContext);
     if (!context) {
-        throw new Error('usePlannedSessionsContext must be used within PlannedSessionsProvider');
+        throw new Error("usePlannedSessionsContext must be used within PlannedSessionsProvider");
     }
     return context;
 }

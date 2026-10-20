@@ -1,8 +1,8 @@
-import { PerformedSession, PerformedExercise } from '@/_types';
-import { useExercisesContext } from '@/app/providers';
-import { capitalize, formatFullDate, getTargetLabel } from '@/lib';
-import styles from './ByExercise.module.scss';
-import { TrackedWorkoutExercise } from '../page';
+import { PerformedSession, PerformedExercise } from "@/_types";
+import { useExercisesContext } from "@/app/providers";
+import { capitalize, formatFullDate, getTargetLabel } from "@/lib";
+import styles from "./ByExercise.module.scss";
+import { TrackedWorkoutExercise } from "../page";
 
 type Props = {
     performedSessions: PerformedSession[];
@@ -38,13 +38,13 @@ export default function ByExercise({
     if (selectedExerciseId === null) {
         return (
             <div>
-                <h3>You haven't trained yet.</h3>
+                <h3>You haven&apos;t trained yet.</h3>
             </div>
         )
     }
 
     const performedEntries = getPerformedExercises(sessionEntries);
-    let relevantFields = getRelevantFields(performedEntries);
+    const relevantFields = getRelevantFields(performedEntries);
     const hasAnyWeight = relevantFields.includes("weight");
 
     function getRelevantFields(entries: PerformedExercise[]): StatField[] {

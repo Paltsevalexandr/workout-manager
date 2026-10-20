@@ -1,25 +1,23 @@
 "use client";
 
-import { useState, type SubmitEvent } from 'react';
-import Content from '@/app/components/layout/Content';
-import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from '@/app/providers';
-import { useParams } from 'next/navigation';
-import { Exercise, PerformedExercise, SessionFormSource, Workout, WorkoutExercise, PerformedSession } from '@/_types';
-import { buildPerformedSession, generateID } from '@/lib';
-import WorkoutTrackingModal from '@/app/components/workout/WorkoutTrackingModal';
+import { useState, type SubmitEvent } from "react";
+import Content from "@/app/components/layout/Content";
+import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from "@/app/providers";
+import { useParams } from "next/navigation";
+import { Exercise, PerformedExercise, SessionFormSource, Workout, WorkoutExercise, PerformedSession } from "@/_types";
+import { buildPerformedSession, generateID } from "@/lib";
+import WorkoutTrackingModal from "@/app/components/workout/WorkoutTrackingModal";
 
 import styles from "./page.module.scss";
-import ByDate from './_components/ByDate';
-import ByExercise from './_components/ByExercise';
-import SelectField from '@/app/components/forms/SelectField';
-
-type Props = {}
+import ByDate from "./_components/ByDate";
+import ByExercise from "./_components/ByExercise";
+import SelectField from "@/app/components/forms/SelectField";
 
 type ViewMode = "byDate" | "byExercise";
 export type TrackedWorkoutExercise = WorkoutExercise & { id: number };
 
-export default function page({ }: Props) {
-    let { workoutId } = useParams<{ workoutId: string }>();
+export default function Page() {
+    const { workoutId } = useParams<{ workoutId: string }>();
     const { workouts } = useWorkoutsContext();
     const { performedSessions, setPerformedSessions } = usePerformedSessionsContext();
     const { plannedSessions } = usePlannedSessionsContext();
@@ -33,9 +31,14 @@ export default function page({ }: Props) {
     if (workout) {
         workoutExercises = getTrackedWorkoutExercises(workout, performedSessions);
     }
-    const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(
-        workoutExercises[0]?.id ?? null
-    );
+    const [selectedExerciseId, setSelectedExerciseId] = useState<number | null>(null);
+
+    // fall back to the first tracked exercise when nothing is selected yet
+    // or the selected one is no longer tracked (e.g. its sessions were deleted)
+    const effectiveSelectedExerciseId =
+        workoutExercises.some(we => we.id === selectedExerciseId)
+            ? selectedExerciseId
+            : workoutExercises[0]?.id ?? null;
 
     const workoutPerformedSessions = performedSessions
         .filter(session => session.workoutId == workout?.id);
@@ -117,7 +120,7 @@ export default function page({ }: Props) {
             return exercise?.name ?? "Unknown";
         }
         const position = sameNameEntries.findIndex(we => we.id === workoutExercise.id) + 1;
-        return `${exercise?.name} (${position})`;
+        return `${exercise?.name ?? "Unknown"} (${position})`;
     }
 
     return (
@@ -153,13 +156,13 @@ export default function page({ }: Props) {
                         }
                         {
                             workout && viewMode == "byExercise"
-                            && selectedExerciseId !== null &&
+                            && effectiveSelectedExerciseId !== null &&
                             <div className={styles.exerciseSelect}>
                                 <SelectField
                                     label=""
                                     name="exercise"
                                     parseValue={Number}
-                                    value={selectedExerciseId}
+                                    value={effectiveSelectedExerciseId}
                                     options={workoutExercises.map(ex => ex.id)}
                                     optionsNames={workoutExercises.map(ex => getExerciseSelectLabel(ex, workout, exercises))}
                                     onChange={(id: number) => setSelectedExerciseId(id)}
@@ -171,7 +174,7 @@ export default function page({ }: Props) {
                         !workout
                             ? <p>Workout not found</p>
                             : !workoutPerformedSessions.length
-                                ? <p>You haven't trained yet.</p>
+                                ? <p>You haven&apos;t trained yet.</p>
                                 : <>
 
                                     {viewMode === "byDate"
@@ -181,7 +184,7 @@ export default function page({ }: Props) {
                                         />
                                         : <ByExercise
                                             performedSessions={workoutPerformedSessions}
-                                            selectedExerciseId={selectedExerciseId}
+                                            selectedExerciseId={effectiveSelectedExerciseId}
                                             workoutExercises={workoutExercises}
                                         />
                                     }

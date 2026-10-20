@@ -1,18 +1,19 @@
 "use client";
 
-import { Dispatch, KeyboardEvent, SetStateAction, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import TextField from './TextField';
-import { X } from 'lucide-react';
+import { Dispatch, KeyboardEvent, SetStateAction, useEffect, useEffectEvent, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import TextField from "./TextField";
+import { X } from "lucide-react";
 import styles from "./SearchableSelect.module.scss";
 import dropdownStyles from "./SearchableDropdown.module.scss";
-import { capitalize } from '@/lib';
+import { capitalize } from "@/lib";
 
 type Props<T extends { name: string, id: number }> = {
     items: T[];
     name: string;
     label: string;
     selectedItem: T | null;
+    error?: string;
     queryMinLength?: number;
     setSelectedItem: Dispatch<SetStateAction<T | null>>
 }
@@ -33,12 +34,13 @@ export default function SearchableSelect<T extends { name: string, id: number }>
     name,
     label,
     selectedItem,
+    error,
     queryMinLength = 0,
     setSelectedItem,
 }: Props<T>) {
     const [query, setQuery] = useState<string>(getItemLabel(selectedItem));
+    const [prevSelectedItem, setPrevSelectedItem] = useState<T | null>(selectedItem);
     const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-    const [mounted, setMounted] = useState<boolean>(false);
     const [position, setPosition] = useState<Position | null>(null);
     // Index of the item highlighted via keyboard/mouse, -1 means none
     const [activeIndex, setActiveIndex] = useState<number>(-1);
@@ -51,13 +53,14 @@ export default function SearchableSelect<T extends { name: string, id: number }>
         setQuery(getItemLabel(selectedItem));
     }
 
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    useEffect(() => {
+    // Show the label of an externally changed selection (synced during render, not in an effect)
+    if (selectedItem !== prevSelectedItem) {
+        setPrevSelectedItem(selectedItem);
         setQuery(getItemLabel(selectedItem));
-    }, [selectedItem]);
+    }
+
+    // Always sees the latest selectedItem without re-subscribing the listeners below
+    const onDismiss = useEffectEvent(closeDropdown);
 
     useLayoutEffect(() => {
         if (!isDropdownOpen || !containerRef.current) return;
@@ -80,27 +83,27 @@ export default function SearchableSelect<T extends { name: string, id: number }>
             const insideField = containerRef.current?.contains(target);
             const insideDropdown = dropdownRef.current?.contains(target);
             if (!insideField && !insideDropdown) {
-                closeDropdown();
+                onDismiss();
             }
         }
         function handleScroll(e: Event) {
             // Ignore scrolling inside the dropdown list itself
             if (dropdownRef.current?.contains(e.target as Node)) return;
-            closeDropdown();
+            onDismiss();
         }
         function handleResize() {
-            closeDropdown();
+            onDismiss();
         }
 
-        document.addEventListener('mousedown', handleOutsideClick);
-        window.addEventListener('scroll', handleScroll, true);
-        window.addEventListener('resize', handleResize);
+        document.addEventListener("mousedown", handleOutsideClick);
+        window.addEventListener("scroll", handleScroll, true);
+        window.addEventListener("resize", handleResize);
         return () => {
-            document.removeEventListener('mousedown', handleOutsideClick);
-            window.removeEventListener('scroll', handleScroll, true);
-            window.removeEventListener('resize', handleResize);
+            document.removeEventListener("mousedown", handleOutsideClick);
+            window.removeEventListener("scroll", handleScroll, true);
+            window.removeEventListener("resize", handleResize);
         };
-    }, [isDropdownOpen, selectedItem]);
+    }, [isDropdownOpen]);
 
     function handleSelectItem(item: T) {
         setSelectedItem(item);
@@ -141,6 +144,8 @@ export default function SearchableSelect<T extends { name: string, id: number }>
                 break;
             }
             case "Escape":
+                // An open dropdown takes Escape, so a surrounding Modal stays open
+                if (showDropdown) e.preventDefault();
                 closeDropdown();
                 break;
         }
@@ -148,7 +153,7 @@ export default function SearchableSelect<T extends { name: string, id: number }>
 
     const filteredItems = items
         .filter(item => item.name.toLowerCase().includes(query.toLowerCase()))
-        .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }));
+        .sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: "base" }));
 
     const showDropdown = isDropdownOpen && query.length >= queryMinLength;
 
@@ -183,8 +188,11 @@ export default function SearchableSelect<T extends { name: string, id: number }>
                     </button>
                 }
             </div>
+            {error && <p className={styles.error}>{error}</p>}
             {
-                mounted && showDropdown && position && createPortal(
+                // position is set only after opening, which happens on the client,
+                // so document is always available here
+                showDropdown && position && createPortal(
                     <ul
                         ref={dropdownRef}
                         className={dropdownStyles.foundItems}

@@ -1,8 +1,8 @@
-import { capitalize, formatRelativeDate, getExercisesLabel, getLastPlan, getLastSessionClass, getLastSessionIcon, getWorkoutExercises } from '@/lib';
+import { capitalize, formatRelativeDate, getExercisesLabel, getLastPlan, getLastSessionClass, getLastSessionIcon, getWorkoutExercises } from "@/lib";
 import styles from "../page.module.scss";
-import { Workout, PlannedSession, } from '@/_types';
-import { CalendarCheck, ListChecks } from 'lucide-react';
-import { useExercisesContext } from '@/app/providers';
+import { Workout, PlannedSession, } from "@/_types";
+import { CalendarCheck, ListChecks } from "lucide-react";
+import { useExercisesContext } from "@/app/providers";
 
 type Props = {
     selectedWorkout: Workout | null;

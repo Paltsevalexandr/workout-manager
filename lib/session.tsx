@@ -31,11 +31,15 @@ export function getDefaultSessionSource(
     return "none";
 }
 
+// Rows always come from the workout's currently active exercises.
+// Values are taken from sourceSession, then from fallbackSession
+// for rows the source doesn't have, then defaults
 export function createSessionExercises(
     workout: Workout,
     sourceSession: PerformedSession | PlannedSession | null,
     newSessionExerciseId: number,
-    exercises: Exercise[]
+    exercises: Exercise[],
+    fallbackSession: PerformedSession | PlannedSession | null = null
 ): PerformedExercise[] | PlannedExercise[] {
     const sessionExercises: (PerformedExercise | PlannedExercise)[] = [];
 
@@ -50,7 +54,7 @@ export function createSessionExercises(
             return;
         }
         sessionExercises.push(
-            createSessionExercise(sourceSession, newSessionExerciseId + index, workoutExercise.id)
+            createSessionExercise(sourceSession, newSessionExerciseId + index, workoutExercise.id, fallbackSession)
         );
     });
 
@@ -107,33 +111,47 @@ export function buildPlannedSession(
     const newPlannedExerciseId = generateID(getAllPlannedExercises(plannedSessions));
 
     const lastSession = getLastSession(workout.id, performedSessions);
+    const existingPlan = getLastPlan(workout.id, plannedSessions);
     const sessionFormSource = getDefaultSessionSource(lastSession);
 
+    // An existing plan is rebuilt against the current workout: rows removed from
+    // the workout are dropped, newly added ones take values from the last session
+    // (or defaults if the exercise was never performed)
     const plannedExercises = createSessionExercises(
-        workout, lastSession, newPlannedExerciseId, exercises
+        workout, existingPlan ?? lastSession, newPlannedExerciseId, exercises,
+        existingPlan ? lastSession : null
     ) as PlannedExercise[];
 
     return {
         plan: {
-            id: null,
+            id: existingPlan?.id ?? null,
             workoutId: workout.id,
-            date: Date.now(),
+            date: existingPlan?.date ?? Date.now(),
             plannedExercises
         },
         sessionFormSource
     };
 }
 
-export function createSessionExercise(
+function findSourceExercise(
     source: PerformedSession | PlannedSession | null,
-    newObjectId: number,
     workoutExerciseId: number
-): PerformedExercise | PlannedExercise {
-    const sourceExercise = isPerformedSession(source)
+): PerformedExercise | PlannedExercise | null {
+    return isPerformedSession(source)
         ? getLatestPerformedExercise(source, workoutExerciseId)
         : isPlannedSession(source)
             ? getPlannedExercise(source, workoutExerciseId)
             : null;
+}
+
+export function createSessionExercise(
+    source: PerformedSession | PlannedSession | null,
+    newObjectId: number,
+    workoutExerciseId: number,
+    fallback: PerformedSession | PlannedSession | null = null
+): PerformedExercise | PlannedExercise {
+    const sourceExercise = findSourceExercise(source, workoutExerciseId)
+        ?? findSourceExercise(fallback, workoutExerciseId);
 
     return {
         id: newObjectId,

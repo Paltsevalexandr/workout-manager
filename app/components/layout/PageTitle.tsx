@@ -1,4 +1,4 @@
-import styles from './PageTitle.module.scss';
+import styles from "./PageTitle.module.scss";
 
 type Props = {
     title:string

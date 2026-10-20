@@ -42,11 +42,11 @@ export default function ExerciseTable({ exercises, allExercises, setDeleteId, on
     }
 
     const sortedExercises = useMemo(() => {
-        const indexed = exercises.map((exercise, index) => ({ exercise, index }));
-        if (sortColumn !== "name") return indexed;
+        if (sortColumn !== "name") return exercises;
 
-        return indexed.sort((first, second) => {
-            const comparison = first.exercise.name.localeCompare(second.exercise.name);
+        // sort a copy, the exercises prop must not be mutated
+        return [...exercises].sort((first, second) => {
+            const comparison = first.name.localeCompare(second.name);
             return sortDirection === "asc" ? comparison : -comparison;
         });
     }, [exercises, sortColumn, sortDirection]);
@@ -100,7 +100,7 @@ export default function ExerciseTable({ exercises, allExercises, setDeleteId, on
                         </td>
                     </tr>
                 )}
-                {sortedExercises.map(({ exercise, index }) => {
+                {sortedExercises.map((exercise) => {
                     const parentExercise = getExerciseById(allExercises, exercise.parent);
 
                     return (

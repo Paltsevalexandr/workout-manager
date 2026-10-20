@@ -18,3 +18,7 @@
     bottom: 10px; // half of input height substracted by half of button height
     right: 0.5rem;
 }
+
+.error {
+    @include error;
+}

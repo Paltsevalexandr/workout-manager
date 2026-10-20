@@ -1,7 +1,5 @@
 
-type Props = {}
-
-export default function Footer({ }: Props) {
+export default function Footer() {
     return (
         <footer>
             <div className="section-content">

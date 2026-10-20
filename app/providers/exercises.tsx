@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
+import { createContext, useContext, useState, Dispatch, SetStateAction } from "react";
 import { Exercise } from "@/_types";
 
 type ExercisesContextType = {
@@ -132,7 +132,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
 export function useExercisesContext() {
     const context = useContext(ExercisesContext);
     if (!context) {
-        throw new Error('useExercisesContext must be used within ExercisesProvider');
+        throw new Error("useExercisesContext must be used within ExercisesProvider");
     }
     return context;
 }
