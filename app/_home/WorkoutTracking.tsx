@@ -71,12 +71,16 @@ export default function WorkoutTracking({ }: Props) {
     // Names are compared case-insensitively; archived workouts count too.
     // TODO - the backend must enforce this as well (unique index)
     const normalizedWorkoutName = workoutName.trim().toLowerCase();
-    const isWorkoutNameTaken = workouts.some(
+    const workoutWithSameName = workouts.find(
         w => w.id !== workoutToEdit?.id && w.name.trim().toLowerCase() === normalizedWorkoutName
     );
-    const workoutNameError = showWorkoutValidation && isWorkoutNameTaken
-        ? "A workout with this name already exists"
-        : undefined;
+    const isWorkoutNameTaken = workoutWithSameName !== undefined;
+    // TODO - link to the archive once it's shown in the UI
+    const workoutNameError = !showWorkoutValidation || !workoutWithSameName
+        ? undefined
+        : workoutWithSameName.status === "archived"
+            ? "An archived workout with this name already exists"
+            : "A workout with this name already exists";
 
     function createWorkout(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();

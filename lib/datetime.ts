@@ -45,7 +45,11 @@ export function formatRelativeDate(timestamp: number | null): string {
         return "Never done";
     }
     let text = "";
-    const days = Math.floor((Date.now() - timestamp) / (1000 * 60 * 60 * 24));
+    // Count calendar days between local midnights, not 24-hour windows:
+    // a session done yesterday at 22:00 is "Yesterday" at 08:00 today.
+    // Math.round absorbs the 23/25-hour days around DST switches
+    const startOfDay = (time: number) => new Date(time).setHours(0, 0, 0, 0);
+    const days = Math.round((startOfDay(Date.now()) - startOfDay(timestamp)) / (1000 * 60 * 60 * 24));
     if (days === 0) {
         text = "Today"
     }
