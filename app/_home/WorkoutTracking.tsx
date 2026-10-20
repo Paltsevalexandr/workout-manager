@@ -197,10 +197,10 @@ export default function WorkoutTracking({ }: Props) {
     function createNextSessionPlan(workout: Workout | null) {
         if (!workout) return;
 
+        // plan is the existing one rebuilt against the current workout, or a new one
         const { plan, sessionFormSource } = buildPlannedSession(workout, performedSessions, plannedSessions, exercises);
-        const existingPlan = getLastPlan(workout.id, plannedSessions);
         setSessionFormSource(sessionFormSource);
-        setPlannedSession(existingPlan ?? plan);
+        setPlannedSession(plan);
         setModalType("plan");
         setSelectedWorkoutName(workout.name);
     }
