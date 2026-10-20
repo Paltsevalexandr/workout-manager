@@ -1,12 +1,12 @@
-import { type SubmitEvent } from 'react';
-import ModalForm from '../ui/ModalForm';
-import Modal from '../ui/Modal';
-import NumberField from '../forms/NumberField';
-import DateField from '../forms/DateField';
-import { getExerciseById, getFormattedDate, getLastSession, getLastPlan, getSourceExercises } from '@/lib';
-import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, WorkoutExercise, PlannedSession, PerformedSession } from '@/_types';
+import { useState, type SubmitEvent } from "react";
+import ModalForm from "../ui/ModalForm";
+import Modal from "../ui/Modal";
+import NumberField from "../forms/NumberField";
+import DateField from "../forms/DateField";
+import { getExerciseById, getFormattedDate, getLastSession, getLastPlan, getSourceExercises } from "@/lib";
+import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, WorkoutExercise, PlannedSession, PerformedSession } from "@/_types";
 import styles from "./WorkoutTrackingModal.module.scss";
-import { useExercisesContext, useWorkoutsContext } from '@/app/providers';
+import { useExercisesContext, useWorkoutsContext } from "@/app/providers";
 
 type Props = {
     modalType: ModalType;
@@ -40,9 +40,11 @@ export default function WorkoutTrackingModal({
     const { exercises } = useExercisesContext();
     const { workouts } = useWorkoutsContext();
     const { workoutId } = session;
+    // "Now" is fixed when the modal opens: reading the clock on every render is impure
+    const [openedAt] = useState(() => Date.now());
 
     function getWorkoutExerciseById(workoutExerciseId: number | null): WorkoutExercise | undefined {
-        let workout = workouts.find(({ id }) => id == workoutId);
+        const workout = workouts.find(({ id }) => id == workoutId);
         if (workout) {
             return workout.workoutExercises.find(({ id }) => id == workoutExerciseId);
         }
@@ -61,7 +63,7 @@ export default function WorkoutTrackingModal({
     const plannedSession = getLastPlan(workoutId, plannedSessions);
     const showSourceToggle = modalType === "session" && plannedSession && lastSession;
 
-    let header = <div className={styles.workoutSessionFormHeader}>
+    const header = <div className={styles.workoutSessionFormHeader}>
         <h2>{headerText}</h2>
         <div className={styles.workoutSessionFormSourceWrap}>
             <button onClick={() => toggleSessionFormSource("prevSession", workoutId)}
@@ -81,7 +83,7 @@ export default function WorkoutTrackingModal({
         </div>
     </div>;
 
-    let sourceExercises: PerformedExercise[] | PlannedExercise[] = getSourceExercises(session);
+    const sourceExercises: PerformedExercise[] | PlannedExercise[] = getSourceExercises(session);
     const hasNoActiveExercises = sourceExercises.length === 0;
 
     return (
@@ -100,7 +102,7 @@ export default function WorkoutTrackingModal({
                     session &&
                     <DateField
                         label="Workout Date"
-                        max={modalType == "session" ? Date.now() : null}
+                        max={modalType == "session" ? openedAt : null}
                         name="workout_session_date"
                         value={getFormattedDate(session.date)}
                         autoFocus={true}
@@ -126,8 +128,8 @@ export default function WorkoutTrackingModal({
                         </div>
                         {
                             sourceExercises.map((sessionExercise) => {
-                                let workoutExercise = getWorkoutExerciseById(sessionExercise.workoutExerciseId)
-                                let exercise = getExerciseById(exercises, workoutExercise?.exerciseId);
+                                const workoutExercise = getWorkoutExerciseById(sessionExercise.workoutExerciseId)
+                                const exercise = getExerciseById(exercises, workoutExercise?.exerciseId);
                                 if (!exercise) {
                                     return null; // TODO - show error, not sure why it can happen at all
                                 }

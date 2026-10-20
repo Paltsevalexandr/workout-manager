@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
+import { createContext, useContext, useState, Dispatch, SetStateAction } from "react";
 import { PerformedSession } from "@/_types";
 
 type PerformedSessionContextType = {
@@ -178,7 +178,7 @@ export function PerformedSessionsProvider({ children }: { children: React.ReactN
 export function usePerformedSessionsContext() {
     const context = useContext(PerformedSessionsContext);
     if (!context) {
-        throw new Error('usePerformedSessionsContext must be used within PerformedSessionsProvider')
+        throw new Error("usePerformedSessionsContext must be used within PerformedSessionsProvider")
     }
     return context;
 }

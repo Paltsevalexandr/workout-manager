@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { dateStringToDateObj, getFormattedDate } from "@/lib";
 
 type Props = {
@@ -28,10 +28,13 @@ export default function DateField({
     // Raw input value, so typing isn't interrupted by re-rendering
     // with an incomplete date (e.g. year "0002")
     const [draft, setDraft] = useState<string>(value);
+    const [prevValue, setPrevValue] = useState<string>(value);
 
-    useEffect(() => {
+    // Sync external value changes during render instead of in an effect
+    if (value !== prevValue) {
+        setPrevValue(value);
         setDraft(value);
-    }, [value]);
+    }
 
     function handleChange(rawValue: string) {
         setDraft(rawValue);

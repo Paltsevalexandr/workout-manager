@@ -6,6 +6,7 @@ type Props = {
     title: string;
     children: ReactNode;
     confirmText?: string;
+    confirmDisabled?: boolean;
     onConfirm: () => void;
     onCancel: () => void;
 }
@@ -14,6 +15,7 @@ export default function ConfirmDialog({
     title,
     children,
     confirmText = "Confirm",
+    confirmDisabled = false,
     onConfirm,
     onCancel,
 }: Props) {
@@ -22,6 +24,7 @@ export default function ConfirmDialog({
             <ModalForm
                 title={title}
                 submitText={confirmText}
+                submitDisabled={confirmDisabled}
                 onSubmit={(event) => {
                     event.preventDefault();
                     onConfirm();

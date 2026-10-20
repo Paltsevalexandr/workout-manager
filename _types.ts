@@ -37,15 +37,15 @@ export type Workout = {
     name: string;
     workoutExercises: WorkoutExercise[];
     // tags: string[];
-    status: 'active' | 'archived';
+    status: "active" | "archived";
     // createdAt: string;
     // archivedAt: string | null;
 };
 
 export type WorkoutExercise = {
     id: number | null;
-    workoutTemplateId: Workout['id'] | null;
-    exerciseId: Exercise['id'];
+    workoutTemplateId: Workout["id"] | null;
+    exerciseId: Exercise["id"];
     isDeleted: boolean;
 }
 

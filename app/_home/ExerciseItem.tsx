@@ -1,7 +1,7 @@
-import { PerformedExercise, PlannedExercise, Workout } from '@/_types';
+import { PerformedExercise, PlannedExercise, Workout } from "@/_types";
 import styles from "../page.module.scss";
-import { useExercisesContext } from '@/app/providers';
-import { getExerciseById, getTargetLabel, getWorkoutExercise } from '@/lib';
+import { useExercisesContext } from "@/app/providers";
+import { getExerciseById, getTargetLabel, getWorkoutExercise } from "@/lib";
 
 type Props = {
     workout: Workout;

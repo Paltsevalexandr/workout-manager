@@ -1,10 +1,10 @@
-import { formatFullDate, getExercisesLabel } from '@/lib';
+import { formatFullDate, getExercisesLabel } from "@/lib";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import Dropdown from '@/app/components/ui/Dropdown';
-import KebabMenu from '@/app/components/ui/KebabMenu';
-import { Workout, PerformedSession } from '@/_types';
+import Dropdown from "@/app/components/ui/Dropdown";
+import KebabMenu from "@/app/components/ui/KebabMenu";
+import { Workout, PerformedSession } from "@/_types";
 import styles from "./ByDate.module.scss";
-import PerformedExerciseItem from './PerformedExerciseItem';
+import PerformedExerciseItem from "./PerformedExerciseItem";
 
 type Props = {
     workout: Workout;

@@ -1,11 +1,11 @@
-import { Dispatch, SetStateAction, useEffect, useRef } from 'react';
-import Modal from '../components/ui/Modal';
-import ModalForm from '../components/ui/ModalForm';
-import { Exercise, Workout, WorkoutExercise } from '../../_types';
-import TextField from '../components/forms/TextField';
+import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import Modal from "../components/ui/Modal";
+import ModalForm from "../components/ui/ModalForm";
+import { Exercise, Workout, WorkoutExercise } from "../../_types";
+import TextField from "../components/forms/TextField";
 import { Trash2, Plus } from "lucide-react"
 import styles from "./WorkoutForm.module.scss";
-import SearchableSelect from '../components/forms/SearchableSelect';
+import SearchableSelect from "../components/forms/SearchableSelect";
 
 type Props = {
     editWorkout?: Workout | null;

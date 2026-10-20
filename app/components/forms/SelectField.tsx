@@ -1,5 +1,5 @@
 import { capitalize } from "../../../lib"
-import { ReactNode } from 'react';
+import { ReactNode } from "react";
 type Props<Value extends string | number> = {
     label: string | ReactNode;
     name: string;

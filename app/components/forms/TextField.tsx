@@ -1,4 +1,4 @@
-import { KeyboardEvent, useEffect, useRef } from 'react';
+import { KeyboardEvent, useEffect, useRef } from "react";
 import styles from "./TextField.module.scss";
 
 type Props = {

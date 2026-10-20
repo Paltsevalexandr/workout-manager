@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, Dispatch, SetStateAction } from 'react';
+import { createContext, useContext, useState, Dispatch, SetStateAction } from "react";
 import { MuscleGroup } from "@/_types";
 
 type MuscleGroupContextType = {
@@ -195,7 +195,7 @@ export function MuscleGroupsProvider({ children }: { children: React.ReactNode }
 export function useMuscleGroupsContext() {
     const context = useContext(MuscleGroupsContext);
     if (!context) {
-        throw new Error('useMuscleGroupsContext must be used within MuscleGroupsProvider')
+        throw new Error("useMuscleGroupsContext must be used within MuscleGroupsProvider")
     }
     return context;
 }

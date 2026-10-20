@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import styles from './Dropdown.module.scss';
+import { ReactNode } from "react";
+import styles from "./Dropdown.module.scss";
 
 type Props = {
     isExpanded: boolean;
@@ -8,7 +8,9 @@ type Props = {
 
 export default function Dropdown({ isExpanded, children}: Props) {
   return (
-      <div className={styles.dropdown + ` ${isExpanded ? styles.active : ""}`}>
+      // inert keeps collapsed content out of Tab order and screen readers,
+      // overflow: hidden only hides it visually
+      <div className={styles.dropdown + ` ${isExpanded ? styles.active : ""}`} inert={!isExpanded}>
           <div className={styles.dropdownContent}>
               {children}
           </div>

@@ -1,11 +1,11 @@
 "use client";
 
-import { Workout, PlannedSession, PerformedSession } from '@/_types';
+import { Workout, PlannedSession, PerformedSession } from "@/_types";
 import styles from "../page.module.scss";
-import { getLastSession, getLastSessionDate } from '@/lib';
-import { useWorkoutsContext } from '@/app/providers';
-import WorkoutItem from './WorkoutItem';
-import { Plus } from 'lucide-react';
+import { getLastSession, getLastSessionDate } from "@/lib";
+import { useWorkoutsContext } from "@/app/providers";
+import WorkoutItem from "./WorkoutItem";
+import { Plus } from "lucide-react";
 
 type Props = {
     selectedWorkout: Workout | null;

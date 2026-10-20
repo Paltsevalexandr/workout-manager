@@ -1,11 +1,11 @@
 import styles from "../page.module.scss";
-import { Workout, PerformedSession, Exercise, Category, MuscleGroup } from '@/_types';
-import ExerciseList from './ExerciseList';
-import { formatRelativeDate, getExercisesLabel, getLastPlan, getLastSession, getLastSessionDate, getLastSessionClass, getWorkoutExercises, formatFullDate, capitalize } from '@/lib';
-import KebabMenu, { MenuItem } from '../components/ui/KebabMenu';
+import { Workout, PerformedSession, Exercise, Category, MuscleGroup } from "@/_types";
+import ExerciseList from "./ExerciseList";
+import { formatRelativeDate, getExercisesLabel, getLastPlan, getLastSession, getLastSessionDate, getLastSessionClass, getWorkoutExercises, formatFullDate, capitalize } from "@/lib";
+import KebabMenu, { MenuItem } from "../components/ui/KebabMenu";
 import { ListChecks } from "lucide-react";
 import { useExercisesContext, usePlannedSessionsContext } from "@/app/providers";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 type Props = {
     workout: Workout;
@@ -29,15 +29,9 @@ export default function WorkoutDetails({
     const lastSessionClass = getLastSessionClass(lastSessionDate, styles);
     const lastRelativeDate: string = formatRelativeDate(lastSessionDate);
 
-    // null = no explicit user choice yet, fall back to the default source (session takes priority over plan)
+    // null = no explicit user choice yet, fall back to the default source (session takes priority over plan).
+    // The parent remounts this component per workout (key), so the choice doesn't leak between workouts
     const [viewMode, setViewMode] = useState<ViewMode>(null);
-
-    useEffect(() => {
-        // reset the manual choice when switching to a different workout,
-        // otherwise a "session"/"plan" viewMode left over from the previous
-        // workout could point at a source the new workout doesn't even have
-        setViewMode(null);
-    }, [workout.id]);
 
     // if the manually selected source disappeared (e.g. the session got deleted),
     // fall back to whichever other source is available

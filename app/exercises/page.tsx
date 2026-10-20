@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, type SubmitEvent } from "react"
-import { useCategoriesContext, useExercisesContext, useMuscleGroupsContext } from '@/app/providers';
+import { useCategoriesContext, useExercisesContext, useMuscleGroupsContext } from "@/app/providers";
 import Content from "../components/layout/Content"
 import styles from "./page.module.scss"
 import { targets } from "../../_types"
@@ -176,9 +176,29 @@ export default function Page() {
         setDeleteId(id);
     }
 
+    // An exercise that is a parent of active exercises can't be deleted,
+    // otherwise its children would point to a removed parent.
+    // Soft-deleted children don't block it.
+    // TODO - the backend must check this too: soft delete doesn't trigger FK constraints
+    function getActiveChildren(id: number): Exercise[] {
+        return exercises.filter(e => e.parent === id && !e.isDeleted);
+    }
+    const deleteExercise = deleteId !== null ? getExercise(deleteId) : undefined;
+    const deleteBlockingChildren = deleteId !== null ? getActiveChildren(deleteId) : [];
+
+    function showChildrenOfDeleted() {
+        if (!deleteExercise) return;
+        setFilters({
+            parents: [deleteExercise], hasNoParent: false, muscleGroups: [], categories: []
+        });
+        setExerciseQuery("");
+        setIsDisplayFilters(true);
+        setDeleteId(null);
+    }
+
     function handleDelete() {
         const exercise = deleteId !== null ? getExercise(deleteId) : undefined;
-        if (!exercise || exercise.isSystem) {
+        if (!exercise || exercise.isSystem || getActiveChildren(exercise.id).length > 0) {
             return;
         }
 
@@ -249,7 +269,7 @@ export default function Page() {
                         <div className={styles.exercisesControlsActions}>
                             <button
                                 className="button-primary"
-                                style={{ visibility: selectedFilters > 0 ? 'visible' : 'hidden' }}
+                                style={{ visibility: selectedFilters > 0 ? "visible" : "hidden" }}
                                 onClick={clearFilters}
                                 type="button"
                             >
@@ -381,16 +401,33 @@ export default function Page() {
                 </Modal>
             )}
             {deleteId !== null && (
-                <ConfirmDialog
-                    title="Delete Exercise?"
-                    onConfirm={handleDelete}
-                    onCancel={() => setDeleteId(null)}
-                >
-                    <p>
-                        Are you sure you want to delete
-                        "{getExercise(deleteId)?.name ?? "exercise"}"?
-                    </p>
-                </ConfirmDialog>
+                deleteBlockingChildren.length > 0
+                    ? <ConfirmDialog
+                        title="Can't Delete Exercise"
+                        confirmText="Delete"
+                        confirmDisabled={true}
+                        onConfirm={handleDelete}
+                        onCancel={() => setDeleteId(null)}
+                    >
+                        <p>
+                            &quot;{deleteExercise?.name ?? "This exercise"}&quot; is the parent of:{" "}
+                            {deleteBlockingChildren.map(child => child.name).join(", ")}.
+                            Change their parent first.
+                        </p>
+                        <button type="button" onClick={showChildrenOfDeleted}>
+                            Show them in the list
+                        </button>
+                    </ConfirmDialog>
+                    : <ConfirmDialog
+                        title="Delete Exercise?"
+                        onConfirm={handleDelete}
+                        onCancel={() => setDeleteId(null)}
+                    >
+                        <p>
+                            Are you sure you want to delete
+                            &quot;{deleteExercise?.name ?? "exercise"}&quot;?
+                        </p>
+                    </ConfirmDialog>
             )}
         </Content>
     )

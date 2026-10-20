@@ -60,7 +60,7 @@ export function isPlannedSession(
 
 export function getSourceExercises(session: PerformedSession | PlannedSession)
     : PerformedExercise[] | PlannedExercise[] {
-    let sourceExercises: PerformedExercise[] | PlannedExercise[] =
+    const sourceExercises: PerformedExercise[] | PlannedExercise[] =
         isPerformedSession(session)
             ? session.performedExercises
             : session.plannedExercises;

@@ -3,26 +3,24 @@
 import {
     useState,
     type SubmitEvent
-} from 'react';
+} from "react";
 import styles from "../page.module.scss";
-import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from '@/app/providers';
+import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from "@/app/providers";
 import WorkoutsList from "./WorkoutsList";
-import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, Workout, WorkoutExercise, PlannedSession, PerformedSession } from '@/_types';
-import WorkoutTrackingModal from '../components/workout/WorkoutTrackingModal';
+import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, Workout, WorkoutExercise, PlannedSession, PerformedSession } from "@/_types";
+import WorkoutTrackingModal from "../components/workout/WorkoutTrackingModal";
 import {
     buildPerformedSession,
     buildPlannedSession,
     generateID,
     getLastPlan,
-} from '@/lib';
-import WorkoutDetails from './WorkoutDetails';
-import WorkoutForm from './WorkoutForm';
-import { MenuItem } from '../components/ui/KebabMenu';
-import ConfirmDialog from '../components/ui/ConfirmDialog';
+} from "@/lib";
+import WorkoutDetails from "./WorkoutDetails";
+import WorkoutForm from "./WorkoutForm";
+import { MenuItem } from "../components/ui/KebabMenu";
+import ConfirmDialog from "../components/ui/ConfirmDialog";
 
-type Props = {}
-
-export default function WorkoutTracking({ }: Props) {
+export default function WorkoutTracking() {
     const { workouts, setWorkouts } = useWorkoutsContext();
     const { exercises } = useExercisesContext();
 
@@ -409,6 +407,9 @@ export default function WorkoutTracking({ }: Props) {
                         {
                             selectedWorkout &&
                             <WorkoutDetails
+                                // remount on workout switch, so the source toggle state
+                                // left over from the previous workout is reset
+                                key={selectedWorkout.id}
                                 workout={selectedWorkout}
                                 performedSessions={performedSessions}
                                 menuItems={getMenuItems(selectedWorkout)}
@@ -468,7 +469,7 @@ export default function WorkoutTracking({ }: Props) {
                             onConfirm={handleDeleteWorkout}
                             onCancel={() => setDeleteWorkoutId(null)}
                         >
-                            <p>Are you sure you want to delete "{workouts.find((workout) => workout.id === deleteWorkoutId)?.name}"?</p>
+                            <p>Are you sure you want to delete &quot;{workouts.find((workout) => workout.id === deleteWorkoutId)?.name}&quot;?</p>
                         </ConfirmDialog>
                     )}
                     {archiveWorkoutId !== null && (
@@ -477,7 +478,7 @@ export default function WorkoutTracking({ }: Props) {
                             onConfirm={handleArchiveWorkout}
                             onCancel={() => setArchiveWorkoutId(null)}
                         >
-                            <p>Are you sure you want to archive "{workouts.find((workout) => workout.id === archiveWorkoutId)?.name}"?</p>
+                            <p>Are you sure you want to archive &quot;{workouts.find((workout) => workout.id === archiveWorkoutId)?.name}&quot;?</p>
                         </ConfirmDialog>
                     )}
                 </div>

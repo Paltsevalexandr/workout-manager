@@ -1,11 +1,11 @@
-import { useState, type SubmitEvent } from 'react'
-import { PerformedExercise, Workout, PerformedSession } from '@/_types';
-import { createSessionExercises, formatFullDate, generateID, getAllPerformedExercises, getLastSession } from '@/lib';
+import { useState, type SubmitEvent } from "react"
+import { PerformedExercise, Workout, PerformedSession } from "@/_types";
+import { createSessionExercises, formatFullDate, generateID, getAllPerformedExercises, getLastSession } from "@/lib";
 import styles from "./ByDate.module.scss";
-import PerformedSessionItem from './PerformedSessionItem';
-import ConfirmDialog from '@/app/components/ui/ConfirmDialog';
-import WorkoutTrackingModal from '@/app/components/workout/WorkoutTrackingModal';
-import { useExercisesContext, usePerformedSessionsContext } from '@/app/providers';
+import PerformedSessionItem from "./PerformedSessionItem";
+import ConfirmDialog from "@/app/components/ui/ConfirmDialog";
+import WorkoutTrackingModal from "@/app/components/workout/WorkoutTrackingModal";
+import { useExercisesContext, usePerformedSessionsContext } from "@/app/providers";
 
 type Props = {
     workout: Workout;
@@ -67,6 +67,8 @@ export default function ByDate({
         setDuplicateSession({
             ...session,
             id: null,
+            // False positive: this runs in a click handler ("Duplicate as New"), not during render
+            // eslint-disable-next-line react-hooks/purity
             date: Date.now(),
             // rows come from the workout's currently active exercises,
             // the picked session only supplies the values (sets/target/weight/rest)
