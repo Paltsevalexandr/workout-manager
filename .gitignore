@@ -40,4 +40,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# skills (restorable from skills-lock.json)
+/.agents/skills/
+/.claude/skills/
+/.windsurf/skills/
+
 TODO.txt
+
+/generated/prisma

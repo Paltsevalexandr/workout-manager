@@ -1,0 +1,147 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// Workout
+enum WorkoutStatus {
+  active
+  archived
+}
+
+model Workout {
+  id         Int           @id @default(autoincrement())
+  name       String
+  status     WorkoutStatus @default(active)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  archivedAt DateTime?
+
+  workoutExercises  WorkoutExercise[]
+  performedSessions PerformedSession[]
+  plannedSessions   PlannedSession[]
+}
+
+model WorkoutExercise {
+  id         Int       @id @default(autoincrement())
+  workoutId  Int
+  exerciseId Int
+  // Order of the exercise inside the workout
+  position   Int
+  deletedAt  DateTime?
+
+  workout            Workout             @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exercise           Exercise            @relation(fields: [exerciseId], references: [id])
+  performedExercises PerformedExercise[]
+  plannedExercises   PlannedExercise[]
+
+  @@index([workoutId, position])
+}
+
+model PerformedSession {
+  id        Int      @id @default(autoincrement())
+  workoutId Int
+  date      DateTime
+  updatedAt DateTime @updatedAt
+
+  workout            Workout             @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  performedExercises PerformedExercise[]
+
+  @@index([workoutId, date])
+}
+
+model PerformedExercise {
+  id                Int   @id @default(autoincrement())
+  sessionId         Int
+  workoutExerciseId Int
+  sets              Int
+  // Reps or seconds, depending on Exercise.targetType
+  target            Int
+  weight            Float
+  rest              Int
+
+  session         PerformedSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  workoutExercise WorkoutExercise  @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, workoutExerciseId])
+}
+
+model PlannedSession {
+  id        Int      @id @default(autoincrement())
+  workoutId Int
+  date      DateTime
+  updatedAt DateTime @updatedAt
+
+  workout          Workout           @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  plannedExercises PlannedExercise[]
+
+  @@index([workoutId, date])
+}
+
+model PlannedExercise {
+  id                Int   @id @default(autoincrement())
+  sessionId         Int
+  workoutExerciseId Int
+  sets              Int
+  // Reps or seconds, depending on Exercise.targetType
+  target            Int
+  weight            Float
+  rest              Int
+
+  session         PlannedSession  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  workoutExercise WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, workoutExerciseId])
+}
+
+// Exercise
+enum ExerciseTargetType {
+  reps
+  duration
+}
+
+model Exercise {
+  id         Int                @id @default(autoincrement())
+  name       String
+  targetType ExerciseTargetType
+  isSystem   Boolean            @default(false)
+  parentId   Int?
+  updatedAt  DateTime           @updatedAt
+  deletedAt  DateTime?
+
+  parent           Exercise?         @relation("ExerciseHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children         Exercise[]        @relation("ExerciseHierarchy")
+  workoutExercises WorkoutExercise[]
+  categories       Category[]
+  muscleGroups     MuscleGroup[]
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  name      String
+  isSystem  Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+
+  exercises Exercise[]
+}
+
+model MuscleGroup {
+  id        Int      @id @default(autoincrement())
+  name      String
+  isSystem  Boolean  @default(false)
+  parentId  Int?
+  updatedAt DateTime @updatedAt
+
+  parent    MuscleGroup?  @relation("MuscleGroupHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children  MuscleGroup[] @relation("MuscleGroupHierarchy")
+  exercises Exercise[]
+}
