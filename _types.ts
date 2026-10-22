@@ -1,3 +1,6 @@
+import type { CategoryDTO } from "@/data/categories";
+import { MuscleGroupDTO } from "./data/muscleGroups";
+
 export const targets = ["reps", "duration"] as const;
 export type Target = typeof targets[number];
 
@@ -18,19 +21,14 @@ export type Exercise = {
     isDeleted: boolean;
 };
 
-export type MuscleGroup = {
-    id: number;
-    name: string;
-    parentId: number | null;
-    isSystem: boolean;
-};
-
-export type Category = {
-    id: number;
-    name: string;
-    parentId: number | null;
-    isSystem: boolean;
-}
+// export type MuscleGroup = {
+//     id: number;
+//     name: string;
+//     parentId: number | null;
+//     isSystem: boolean;
+// };
+export type MuscleGroup = MuscleGroupDTO;
+export type Category = CategoryDTO;
 
 export type Workout = {
     id: number;

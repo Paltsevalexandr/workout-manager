@@ -5,6 +5,8 @@ import "./globals.scss";
 import Header from "./components/layout/Header";
 import Footer from "./components/layout/Footer";
 import { AppProviders } from "./providers";
+import { getCategories } from "@/data/categories";
+import { getMuscleGroups } from "@/data/muscleGroups";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -21,11 +23,15 @@ export const metadata: Metadata = {
     description: "Your best helper in your training",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
+    const [categories, muscleGroups] = await Promise.all([
+        getCategories(),
+        getMuscleGroups(),
+    ]);
 
     return (
         <html
@@ -35,7 +41,10 @@ export default function RootLayout({
             <body className="min-h-full flex flex-col">
                 <Header />
 
-                <AppProviders>
+                <AppProviders
+                    categories={categories}
+                    muscleGroups={muscleGroups}
+                >
                     {children}
                 </AppProviders>
 

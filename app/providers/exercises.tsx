@@ -16,7 +16,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             id: 1,
             name: "Push-ups",
             parent: null,
-            categories: [{ id: 1, name: "strength", parentId: null, isSystem: true }],
+            categories: [{ id: 1, name: "strength", isSystem: true }],
             muscleGroups: [
                 {
                     id: 1,
@@ -34,7 +34,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             id: 2,
             name: "Barbell squat",
             parent: null,
-            categories: [{ id: 1, name: "strength", parentId: null, isSystem: true }],
+            categories: [{ id: 1, name: "strength", isSystem: true }],
             muscleGroups: [
                 {
                     id: 6,
@@ -52,7 +52,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             id: 3,
             name: "Running",
             parent: null,
-            categories: [{ id: 2, name: "cardio", parentId: null, isSystem: true }],
+            categories: [{ id: 2, name: "cardio", isSystem: true }],
             muscleGroups: [
                 {
                     id: 6,
@@ -70,7 +70,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             id: 4,
             name: "Dumbbell row",
             parent: null,
-            categories: [{ id: 1, name: "strength", parentId: null, isSystem: true }],
+            categories: [{ id: 1, name: "strength", isSystem: true }],
             muscleGroups: [
                 {
                     id: 2,
@@ -88,7 +88,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             id: 5,
             name: "Plank",
             parent: null,
-            categories: [{ id: 3, name: "mobility", parentId: null, isSystem: true }],
+            categories: [{ id: 3, name: "mobility", isSystem: true }],
             muscleGroups: [
                 {
                     id: 5,
@@ -106,7 +106,7 @@ export function ExercisesProvider({ children }: { children: React.ReactNode }) {
             id: 6,
             name: "Lunges",
             parent: null,
-            categories: [{ id: 4, name: "stretching", parentId: null, isSystem: true }],
+            categories: [{ id: 4, name: "stretching", isSystem: true }],
             muscleGroups: [
                 {
                     id: 6,
