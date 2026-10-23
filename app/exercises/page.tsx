@@ -50,12 +50,12 @@ function matchesFilter<T extends { id: number }>(itemIds: number[], filterItems:
 
 function matchesParentFilter(exercise: Exercise, filters: Filters): boolean {
     if (filters.parents.length === 0 && !filters.hasNoParent) return true;
-    if (exercise.parent === null) return filters.hasNoParent;
-    return filters.parents.some(parent => parent.id === exercise.parent);
+    if (exercise.parentId === null) return filters.hasNoParent;
+    return filters.parents.some(parent => parent.id === exercise.parentId);
 }
 
 export default function Page() {
-    const { exercises, setExercises } = useExercisesContext();
+    const { exercises } = useExercisesContext();
     const { categories } = useCategoriesContext();
     const { muscleGroups } = useMuscleGroupsContext();
 
@@ -95,6 +95,9 @@ export default function Page() {
 
     const getExercise = (id: number) => getExerciseById(exercises, id);
 
+    function setExercises(fn: (currentExercises: Exercise[]) => Exercise[]) {
+        // TODO: temporary no-op until exercise mutations move to Server Actions
+    }
     function openCreateForm() {
         setExerciseDraft(createEmptyExerciseDraft());
         setShowValidation(false);
@@ -108,9 +111,9 @@ export default function Page() {
         setExerciseDraft({
             name: exercise.name,
             categories: [...exercise.categories],
-            target: exercise.target,
+            target: exercise.targetType,
             muscleGroups: [...exercise.muscleGroups],
-            parent: exercise.parent !== null ? getExercise(exercise.parent) ?? null : null,
+            parent: exercise.parentId !== null ? getExercise(exercise.parentId) ?? null : null,
         });
         setShowValidation(false);
         setEditId(id);
@@ -142,10 +145,10 @@ export default function Page() {
                 {
                     id: generateID(currentExercises),
                     name: exerciseDraft.name.trim(),
-                    parent: exerciseDraft.parent?.id ?? null,
+                    parentId: exerciseDraft.parent?.id ?? null,
                     categories: [...exerciseDraft.categories],
                     muscleGroups: [...exerciseDraft.muscleGroups],
-                    target: exerciseDraft.target,
+                    targetType: exerciseDraft.target,
                     isSystem: false,
                     isDeleted: false,
                 },
@@ -181,7 +184,7 @@ export default function Page() {
     // Soft-deleted children don't block it.
     // TODO - the backend must check this too: soft delete doesn't trigger FK constraints
     function getActiveChildren(id: number): Exercise[] {
-        return exercises.filter(e => e.parent === id && !e.isDeleted);
+        return exercises.filter(e => e.parentId === id && !e.isDeleted);
     }
     const deleteExercise = deleteId !== null ? getExercise(deleteId) : undefined;
     const deleteBlockingChildren = deleteId !== null ? getActiveChildren(deleteId) : [];

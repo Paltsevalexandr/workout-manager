@@ -66,7 +66,7 @@ export default function WorkoutDetails({
     }
 
     function getWorkoutMuscleGroups(workout: Workout, exercises: Exercise[]): MuscleGroup[] {
-        const groups = getWorkoutExercises(workout, exercises).filter(e => e.parent === null).flatMap(e => e.muscleGroups);
+        const groups = getWorkoutExercises(workout, exercises).filter(e => e.parentId === null).flatMap(e => e.muscleGroups);
         return [...new Map(groups.map(g => [g.id, g])).values()]; // remove id duplication
     }
     const session = effectiveMode == "session" ? lastSession : effectiveMode == "plan" ? lastPlan : null;

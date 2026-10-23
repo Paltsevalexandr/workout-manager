@@ -55,7 +55,7 @@ export default function ExerciseForm({
         while (current && !visited.has(current.id)) {
             if (current.id === excludeExerciseId) return true;
             visited.add(current.id);
-            current = exercises.find((e) => e.id === current!.parent);
+            current = exercises.find((e) => e.id === current!.parentId);
         }
         return false;
     };

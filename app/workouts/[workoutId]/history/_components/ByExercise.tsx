@@ -66,7 +66,7 @@ export default function ByExercise({
         if (field === "weight") {
             return "kg";
         }
-        if (field === "rest" || (field === "target" && exercise?.target === "duration")) {
+        if (field === "rest" || (field === "target" && exercise?.targetType === "duration")) {
             return "s";
         }
         return "";
@@ -78,7 +78,7 @@ export default function ByExercise({
         if (hasAnyWeight) {
             return "kg";
         }
-        return exercise?.target === "duration" ? "s" : "reps";
+        return exercise?.targetType === "duration" ? "s" : "reps";
     }
     function getPercentChange(current: number, first: number): number | null {
         return first !== 0 ? Math.round((current - first) / first * 1000) / 10 : null;
@@ -144,7 +144,7 @@ export default function ByExercise({
                             return (
                                 <li className={styles.exerciseStat} key={field}>
                                     <p className={styles.exerciseStatFieldName}>
-                                        {capitalize(field == "target" ? (exercise?.target == "reps" ? "Reps" : "Duration") : field)}
+                                        {capitalize(field == "target" ? (exercise?.targetType == "reps" ? "Reps" : "Duration") : field)}
                                     </p>
                                     <p className={styles.exerciseStatCurrent}>{current}{getFieldUnit(field)}</p>
                                     {renderDelta(current, first, best, isAtBest, getFieldUnit(field), higherIsBetter[field])}

@@ -101,7 +101,7 @@ export default function ExerciseTable({ exercises, allExercises, setDeleteId, on
                     </tr>
                 )}
                 {sortedExercises.map((exercise) => {
-                    const parentExercise = getExerciseById(allExercises, exercise.parent);
+                    const parentExercise = getExerciseById(allExercises, exercise.parentId);
 
                     return (
                     <tr key={"exercise_" + exercise.id}>
@@ -140,7 +140,7 @@ export default function ExerciseTable({ exercises, allExercises, setDeleteId, on
                             </div>
                         </td>
                         <td>
-                            {exercise.target}
+                            {exercise.targetType}
                         </td>
                         <td className={styles.actionCell}>
                             <div className={styles.actions}>

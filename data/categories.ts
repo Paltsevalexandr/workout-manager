@@ -2,7 +2,7 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import type { Prisma } from "@/generated/prisma/client";
 
-const categorySelect = {
+export const categorySelect = {
     id: true,
     name: true,
     isSystem: true,

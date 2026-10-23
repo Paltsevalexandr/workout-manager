@@ -6,17 +6,18 @@ import { CategoriesProvider } from "./categories";
 import { MuscleGroupsProvider } from "./muscleGroups";
 import { PerformedSessionsProvider } from "./performedSessions";
 import { PlannedSessionsProvider } from "./plannedSessions";
-import { Category, MuscleGroup } from "@/_types";
+import { Category, Exercise, MuscleGroup } from "@/_types";
 
 type Props = {
     children: React.ReactNode;
     categories: Category[];
-    muscleGroups: MuscleGroup[],
+    muscleGroups: MuscleGroup[];
+    exercises: Exercise[];
 }
-export default function AppProviders({ children, categories, muscleGroups }: Props) {
+export default function AppProviders({ children, categories, muscleGroups, exercises }: Props) {
     return (
         <WorkoutsProvider>
-            <ExercisesProvider>
+            <ExercisesProvider exercises={exercises}>
                 <CategoriesProvider categories={categories}>
                     <MuscleGroupsProvider muscleGroups={muscleGroups}>
                         <PerformedSessionsProvider>
