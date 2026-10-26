@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, type SubmitEvent } from "react"
+import { useState, useTransition, type SubmitEvent } from "react"
+import { createExerciseAction, deleteExerciseAction, updateExerciseAction } from "./actions";
 import { useCategoriesContext, useExercisesContext, useMuscleGroupsContext } from "@/app/providers";
 import Content from "../components/layout/Content"
 import styles from "./page.module.scss"
@@ -11,7 +12,7 @@ import ExerciseForm from "./_components/ExerciseForm"
 import Modal from "../components/ui/Modal"
 import ModalForm from "../components/ui/ModalForm"
 import ConfirmDialog from "../components/ui/ConfirmDialog"
-import { generateID, getExerciseById } from "../../lib";
+import { getExerciseById } from "../../lib";
 import { Plus, Filter, ChevronDown, ChevronUp } from "lucide-react";
 import Dropdown from "../components/ui/Dropdown";
 import SearchableMultiSelect from "../components/forms/SearchableMultiSelect";
@@ -59,6 +60,9 @@ export default function Page() {
     const { categories } = useCategoriesContext();
     const { muscleGroups } = useMuscleGroupsContext();
 
+    const [isPending, startTransition] = useTransition();
+    const [submitError, setSubmitError] = useState<string | null>(null);
+
     const [modalMode, setModalMode] = useState<ModalMode>("none");
     const [exerciseDraft, setExerciseDraft] = useState<ExerciseDraft>(createEmptyExerciseDraft);
     const [editId, setEditId] = useState<number | null>(null);
@@ -94,14 +98,11 @@ export default function Page() {
         : undefined;
 
     const getExercise = (id: number) => getExerciseById(exercises, id);
-
-    function setExercises(fn: (currentExercises: Exercise[]) => Exercise[]) {
-        // TODO: temporary no-op until exercise mutations move to Server Actions
-    }
     function openCreateForm() {
         setExerciseDraft(createEmptyExerciseDraft());
         setShowValidation(false);
         setModalMode("create");
+        setSubmitError(null);
     }
 
     function handleEdit(id: number) {
@@ -118,6 +119,7 @@ export default function Page() {
         setShowValidation(false);
         setEditId(id);
         setModalMode("edit");
+        setSubmitError(null);
     }
 
     function handleCancel() {
@@ -125,6 +127,7 @@ export default function Page() {
         setShowValidation(false);
         setModalMode("none");
         setEditId(null);
+        setSubmitError(null);
     }
 
     function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
@@ -139,44 +142,34 @@ export default function Page() {
             return;
         }
 
-        if (modalMode === "create") {
-            setExercises((currentExercises) => [
-                ...currentExercises,
-                {
-                    id: generateID(currentExercises),
-                    name: exerciseDraft.name.trim(),
-                    parentId: exerciseDraft.parent?.id ?? null,
-                    categories: [...exerciseDraft.categories],
-                    muscleGroups: [...exerciseDraft.muscleGroups],
-                    targetType: exerciseDraft.target,
-                    isSystem: false,
-                    isDeleted: false,
-                },
-            ]);
-        } else if (modalMode === "edit" && editId !== null && getExercise(editId)?.isSystem === false) {
-            setExercises((currentExercises) =>
-                currentExercises.map((exercise) =>
-                    exercise.id === editId
-                        ? {
-                            ...exercise,
-                            parent: exerciseDraft.parent?.id ?? null,
-                            name: exerciseDraft.name.trim(),
-                            categories: [...exerciseDraft.categories],
-                            muscleGroups: [...exerciseDraft.muscleGroups],
-                            target: exerciseDraft.target,
-                        }
-                        : exercise
-                )
-            );
-        }
+        if (modalMode === "edit" && editId === null) return;
 
-        handleCancel();
+        const input = {
+            name: exerciseDraft.name.trim(),
+            targetType: exerciseDraft.target,
+            parentId: exerciseDraft.parent?.id ?? null,
+            categoryIds: exerciseDraft.categories.map((category) => category.id),
+            muscleGroupIds: exerciseDraft.muscleGroups.map((group) => group.id),
+        };
+
+        startTransition(async () => {
+            const result = modalMode === "create"
+                ? await createExerciseAction(input)
+                : await updateExerciseAction(editId, input);
+
+            if (!result.ok) {
+                setSubmitError(result.error);
+                return;
+            }
+            handleCancel();
+        });
     }
 
     function requestDelete(id: number) {
         const exercise = getExercise(id);
         if (!exercise || exercise.isSystem || exercise.isDeleted) return;
         setDeleteId(id);
+        setSubmitError(null);
     }
 
     // An exercise that is a parent of active exercises can't be deleted,
@@ -205,14 +198,14 @@ export default function Page() {
             return;
         }
 
-        // keep the exercise around (soft delete) so WorkoutExercise rows,
-        // and the history that references them, can still resolve its name
-        setExercises((currentExercises) =>
-            currentExercises.map((ex) =>
-                ex.id === deleteId ? { ...ex, isDeleted: true } : ex
-            )
-        );
-        setDeleteId(null);
+        startTransition(async () => {
+            const result = await deleteExerciseAction(exercise.id);
+            if (!result.ok) {
+                setSubmitError(result.error);
+                return;
+            }
+            setDeleteId(null);
+        });
     }
 
     const activeExercises = exercises.filter(exercise => !exercise.isDeleted);
@@ -365,6 +358,7 @@ export default function Page() {
                     <ModalForm
                         title={modalMode === "create" ? "New Exercise" : "Edit Exercise"}
                         submitText={modalMode === "create" ? "Add exercise" : "Save changes"}
+                        submitDisabled={isPending}
                         onSubmit={handleSubmit}
                         onCancel={handleCancel}
                     >
@@ -400,6 +394,7 @@ export default function Page() {
                                 }))
                             }
                         />
+                        {submitError && <p className={styles.formError} role="alert">{submitError}</p>}
                     </ModalForm>
                 </Modal>
             )}
@@ -423,6 +418,7 @@ export default function Page() {
                     </ConfirmDialog>
                     : <ConfirmDialog
                         title="Delete Exercise?"
+                        confirmDisabled={isPending}
                         onConfirm={handleDelete}
                         onCancel={() => setDeleteId(null)}
                     >
@@ -430,6 +426,7 @@ export default function Page() {
                             Are you sure you want to delete
                             &quot;{deleteExercise?.name ?? "exercise"}&quot;?
                         </p>
+                        {submitError && <p className={styles.formError} role="alert">{submitError}</p>}
                     </ConfirmDialog>
             )}
         </Content>

@@ -174,6 +174,8 @@ export default function SearchableSelect<T extends { name: string, id: number }>
                     autoComplete="off"
                     className={selectedItem ? styles.searchInput : ""}
                     onFocus={() => setIsDropdownOpen(true)}
+                    // Closes the list when focus leaves the field, e.g. via Tab
+                    onBlur={closeDropdown}
                     onChange={handleQueryChange}
                     onKeyDown={handleKeyDown}
                     placeholder={"Search..."}
@@ -195,6 +197,8 @@ export default function SearchableSelect<T extends { name: string, id: number }>
                 showDropdown && position && createPortal(
                     <ul
                         ref={dropdownRef}
+                        // Keep focus in the input, otherwise its blur would close the list before the click
+                        onMouseDown={(e) => e.preventDefault()}
                         className={dropdownStyles.foundItems}
                         style={{ top: position.top, left: position.left, width: position.width }}>
                         {

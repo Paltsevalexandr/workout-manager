@@ -70,6 +70,8 @@ export default function ExerciseForm({
                 error={nameError}
                 autoComplete="off"
                 required
+                // Matches the name limit in the exercise action schema
+                maxLength={191}
                 autoFocus
                 onChange={onNameChange}
             />

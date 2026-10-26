@@ -48,3 +48,6 @@ next-env.d.ts
 TODO.txt
 
 /generated/prisma
+
+/.mcp.json
+/.playwright-mcp/

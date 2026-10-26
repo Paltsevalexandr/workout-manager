@@ -95,6 +95,8 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
         setSelectedItems(prev => [...prev, item]);
         setQuery("");
         setActiveIndex(-1);
+        // Close the list so it doesn't cover the next field; clicking or typing reopens it
+        setIsDropdownOpen(false);
         inputRef.current?.focus();
     }
 
@@ -180,6 +182,13 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                     value={query}
                     autoComplete="off"
                     onFocus={() => setIsDropdownOpen(true)}
+                    // The input stays focused after picking an item, so focus alone can't reopen the list
+                    onClick={() => setIsDropdownOpen(true)}
+                    // Closes the list when focus leaves the field, e.g. via Tab
+                    onBlur={() => {
+                        setIsDropdownOpen(false);
+                        setActiveIndex(-1);
+                    }}
                     onChange={(e) => handleQueryChange(e.target.value)}
                     onKeyDown={handleKeyDown}
                     placeholder={"Search..."}
@@ -191,6 +200,8 @@ export default function SearchableMultiSelect<T extends { name: string, id: numb
                 showDropdown && position && createPortal(
                     <ul
                         ref={dropdownRef}
+                        // Keep focus in the input, otherwise its blur would close the list before the click
+                        onMouseDown={(e) => e.preventDefault()}
                         className={dropdownStyles.foundItems}
                         style={{ top: position.top, left: position.left, width: position.width }}>
                         {
