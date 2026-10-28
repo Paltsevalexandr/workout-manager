@@ -1,7 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/prisma";
-import { Prisma } from "@/generated/prisma/client";
-import type { ExerciseTargetType } from "@/generated/prisma/client";
+
+import { Prisma, ExerciseTargetType } from "@/generated/prisma/client";
 import { categorySelect } from "@/data/categories";
 import { muscleGroupSelect } from "@/data/muscleGroups";
 import { DataError } from "@/data/errors";
@@ -43,8 +43,8 @@ export type ExerciseInput = {
     muscleGroupIds: number[];
 };
 
-// Unique index over active exercise names, created by hand in a migration
-const ACTIVE_NAME_INDEX = "Exercise_active_name_key";
+// Unique index over the generated activeName column, created by hand in a migration
+const ACTIVE_NAME_INDEX = "Exercise_activeName_key";
 const NAME_TAKEN_MESSAGE = "An exercise with this name already exists";
 
 // assertNameIsFree is a fast check for the usual case, but it can't stop two
