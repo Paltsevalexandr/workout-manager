@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { Prisma, ExerciseTargetType } from "@/generated/prisma/client";
 import { categorySelect } from "@/data/categories";
 import { muscleGroupSelect } from "@/data/muscleGroups";
-import { DataError } from "@/data/errors";
+import { DataError, withNameConflictCheck } from "@/data/errors";
 
 const exerciseSelect = {
     id: true,
@@ -43,40 +43,9 @@ export type ExerciseInput = {
     muscleGroupIds: number[];
 };
 
-// Unique index over the generated activeName column, created by hand in a migration
-const ACTIVE_NAME_INDEX = "Exercise_activeName_key";
-const NAME_TAKEN_MESSAGE = "An exercise with this name already exists";
-
-// assertNameIsFree is a fast check for the usual case, but it can't stop two
-// concurrent requests with the same name; the unique index does, and this
-// turns its violation into the same user-facing error
-async function withNameConflictCheck<T>(mutation: () => Promise<T>): Promise<T> {
-    try {
-        return await mutation();
-    } catch (error) {
-        const isNameConflict =
-            error instanceof Prisma.PrismaClientKnownRequestError &&
-            error.code === "P2002" &&
-            // The index name sits in the driver adapter's error details
-            JSON.stringify(error.meta ?? {}).includes(ACTIVE_NAME_INDEX);
-        if (isNameConflict) {
-            throw new DataError(NAME_TAKEN_MESSAGE);
-        }
-        throw error;
-    }
-}
-
-async function assertNameIsFree(name: string, exceptId?: number) {
-    const count = await prisma.exercise.count({
-        where: {
-            name,
-            deletedAt: null,
-            id: exceptId === undefined ? undefined : { not: exceptId },
-        },
-    });
-    if (count > 0) {
-        throw new DataError(NAME_TAKEN_MESSAGE);
-    }
+const NAME_CONFLICT = {
+    indexName: "Exercise_activeName_key", // Unique index over the generated activeName column, created by hand in a migration
+    errorMessage: "An exercise with this name already exists",
 }
 
 async function assertParentIsActive(parentId: number | null) {
@@ -137,7 +106,7 @@ async function getEditableExercise(id: number) {
 }
 
 export async function createExercise(input: ExerciseInput): Promise<ExerciseDTO> {
-    await assertNameIsFree(input.name);
+    // await assertNameIsFree(input.name);
     await assertParentIsActive(input.parentId);
     await assertRelationsExist(input.categoryIds, input.muscleGroupIds);
 
@@ -150,13 +119,12 @@ export async function createExercise(input: ExerciseInput): Promise<ExerciseDTO>
             muscleGroups: { connect: input.muscleGroupIds.map((id) => ({ id })) },
         },
         select: exerciseSelect,
-    }));
+    }), NAME_CONFLICT);
     return toExerciseDTO(row);
 }
 
 export async function updateExercise(id: number, input: ExerciseInput): Promise<ExerciseDTO> {
     await getEditableExercise(id);
-    await assertNameIsFree(input.name, id);
     await assertParentIsActive(input.parentId);
     await assertNoParentCycle(id, input.parentId);
     await assertRelationsExist(input.categoryIds, input.muscleGroupIds);
@@ -171,7 +139,7 @@ export async function updateExercise(id: number, input: ExerciseInput): Promise<
             muscleGroups: { set: input.muscleGroupIds.map((muscleGroupId) => ({ id: muscleGroupId })) },
         },
         select: exerciseSelect,
-    }));
+    }), NAME_CONFLICT);
     return toExerciseDTO(row);
 }
 

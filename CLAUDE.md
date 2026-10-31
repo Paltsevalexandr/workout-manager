@@ -18,4 +18,9 @@
   Don't batch unrelated edits or rewrite whole files.
 - Never run migrations, database resets or other commands against the real database without
   explicit approval.
+- When the user writes a file by hand and asks how to change or finish it, point to exact places
+  in their code: quote the line numbers (or the line itself) and say precisely where to add,
+  move or remove it ("move lines 97-104 to right after line 92"). Never use vague phrases like
+  "put it first" or "do this before that" without naming the line. Give a short snippet only
+  for the part that is new.
 
