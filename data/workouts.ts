@@ -138,6 +138,41 @@ export async function updateWorkout(workoutId: number, input: WorkoutInput): Pro
     return result;
 }
 
+export async function softDeleteWorkout(workoutId: number): Promise<void> {
+    const { count } = await prisma.workout.updateMany({
+        where: { id: workoutId, deletedAt: null },
+        data: { deletedAt: new Date() },
+    });
+    if (count === 0) {
+        throw new DataError("Workout not found");
+    }
+}
+
+export async function archiveWorkout(workoutId: number): Promise<void> {
+    const { count } = await prisma.workout.updateMany({
+        where: { id: workoutId, deletedAt: null, status: "active", },
+        data: { archivedAt: new Date(), status: "archived", },
+    });
+    if (count === 0) {
+        throw new DataError("Workout not found or archived already");
+    }
+}
+
+export async function unarchiveWorkout(workoutId: number): Promise<void> {
+    const { count } = await prisma.workout.updateMany({
+        where: {
+            id: workoutId,
+            deletedAt: null,
+            status: "archived",
+        },
+        data: { archivedAt: null, status: "active" }
+    });
+
+    if (count === 0) {
+        throw new DataError("Workout not found or not archived");
+    }
+}
+
 async function assertWorkoutExercisesExist(exerciseIds: number[], db: Prisma.TransactionClient = prisma) {
     const count = await db.exercise.count({
         where: { id: { in: exerciseIds }, deletedAt: null },
