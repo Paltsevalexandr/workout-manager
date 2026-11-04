@@ -2,6 +2,7 @@ import "server-only";
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@/generated/prisma/client";
 import { DataError } from "./errors";
+import { assertExerciseListIsValid, assertExercisesAllowed, findActiveWorkoutOrThrow, SessionExerciseInput, toExerciseCreateData, toValidDate } from "./sessionHelper";
 
 const performedExerciseSelect = {
     id: true,
@@ -47,13 +48,7 @@ export async function getPerformedSessions(
     });
 }
 
-export type PerformedExerciseInput = {
-    workoutExerciseId: number;
-    sets: number;
-    target: number;
-    weight: number;
-    rest: number;
-};
+export type PerformedExerciseInput = SessionExerciseInput;
 
 export type PerformedSessionInput = {
     workoutId: number;
@@ -92,7 +87,7 @@ export async function updatePerformedSession(sessionId: number, input: Performed
             data: { date }
         });
         if (!count) {
-            throw new DataError("Session doesn't exist");
+            throw new DataError("Performed session not found");
         }
         const session = await tx.performedSession.findUniqueOrThrow({
             where: { id: sessionId },
@@ -128,62 +123,5 @@ export async function deletePerformedSession(sessionId: number): Promise<void> {
     });
     if (!count) {
         throw new DataError("Performed session not found");
-    }
-}
-
-function toValidDate(timestamp: number) {
-    const date = new Date(timestamp);
-    if (Number.isNaN(date.getTime())) {
-        throw new DataError("The date is invalid");
-    }
-    return date;
-}
-
-function assertExerciseListIsValid(performedExercises: PerformedExerciseInput[]) {
-    if (performedExercises.length === 0) {
-        throw new DataError("Session must have at least one exercise");
-    }
-    const sessionExercises = new Set(performedExercises.map(ex => ex.workoutExerciseId));
-    if (sessionExercises.size !== performedExercises.length) {
-        throw new DataError("The same exercise is added to the session more than once");
-    }
-}
-
-async function findActiveWorkoutOrThrow(
-    workoutId: number,
-    transaction: Prisma.TransactionClient = prisma
-) {
-    const workout = await transaction.workout.findUnique({
-        where: { id: workoutId, deletedAt: null },
-        select: {
-            workoutExercises: {
-                where: { deletedAt: null },
-                select: { id: true }
-            },
-            id: true,
-        }
-    });
-
-    if (!workout) {
-        throw new DataError("Workout not found");
-    }
-    return workout;
-}
-
-function assertExercisesAllowed(allowedIds: Set<number>, performedExercises: PerformedExerciseInput[]) {
-    if (!performedExercises.every(
-        ex => allowedIds.has(ex.workoutExerciseId)
-    )) {
-        throw new DataError("One or more exercises don't belong to this workout");
-    }
-}
-
-function toExerciseCreateData(exercise: PerformedExerciseInput) {
-    return {
-        workoutExerciseId: exercise.workoutExerciseId,
-        sets: exercise.sets,
-        target: exercise.target,
-        weight: exercise.weight,
-        rest: exercise.rest,
     }
 }
