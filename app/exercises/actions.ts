@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { ExerciseTargetType } from "@/generated/prisma/enums";
 import { DataError } from "@/data/errors";
-import { createExercise, softDeleteExercise, updateExercise } from "@/data/exercises";
+import { createExercise, deleteExercise, updateExercise } from "@/data/exercises";
 
 const idSchema = z.number().int().positive();
 
@@ -54,5 +54,5 @@ export async function deleteExerciseAction(id: unknown): Promise<ActionResult> {
     if (!parsedId.success) {
         return { ok: false, error: "Invalid exercise id" };
     }
-    return runMutation(() => softDeleteExercise(parsedId.data));
+    return runMutation(() => deleteExercise(parsedId.data));
 }

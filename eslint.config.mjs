@@ -5,11 +5,23 @@ import nextTs from "eslint-config-next/typescript";
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
-  {
-    rules: {
-      quotes: ["error", "double"],
+    {
+        rules: {
+            quotes: ["error", "double"],
+        },
     },
-  },
+    {
+        files: ["data/**/*.ts", "app/**/actions.ts"],
+        languageOptions: {
+            parserOptions: {
+                projectService: true,
+                tsconfigRootDir: import.meta.dirname,
+            },
+        },
+        rules: {
+            "@typescript-eslint/no-floating-promises": "error",
+        },
+    },
   // Override default ignores of eslint-config-next.
   globalIgnores([
     // Default ignores of eslint-config-next:

@@ -91,7 +91,7 @@ async function assertRelationsExist(categoryIds: number[], muscleGroupIds: numbe
     }
 }
 
-async function getEditableExercise(id: number) {
+async function assertExerciseIsEditable(id: number): Promise<void> {
     const exercise = await prisma.exercise.findUnique({
         where: { id },
         select: { isSystem: true, deletedAt: true },
@@ -102,11 +102,9 @@ async function getEditableExercise(id: number) {
     if (exercise.isSystem) {
         throw new DataError("System exercises can't be changed");
     }
-    return exercise;
 }
 
 export async function createExercise(input: ExerciseInput): Promise<ExerciseDTO> {
-    // await assertNameIsFree(input.name);
     await assertParentIsActive(input.parentId);
     await assertRelationsExist(input.categoryIds, input.muscleGroupIds);
 
@@ -124,7 +122,7 @@ export async function createExercise(input: ExerciseInput): Promise<ExerciseDTO>
 }
 
 export async function updateExercise(id: number, input: ExerciseInput): Promise<ExerciseDTO> {
-    await getEditableExercise(id);
+    await assertExerciseIsEditable(id);
     await assertParentIsActive(input.parentId);
     await assertNoParentCycle(id, input.parentId);
     await assertRelationsExist(input.categoryIds, input.muscleGroupIds);
@@ -143,16 +141,43 @@ export async function updateExercise(id: number, input: ExerciseInput): Promise<
     return toExerciseDTO(row);
 }
 
-export async function softDeleteExercise(id: number): Promise<void> {
-    await getEditableExercise(id);
+export async function deleteExercise(id: number): Promise<void> {
+    await assertExerciseIsEditable(id);
 
     const activeChildren = await prisma.exercise.count({
         where: { parentId: id, deletedAt: null },
     });
+
     if (activeChildren > 0) {
         throw new DataError("This exercise is a parent of other exercises");
     }
 
+    const trashedChildren = await prisma.exercise.count({
+        where: { parentId: id, deletedAt: { not: null } },
+    });
+
+    if (trashedChildren > 0) {
+        await softDeleteExercise(id);
+    }
+    else {
+        try {
+            await prisma.exercise.delete({
+                where: { id }
+            });
+        }
+        catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError
+                && error.code === "P2003") {
+                await softDeleteExercise(id);
+            }
+            else {
+                throw error;
+            }
+        }
+    }
+}
+
+async function softDeleteExercise(id: number): Promise<void> {
     await prisma.exercise.update({
         where: { id },
         data: { deletedAt: new Date() },

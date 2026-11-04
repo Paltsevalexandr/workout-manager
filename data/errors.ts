@@ -6,7 +6,8 @@ export class DataError extends Error { }
 // Runs a mutation and turns a violation of the unique index over activeName
 // (a duplicate name among active rows) into a user-facing DataError.
 // The index is what stops concurrent requests with the same name, so the
-// conflict can only be detected when the write fails. Other errors pass through.
+// conflict can only be detected when the write fails. 
+// Other errors pass through.
 export async function withNameConflictCheck<T>(
     mutation: () => Promise<T>,
     { indexName, errorMessage }: { indexName: string, errorMessage: string }
