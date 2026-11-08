@@ -12,7 +12,6 @@ const workoutExerciseSelect = {
 const workoutSelect = {
     id: true,
     name: true,
-    status: true,
     createdAt: true,
     archivedAt: true,
     workoutExercises: {
@@ -150,8 +149,12 @@ export async function softDeleteWorkout(workoutId: number): Promise<void> {
 
 export async function archiveWorkout(workoutId: number): Promise<void> {
     const { count } = await prisma.workout.updateMany({
-        where: { id: workoutId, deletedAt: null, status: "active", },
-        data: { archivedAt: new Date(), status: "archived", },
+        where: {
+            id: workoutId,
+            deletedAt: null,
+            archivedAt: null
+        },
+        data: { archivedAt: new Date() },
     });
     if (count === 0) {
         throw new DataError("Workout not found or archived already");
@@ -163,9 +166,9 @@ export async function unarchiveWorkout(workoutId: number): Promise<void> {
         where: {
             id: workoutId,
             deletedAt: null,
-            status: "archived",
+            archivedAt: { not: null },
         },
-        data: { archivedAt: null, status: "active" }
+        data: { archivedAt: null }
     });
 
     if (count === 0) {
