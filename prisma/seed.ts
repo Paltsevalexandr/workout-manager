@@ -155,7 +155,6 @@ async function main() {
         const created = await prisma.workout.create({
             data: {
                 name: workout.name,
-                status: workout.archived ? "archived" : "active",
                 archivedAt: workout.archived ? daysAgo(30) : null,
                 workoutExercises: {
                     create: workout.exercises.map((name, index) => ({

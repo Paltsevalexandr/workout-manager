@@ -12,16 +12,9 @@ datasource db {
   provider = "mysql"
 }
 
-// Workout
-enum WorkoutStatus {
-  active
-  archived
-}
-
 model Workout {
   id         Int           @id @default(autoincrement())
   name       String
-  status     WorkoutStatus @default(active)
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
   archivedAt DateTime?
