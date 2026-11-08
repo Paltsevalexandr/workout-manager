@@ -141,7 +141,9 @@ export async function updateExercise(id: number, input: ExerciseInput): Promise<
     return toExerciseDTO(row);
 }
 
-export async function deleteExercise(id: number): Promise<void> {
+// return null if exercise was hard deleted from DB,
+// ExerciseDTO when it was soft deleted
+export async function deleteExercise(id: number): Promise<ExerciseDTO | null> {
     await assertExerciseIsEditable(id);
 
     const activeChildren = await prisma.exercise.count({
@@ -157,18 +159,19 @@ export async function deleteExercise(id: number): Promise<void> {
     });
 
     if (trashedChildren > 0) {
-        await softDeleteExercise(id);
+        return await softDeleteExercise(id);
     }
     else {
         try {
             await prisma.exercise.delete({
                 where: { id }
             });
+            return null;
         }
         catch (error) {
             if (error instanceof Prisma.PrismaClientKnownRequestError
                 && error.code === "P2003") {
-                await softDeleteExercise(id);
+                return await softDeleteExercise(id);
             }
             else {
                 throw error;
@@ -177,9 +180,11 @@ export async function deleteExercise(id: number): Promise<void> {
     }
 }
 
-async function softDeleteExercise(id: number): Promise<void> {
-    await prisma.exercise.update({
+async function softDeleteExercise(id: number): Promise<ExerciseDTO> {
+    const exercise = await prisma.exercise.update({
         where: { id },
         data: { deletedAt: new Date() },
+        select: exerciseSelect
     });
+    return toExerciseDTO(exercise);
 }
