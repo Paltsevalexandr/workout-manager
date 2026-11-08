@@ -164,7 +164,7 @@ export function createSessionExercise(
 }
 
 export function getTargetLabel(exercise: Exercise | undefined) {
-    return exercise?.target === "duration" ? "s" : "";
+    return exercise?.targetType === "duration" ? "s" : "";
 }
 
 export type SessionRecency = "none" | "recent" | "longAgo";

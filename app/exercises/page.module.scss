@@ -118,3 +118,7 @@ $maxWidth: 950px;
         @include selectedItem;
     }
 }
+
+.formError {
+    @include error;
+}

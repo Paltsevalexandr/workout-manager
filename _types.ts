@@ -1,3 +1,5 @@
+import type { ExerciseDTO as Exercise } from "./data/exercises";
+
 export const targets = ["reps", "duration"] as const;
 export type Target = typeof targets[number];
 
@@ -7,39 +9,15 @@ export type Day = typeof days[number];
 export type SessionFormSource = "none" | "prevSession" | "plan";
 export type ModalType = "none" | "session" | "plan";
 
-export type Exercise = {
-    id: number;
-    parent: number | null;
-    name: string;
-    categories: Category[];
-    muscleGroups: MuscleGroup[];
-    target: Target;
-    isSystem: boolean;
-    isDeleted: boolean;
-};
-
-export type MuscleGroup = {
-    id: number;
-    name: string;
-    parentId: number | null;
-    isSystem: boolean;
-};
-
-export type Category = {
-    id: number;
-    name: string;
-    parentId: number | null;
-    isSystem: boolean;
-}
+export type { Exercise };
+export type { CategoryDTO as Category } from "@/data/categories";
+export type { MuscleGroupDTO as MuscleGroup } from "@/data/muscleGroups";
 
 export type Workout = {
     id: number;
     name: string;
     workoutExercises: WorkoutExercise[];
-    // tags: string[];
     status: "active" | "archived";
-    // createdAt: string;
-    // archivedAt: string | null;
 };
 
 export type WorkoutExercise = {
