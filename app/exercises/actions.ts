@@ -1,12 +1,9 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { ExerciseTargetType } from "@/generated/prisma/enums";
-import { DataError } from "@/data/errors";
-import { createExercise, deleteExercise, updateExercise } from "@/data/exercises";
-
-const idSchema = z.number().int().positive();
+import { createExercise, deleteExercise, ExerciseDTO, updateExercise } from "@/data/exercises";
+import { ActionResult, idSchema, runMutation } from "@/lib/mutation";
 
 const exerciseInputSchema = z.object({
     name: z.string().trim().min(1).max(191),
@@ -16,23 +13,7 @@ const exerciseInputSchema = z.object({
     muscleGroupIds: z.array(idSchema).min(1),
 });
 
-export type ActionResult = { ok: true } | { ok: false; error: string };
-
-// Runs a DAL mutation: expected errors go back to the UI, unexpected ones are rethrown
-async function runMutation(mutation: () => Promise<unknown>): Promise<ActionResult> {
-    try {
-        await mutation();
-    } catch (error) {
-        if (error instanceof DataError) {
-            return { ok: false, error: error.message };
-        }
-        throw error;
-    }
-    revalidatePath("/", "layout");
-    return { ok: true };
-}
-
-export async function createExerciseAction(input: unknown): Promise<ActionResult> {
+export async function createExerciseAction(input: unknown): Promise<ActionResult<ExerciseDTO>> {
     const parsed = exerciseInputSchema.safeParse(input);
     if (!parsed.success) {
         return { ok: false, error: "Invalid exercise data" };
@@ -40,16 +21,16 @@ export async function createExerciseAction(input: unknown): Promise<ActionResult
     return runMutation(() => createExercise(parsed.data));
 }
 
-export async function updateExerciseAction(id: unknown, input: unknown): Promise<ActionResult> {
+export async function updateExerciseAction(id: unknown, input: unknown): Promise<ActionResult<ExerciseDTO>> {
     const parsedId = idSchema.safeParse(id);
-    const parsed = exerciseInputSchema.safeParse(input);
-    if (!parsedId.success || !parsed.success) {
+    const parsedInput = exerciseInputSchema.safeParse(input);
+    if (!parsedId.success || !parsedInput.success) {
         return { ok: false, error: "Invalid exercise data" };
     }
-    return runMutation(() => updateExercise(parsedId.data, parsed.data));
+    return runMutation(() => updateExercise(parsedId.data, parsedInput.data));
 }
 
-export async function deleteExerciseAction(id: unknown): Promise<ActionResult> {
+export async function deleteExerciseAction(id: unknown): Promise<ActionResult<ExerciseDTO | null>> {
     const parsedId = idSchema.safeParse(id);
     if (!parsedId.success) {
         return { ok: false, error: "Invalid exercise id" };
