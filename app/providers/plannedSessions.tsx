@@ -1,35 +1,20 @@
 "use client";
 
-import { createContext, useContext, useState, Dispatch, SetStateAction } from "react";
+import { createContext, useContext } from "react";
 import { PlannedSession } from "@/_types";
 
 type PlannedSessionContextType = {
     plannedSessions: PlannedSession[];
-    setPlannedSessions: Dispatch<SetStateAction<PlannedSession[]>>;
 }
 
 const PlannedSessionsContext = createContext<PlannedSessionContextType | undefined>(undefined);
 
-export function PlannedSessionsProvider({ children }: { children: React.ReactNode }) {
-    // lazy initializer: the seed reads the clock once, not on every render
-    const [plannedSessions, setPlannedSessions] = useState<PlannedSession[]>(() => [
-        {
-            id: 1,
-            workoutId: 1,
-            date: Date.now(),
-            plannedExercises: [
-                { id: 1, workoutExerciseId: 0, sets: 3, target: 25, weight: 20, rest: 60 },
-                { id: 2, workoutExerciseId: 1, sets: 3, target: 30, weight: 0, rest: 60 },
-                { id: 3, workoutExerciseId: 2, sets: 4, target: 12, weight: 44, rest: 60 },
-                { id: 4, workoutExerciseId: 3, sets: 3, target: 11, weight: 0, rest: 60 },
-                { id: 5, workoutExerciseId: 4, sets: 1, target: 15, weight: 0, rest: 60 },
-                { id: 6, workoutExerciseId: 5, sets: 3, target: 17, weight: 0, rest: 60 },
-            ]
-        }
-    ]);
-
+export function PlannedSessionsProvider({
+    children,
+    plannedSessions
+}: { children: React.ReactNode, plannedSessions: PlannedSession[] }) {
     return (
-        <PlannedSessionsContext.Provider value={{ plannedSessions, setPlannedSessions }}>
+        <PlannedSessionsContext.Provider value={{ plannedSessions }}>
             {children}
         </PlannedSessionsContext.Provider>
     );

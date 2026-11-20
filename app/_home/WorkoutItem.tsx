@@ -10,7 +10,7 @@ type Props = {
     lastSessionDate: number | null,
     plannedSessions: PlannedSession[];
     setSelectedWorkout: () => void;
-    savePerformedSession: () => void;
+    openPerformedSessionForm: () => void;
 }
 
 export default function WorkoutItem({
@@ -19,7 +19,7 @@ export default function WorkoutItem({
     lastSessionDate,
     plannedSessions,
     setSelectedWorkout,
-    savePerformedSession
+    openPerformedSessionForm
 }: Props) {
     const { exercises } = useExercisesContext();
     const lastRelativeDate: string = formatRelativeDate(lastSessionDate);
@@ -42,7 +42,7 @@ export default function WorkoutItem({
                 <button className={styles.workoutTrackProgressBtn}
                     onClick={(e) => {
                         e.stopPropagation();
-                        savePerformedSession();
+                        openPerformedSessionForm();
                     }}>
                     <ListChecks size={16} />
                 </button>

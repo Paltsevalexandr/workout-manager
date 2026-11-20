@@ -4,8 +4,8 @@ A web app for planning workouts, logging what you actually did, and keeping a hi
 Built with Next.js, TypeScript, Prisma and MySQL.
 
 > **Status: work in progress.** This project is not finished and I am actively working on it.
-> The backend (data layer and Server Actions) is done; the frontend is being moved from mock data
-> to the real database page by page. Expect rough edges and unfinished screens. See [Roadmap](#roadmap).
+> The backend (data layer and Server Actions) is done and the exercises, workouts and sessions
+> screens all run on the real database. Expect rough edges and unfinished screens (for example, there is no Trash screen yet). See [Roadmap](#roadmap).
 
 ## What it does
 
@@ -102,15 +102,15 @@ Other scripts: `npm run build`, `npm run lint`.
 | --- | --- |
 | Data layer: exercises, workouts, planned and performed sessions | Done, checked with scripts against a scratch database |
 | Server Actions: exercises | Done and wired to the UI |
-| Server Actions: workouts, planned and performed sessions | Written (Zod validation); not wired to the UI yet |
+| Server Actions: workouts, planned and performed sessions | Done and wired to the UI |
 | Exercises page | Uses the real database |
-| Workouts and home pages | Still use in-memory mock data, being migrated |
+| Home page (workouts, planning, tracking) | Uses the real database: data is loaded in the root layout and passed to the context providers; changes go through Server Actions |
+| Workout history page | Uses the real database: add, edit, duplicate and delete performed sessions |
 | Automated tests | Not added yet |
 
 ## Roadmap
 
-- Replace the mock data providers in the UI with real queries and the new Server Actions
-  (workouts, planned and performed sessions).
+- Load sessions per workout instead of all at once in the root layout.
 - Trash screen: restore deleted items, scheduled permanent removal after 30 days.
 - Authentication, with data and unique names scoped per user.
 - Automated tests and a Docker setup for a reproducible MySQL environment.

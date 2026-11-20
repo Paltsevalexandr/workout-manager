@@ -1,30 +1,33 @@
-import { useState, type SubmitEvent } from "react"
-import { PerformedExercise, Workout, PerformedSession } from "@/_types";
-import { createSessionExercises, formatFullDate, generateID, getAllPerformedExercises, getLastSession } from "@/lib";
+import { Dispatch, SetStateAction, useState, type SubmitEvent } from "react"
+import { Workout, PerformedSession, PerformedSessionDraft, SessionExerciseDraft } from "@/_types";
+import { createSessionExercises, formatFullDate, getLastSession } from "@/lib";
 import styles from "./ByDate.module.scss";
 import PerformedSessionItem from "./PerformedSessionItem";
 import ConfirmDialog from "@/app/components/ui/ConfirmDialog";
 import WorkoutTrackingModal from "@/app/components/workout/WorkoutTrackingModal";
-import { useExercisesContext, usePerformedSessionsContext } from "@/app/providers";
+import { useExercisesContext } from "@/app/providers";
+import { useServerAction } from "@/hooks/useServerAction";
+import { deletePerformedSessionAction, updatePerformedSessionAction } from "@/app/sessions/actions";
 
 type Props = {
     workout: Workout;
     performedSessions: PerformedSession[];
+    setNewSession: Dispatch<SetStateAction<PerformedSessionDraft | null>>
 }
 
 export default function ByDate({
     workout,
-    performedSessions
+    performedSessions,
+    setNewSession,
 }: Props) {
+    const { runServerAction, resetError, isPending, error } = useServerAction();
     const [expandedSessions, setExpandedSessions] = useState<number[]>(() => {
         const lastSession = getLastSession(workout.id, performedSessions);
-        return lastSession !== null && lastSession.id !== null ? [lastSession.id] : []
+        return lastSession !== null ? [lastSession.id] : []
     });
     const { exercises } = useExercisesContext();
-    const { performedSessions: allPerformedSessions, setPerformedSessions } = usePerformedSessionsContext();
     const [deleteSession, setDeleteSession] = useState<PerformedSession | null>(null);
     const [editSession, setEditSession] = useState<PerformedSession | null>(null);
-    const [duplicateSession, setDuplicateSession] = useState<PerformedSession | null>(null);
     const sortedPerformedSessions = [...performedSessions].sort((a, b) => b.date - a.date);
 
     function toggleSessionDropdown(id: number) {
@@ -40,7 +43,7 @@ export default function ByDate({
         setEditSession(prev => prev ? { ...prev, date } : prev);
     }
 
-    function handlePerformedExerciseChange(value: number, workoutExerciseId: number, field: keyof PerformedExercise) {
+    function handlePerformedExerciseChange(value: number, workoutExerciseId: number, field: keyof SessionExerciseDraft) {
         setEditSession(prev => {
             if (!prev) {
                 return prev;
@@ -57,56 +60,25 @@ export default function ByDate({
     function saveEditSession(e: SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         if (!editSession) return;
-        setPerformedSessions(prev => prev.map(s => s.id === editSession.id ? editSession : s));
-        setEditSession(null);
+
+        runServerAction({
+            action: () => updatePerformedSessionAction(editSession.id, editSession),
+            onSuccess: () => setEditSession(null)
+        });
     }
 
     function duplicateSessionForCreating(session: PerformedSession) {
-        // ids are unique across all workouts, not just this one
-        const firstExerciseId = generateID(getAllPerformedExercises(allPerformedSessions));
-        setDuplicateSession({
-            ...session,
-            id: null,
-            // False positive: this runs in a click handler ("Duplicate as New"), not during render
+        setNewSession({
+            workoutId: session.workoutId,
+            // False positive: this runs in a click handler ("Duplicate as New"), not during render, so next line tells ESlint to ignore the "issue"
             // eslint-disable-next-line react-hooks/purity
             date: Date.now(),
             // rows come from the workout's currently active exercises,
             // the picked session only supplies the values (sets/target/weight/rest)
-            performedExercises: createSessionExercises(workout, session, firstExerciseId, exercises) as PerformedExercise[],
-        });
+            performedExercises: createSessionExercises(workout, session, exercises),
+        })
     }
 
-    function setDuplicateSessionDate(date: number) {
-        setDuplicateSession(prev => prev ? { ...prev, date } : prev);
-    }
-
-    function handleDuplicateExerciseChange(
-        value: number,
-        workoutExerciseId: number,
-        field: keyof PerformedExercise
-    ) {
-        setDuplicateSession(prev => {
-            if (!prev) {
-                return prev;
-            }
-            return {
-                ...prev,
-                performedExercises: prev.performedExercises.map(ex =>
-                    ex.workoutExerciseId === workoutExerciseId ? { ...ex, [field]: value } : ex
-                )
-            };
-        });
-    }
-
-    function saveDuplicateSession(e: SubmitEvent<HTMLFormElement>) {
-        e.preventDefault();
-        if (!duplicateSession) return;
-        setPerformedSessions(prev => [
-            ...prev,
-            { ...duplicateSession, id: generateID(prev) }
-        ]);
-        setDuplicateSession(null);
-    }
     const sessionsAmount = sortedPerformedSessions.length;
     return (
         <>
@@ -121,13 +93,12 @@ export default function ByDate({
                         return (
                             <PerformedSessionItem
                                 key={`session_${session.id}`}
-                                workout={workout}
                                 session={session}
                                 showDeleteModal={() => setDeleteSession(session)}
                                 showEditModal={() => setEditSession(session)}
                                 showDuplicateModal={() => duplicateSessionForCreating(session)}
-                                isExpanded={expandedSessions.includes(session.id!)}
-                                toggleSessionDropdown={() => toggleSessionDropdown(session.id!)}
+                                isExpanded={expandedSessions.includes(session.id)}
+                                toggleSessionDropdown={() => toggleSessionDropdown(session.id)}
                             />
                         )
                     })
@@ -137,11 +108,18 @@ export default function ByDate({
                 deleteSession &&
                 <ConfirmDialog
                     title="Delete Session?"
+                    error={error}
+                    confirmDisabled={isPending}
                     onConfirm={() => {
-                        setPerformedSessions(prev => prev.filter(s => s.id != deleteSession.id));
+                        runServerAction({
+                            action: () => deletePerformedSessionAction(deleteSession.id),
+                            onSuccess: () => setDeleteSession(null)
+                        });
+                    }}
+                    onCancel={() => {
+                        resetError();
                         setDeleteSession(null);
                     }}
-                    onCancel={() => setDeleteSession(null)}
                 >
                     <p>Are you sure you want to delete session from {formatFullDate(deleteSession.date, true)}?</p>
                 </ConfirmDialog>
@@ -156,26 +134,15 @@ export default function ByDate({
                     plannedSessions={[]}
                     performedSessions={performedSessions}
                     submitText="Save Progress"
+                    submitDisabled={isPending}
+                    error={error}
                     saveSession={saveEditSession}
-                    cancelForm={() => setEditSession(null)}
+                    cancelForm={() => {
+                        resetError();
+                        setEditSession(null);
+                    }}
                     setDate={setEditSessionDate}
                     handleSessionExerciseChange={handlePerformedExerciseChange}
-                />
-            }
-            {
-                duplicateSession &&
-                <WorkoutTrackingModal
-                    modalType="session"
-                    session={duplicateSession}
-                    sessionFormSource="none"
-                    workoutName={workout.name}
-                    plannedSessions={[]}
-                    performedSessions={performedSessions}
-                    submitText="Save Progress"
-                    saveSession={saveDuplicateSession}
-                    cancelForm={() => setDuplicateSession(null)}
-                    setDate={setDuplicateSessionDate}
-                    handleSessionExerciseChange={handleDuplicateExerciseChange}
                 />
             }
         </>

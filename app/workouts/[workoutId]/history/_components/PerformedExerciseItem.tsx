@@ -1,25 +1,18 @@
-import { PerformedExercise, Workout } from "@/_types";
+import { PerformedExercise } from "@/_types";
 import { useExercisesContext } from "@/app/providers";
-import { getExerciseById, getTargetLabel, getWorkoutExercise } from "@/lib";
+import { getExerciseById, getTargetLabel } from "@/lib";
 import styles from "./ByDate.module.scss";
 
 
 type Props = {
-    workout: Workout;
     performedExercise: PerformedExercise;
 }
 
 export default function PerformedExerciseItem({
-    workout,
     performedExercise
 }: Props) {
     const { exercises } = useExercisesContext();
-    const { workoutExerciseId } = performedExercise;
-    const workoutExercise = getWorkoutExercise(workoutExerciseId, workout);
-    if (!workoutExercise) {
-        return null;
-    }
-    const { exerciseId } = workoutExercise;
+    const exerciseId = performedExercise.workoutExercise.exerciseId;
     const exercise = getExerciseById(exercises, exerciseId);
     if (!exercise) {
         return null;

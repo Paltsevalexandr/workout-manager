@@ -11,6 +11,11 @@ const performedExerciseSelect = {
     weight: true,
     rest: true,
     workoutExerciseId: true,
+    workoutExercise: {
+        select: {
+            exerciseId: true
+        }
+    },
 } satisfies Prisma.PerformedExerciseSelect;
 
 const performedSessionSelect = {
@@ -26,19 +31,20 @@ const performedSessionSelect = {
     }
 } satisfies Prisma.PerformedSessionSelect;
 
-export type PerformedSessionDTO = Prisma.PerformedSessionGetPayload<{ select: typeof performedSessionSelect }>;
+export type PerformedSessionRow = Prisma.PerformedSessionGetPayload<{ select: typeof performedSessionSelect }>;
 export type PerformedExerciseDTO = Prisma.PerformedExerciseGetPayload<{ select: typeof performedExerciseSelect }>;
 
+// What the UI gets: the date as a timestamp (number), like the actions accept it
+export type PerformedSessionDTO = Omit<PerformedSessionRow, "date"> & { date: number };
+
+function toPerformedSessionDTO(row: PerformedSessionRow): PerformedSessionDTO {
+    return { ...row, date: row.date.getTime() };
+}
+
 export async function getPerformedSessions(
-    {
-        workoutId,
-        includeDeleted
-    }: {
-        workoutId: number | null,
-        includeDeleted: boolean
-    }
+    workoutId: number | null = null, includeDeleted: boolean = false
 ): Promise<PerformedSessionDTO[]> {
-    return await prisma.performedSession.findMany({
+    const rows = await prisma.performedSession.findMany({
         where: {
             workoutId: workoutId ?? undefined,
             workout: includeDeleted ? undefined : { deletedAt: null },
@@ -46,6 +52,7 @@ export async function getPerformedSessions(
         select: performedSessionSelect,
         orderBy: [{ date: "desc" }, { id: "desc" }]
     });
+    return rows.map(toPerformedSessionDTO);
 }
 
 export type PerformedExerciseInput = SessionExerciseInput;
@@ -63,7 +70,7 @@ export async function createPerformedSession(input: PerformedSessionInput): Prom
     const allowedIds = new Set(workout.workoutExercises.map(row => row.id));
     assertExercisesAllowed(allowedIds, input.performedExercises);
 
-    return await prisma.performedSession.create({
+    const row = await prisma.performedSession.create({
         data: {
             workoutId: input.workoutId,
             date,
@@ -73,12 +80,13 @@ export async function createPerformedSession(input: PerformedSessionInput): Prom
         },
         select: performedSessionSelect
     });
+    return toPerformedSessionDTO(row);
 }
 
 export async function updatePerformedSession(sessionId: number, input: PerformedSessionInput): Promise<PerformedSessionDTO> {
     const date = toValidDate(input.date);
     assertExerciseListIsValid(input.performedExercises);
-    return await prisma.$transaction(async (tx) => {
+    const row = await prisma.$transaction(async (tx) => {
         const { count } = await tx.performedSession.updateMany({
             where: {
                 id: sessionId,
@@ -115,6 +123,8 @@ export async function updatePerformedSession(sessionId: number, input: Performed
             select: performedSessionSelect,
         });
     });
+
+    return toPerformedSessionDTO(row);
 }
 
 export async function deletePerformedSession(sessionId: number): Promise<void> {

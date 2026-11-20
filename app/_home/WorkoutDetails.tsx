@@ -10,7 +10,7 @@ import { useState } from "react";
 type Props = {
     workout: Workout;
     performedSessions: PerformedSession[];
-    savePerformedSession: (workoutId: number) => void;
+    openPerformedSessionForm: (workoutId: number) => void;
     menuItems: MenuItem[];
 }
 
@@ -18,7 +18,7 @@ export default function WorkoutDetails({
     workout,
     performedSessions,
     menuItems,
-    savePerformedSession,
+    openPerformedSessionForm,
 }: Props) {
     type ViewMode = "session" | "plan" | null;
     const { exercises } = useExercisesContext();
@@ -91,7 +91,7 @@ export default function WorkoutDetails({
                 </div>
                 <div className={styles.detailsHeaderRight}>
                     <button type="button"
-                        onClick={() => savePerformedSession(workout.id)}>
+                        onClick={() => openPerformedSessionForm(workout.id)}>
                         <ListChecks size={16} />Track Progress
                     </button>
                     <div className={styles.detailsMenuWrap}>

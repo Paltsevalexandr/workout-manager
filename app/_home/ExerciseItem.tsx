@@ -1,26 +1,23 @@
-import { PerformedExercise, PlannedExercise, Workout } from "@/_types";
+import { PerformedExercise, PlannedExercise } from "@/_types";
 import styles from "../page.module.scss";
 import { useExercisesContext } from "@/app/providers";
-import { getExerciseById, getTargetLabel, getWorkoutExercise } from "@/lib";
+import { getExerciseById, getTargetLabel } from "@/lib";
 
 type Props = {
-    workout: Workout;
     sourceExercise: PerformedExercise | PlannedExercise;
     hasWeight: boolean;
 }
 
 export default function ExerciseItem({
-    workout, sourceExercise, hasWeight
+    sourceExercise, hasWeight
 }: Props) {
     const { exercises } = useExercisesContext();
-    const workoutExercise = getWorkoutExercise(sourceExercise.workoutExerciseId, workout);
-    if (!workoutExercise) {
-        return null;
-    }
-    const exerciseData = getExerciseById(exercises, workoutExercise.exerciseId);
+    const exerciseId = sourceExercise.workoutExercise.exerciseId;
+    const exerciseData = getExerciseById(exercises, exerciseId);
     if (!exerciseData) {
         return null;
     }
+
     return (
         <li className={styles.detailsExercise}>
             <div className={styles.detailsExerciseName}>

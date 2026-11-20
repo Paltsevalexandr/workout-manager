@@ -15,7 +15,6 @@ export {
 export {
     getExerciseById,
     getLastSessionDate,
-    generateID,
     getLastSession,
     getLastPlan,
     isPerformedSession,
@@ -30,8 +29,6 @@ export {
 } from "./data";
 
 export {
-    getAllPerformedExercises,
-    getAllPlannedExercises,
     getDefaultSessionSource,
     createSessionExercises,
     createSessionExercise,

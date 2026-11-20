@@ -4,23 +4,25 @@ import Modal from "../ui/Modal";
 import NumberField from "../forms/NumberField";
 import DateField from "../forms/DateField";
 import { getExerciseById, getFormattedDate, getLastSession, getLastPlan, getSourceExercises } from "@/lib";
-import { ModalType, PerformedExercise, PlannedExercise, SessionFormSource, WorkoutExercise, PlannedSession, PerformedSession } from "@/_types";
+import { ModalType, SessionFormSource, WorkoutExercise, PlannedSession, PerformedSession, PlannedSessionDraft, PerformedSessionDraft, SessionExerciseDraft } from "@/_types";
 import styles from "./WorkoutTrackingModal.module.scss";
 import { useExercisesContext, useWorkoutsContext } from "@/app/providers";
 
 type Props = {
     modalType: ModalType;
-    session: PerformedSession | PlannedSession;
+    session: PerformedSessionDraft | PlannedSessionDraft;
     sessionFormSource: SessionFormSource;
     plannedSessions: PlannedSession[];
     performedSessions: PerformedSession[];
     workoutName: string;
     submitText: string;
+    error?: string;
+    submitDisabled?: boolean;
     saveSession: (e: SubmitEvent<HTMLFormElement>) => void;
     cancelForm: () => void;
     toggleSessionFormSource?: (source: SessionFormSource, workoutId: number) => void;
     setDate: (date: number) => void;
-    handleSessionExerciseChange: (value: number, workoutExerciseId: number, field: keyof PerformedExercise) => void;
+    handleSessionExerciseChange: (value: number, workoutExerciseId: number, field: keyof SessionExerciseDraft) => void;
 }
 
 export default function WorkoutTrackingModal({
@@ -31,6 +33,8 @@ export default function WorkoutTrackingModal({
     plannedSessions,
     workoutName,
     submitText,
+    error,
+    submitDisabled,
     saveSession,
     cancelForm,
     setDate,
@@ -83,7 +87,7 @@ export default function WorkoutTrackingModal({
         </div>
     </div>;
 
-    const sourceExercises: PerformedExercise[] | PlannedExercise[] = getSourceExercises(session);
+    const sourceExercises: SessionExerciseDraft[] = getSourceExercises(session);
     const hasNoActiveExercises = sourceExercises.length === 0;
 
     return (
@@ -94,7 +98,7 @@ export default function WorkoutTrackingModal({
                 header={showSourceToggle ? header : undefined}
                 title={!showSourceToggle ? headerText : undefined}
                 submitText={submitText}
-                submitDisabled={hasNoActiveExercises}
+                submitDisabled={hasNoActiveExercises || submitDisabled}
                 onSubmit={saveSession}
                 onCancel={cancelForm}
             >
@@ -134,7 +138,7 @@ export default function WorkoutTrackingModal({
                                     return null; // TODO - show error, not sure why it can happen at all
                                 }
                                 return (
-                                    <div key={`workout_session_exercise_${sessionExercise.id}`}
+                                    <div key={`workout_session_exercise_${sessionExercise.workoutExerciseId}`}
                                         className={styles.workoutSessionFormExercisesItem}>
                                         <p>
                                             {exercise.name}
@@ -172,7 +176,13 @@ export default function WorkoutTrackingModal({
                         }
                     </div>
                 }
+                {
+                    session && !hasNoActiveExercises && error &&
+                    <p className={styles.error}>
+                        {error}
+                    </p>
+                }
             </ModalForm>
-        </Modal>
+        </Modal >
     )
 }

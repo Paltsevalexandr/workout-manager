@@ -2,12 +2,11 @@ import { formatFullDate, getExercisesLabel } from "@/lib";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import Dropdown from "@/app/components/ui/Dropdown";
 import KebabMenu from "@/app/components/ui/KebabMenu";
-import { Workout, PerformedSession } from "@/_types";
+import { PerformedSession } from "@/_types";
 import styles from "./ByDate.module.scss";
 import PerformedExerciseItem from "./PerformedExerciseItem";
 
 type Props = {
-    workout: Workout;
     session: PerformedSession;
     isExpanded: boolean;
     toggleSessionDropdown: () => void;
@@ -17,7 +16,6 @@ type Props = {
 }
 
 export default function PerformedSessionItem({
-    workout,
     isExpanded,
     session,
     toggleSessionDropdown,
@@ -62,7 +60,6 @@ export default function PerformedSessionItem({
                             return (
                                 <PerformedExerciseItem
                                     key={`session_${session.id}_${performedExercise.id}`}
-                                    workout={workout}
                                     performedExercise={performedExercise}
                                 />
                             )

@@ -4,28 +4,35 @@ import { useState, type SubmitEvent } from "react";
 import Content from "@/app/components/layout/Content";
 import { useExercisesContext, usePerformedSessionsContext, usePlannedSessionsContext, useWorkoutsContext } from "@/app/providers";
 import { useParams } from "next/navigation";
-import { Exercise, PerformedExercise, SessionFormSource, Workout, WorkoutExercise, PerformedSession } from "@/_types";
-import { buildPerformedSession, generateID } from "@/lib";
+import {
+    Exercise, SessionFormSource, Workout,
+    WorkoutExercise, PerformedSession,
+    PerformedSessionDraft, SessionExerciseDraft
+} from "@/_types";
+import { buildPerformedSession } from "@/lib";
 import WorkoutTrackingModal from "@/app/components/workout/WorkoutTrackingModal";
 
 import styles from "./page.module.scss";
 import ByDate from "./_components/ByDate";
 import ByExercise from "./_components/ByExercise";
 import SelectField from "@/app/components/forms/SelectField";
+import { useServerAction } from "@/hooks/useServerAction";
+import { createPerformedSessionAction } from "@/app/sessions/actions";
 
 type ViewMode = "byDate" | "byExercise";
-export type TrackedWorkoutExercise = WorkoutExercise & { id: number };
+export type TrackedWorkoutExercise = WorkoutExercise;
 
 export default function Page() {
     const { workoutId } = useParams<{ workoutId: string }>();
     const { workouts } = useWorkoutsContext();
-    const { performedSessions, setPerformedSessions } = usePerformedSessionsContext();
+    const { performedSessions } = usePerformedSessionsContext();
     const { plannedSessions } = usePlannedSessionsContext();
     const [viewMode, setViewMode] = useState<ViewMode>("byDate");
-    const [newSession, setNewSession] = useState<PerformedSession | null>(null);
+    const [newSession, setNewSession] = useState<PerformedSessionDraft | null>(null);
     const [sessionFormSource, setSessionFormSource] = useState<SessionFormSource>("none");
     const workout = workouts.find(w => w.id === Number(workoutId));
     const { exercises } = useExercisesContext();
+    const { runServerAction, resetError, isPending, error } = useServerAction();
 
     let workoutExercises: TrackedWorkoutExercise[] = [];
     if (workout) {
@@ -69,7 +76,7 @@ export default function Page() {
     function handleNewSessionExerciseChange(
         value: number,
         workoutExerciseId: number,
-        field: keyof PerformedExercise
+        field: keyof SessionExerciseDraft
     ) {
         setNewSession(prev => {
             if (!prev) return prev;
@@ -87,15 +94,15 @@ export default function Page() {
     function saveNewSession(event: SubmitEvent<HTMLFormElement>) {
         event.preventDefault();
         if (!newSession) return;
-        setPerformedSessions(prev => [
-            ...prev,
-            { ...newSession, id: generateID(prev) },
-        ]);
-        setNewSession(null);
-        setSessionFormSource("none");
+
+        runServerAction({
+            action: () => createPerformedSessionAction(newSession),
+            onSuccess: cancelNewSession
+        });
     }
 
     function cancelNewSession() {
+        resetError();
         setNewSession(null);
         setSessionFormSource("none");
     }
@@ -104,7 +111,7 @@ export default function Page() {
             sessions.flatMap(session => session.performedExercises.map(pe => pe.workoutExerciseId))
         );
         return workout.workoutExercises.filter(
-            (we): we is TrackedWorkoutExercise => we.id !== null && usedIds.has(we.id)
+            (we): we is TrackedWorkoutExercise => usedIds.has(we.id)
         );
     }
 
@@ -181,6 +188,7 @@ export default function Page() {
                                         ? <ByDate
                                             workout={workout}
                                             performedSessions={workoutPerformedSessions}
+                                            setNewSession={setNewSession}
                                         />
                                         : <ByExercise
                                             performedSessions={workoutPerformedSessions}
@@ -197,9 +205,11 @@ export default function Page() {
                             session={newSession}
                             sessionFormSource={sessionFormSource}
                             workoutName={workout?.name ?? ""}
-                            plannedSessions={plannedSessions}
+                            plannedSessions={sessionFormSource === "none" ? [] : plannedSessions}
                             performedSessions={workoutPerformedSessions}
                             submitText="Save Progress"
+                            error={error}
+                            submitDisabled={isPending}
                             saveSession={saveNewSession}
                             cancelForm={cancelNewSession}
                             setDate={setNewSessionDate}

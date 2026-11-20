@@ -1,7 +1,7 @@
 import styles from "../page.module.scss";
 import { Workout, PerformedSession, PlannedSession, PerformedExercise, PlannedExercise } from "@/_types";
 import ExerciseItem from "./ExerciseItem";
-import { getExerciseById, getSourceExercises, getWorkoutExercise, isPlannedSession } from "@/lib";
+import { getExerciseById, getWorkoutExercise, isPlannedSession } from "@/lib";
 import { useExercisesContext } from "@/app/providers";
 
 type Props = {
@@ -19,9 +19,10 @@ export default function ExerciseList({ workout, session }: Props) {
         ? session.plannedExercises.filter(plannedExercise => {
             const workoutExercise = getWorkoutExercise(plannedExercise.workoutExerciseId, workout);
             const exercise = getExerciseById(exercises, workoutExercise?.exerciseId);
-            return workoutExercise && !workoutExercise.isDeleted && exercise && !exercise.isDeleted;
+            // TODO - make sure I don't need filter for soft-deleted workoutExercises
+            return workoutExercise && exercise && !exercise.isDeleted;
         })
-        : getSourceExercises(session);
+        : session.performedExercises;
     const hasWeight = sourceExercises.some(exercise => exercise.weight > 0);
     return (
         <ul className={styles.detailsExercises}>
@@ -47,7 +48,6 @@ export default function ExerciseList({ workout, session }: Props) {
             {
                 sourceExercises.map((sourceExercise) => {
                     return <ExerciseItem key={`source_exercise_${sourceExercise.id}`}
-                        workout={workout}
                         sourceExercise={sourceExercise}
                         hasWeight={hasWeight}
                     />

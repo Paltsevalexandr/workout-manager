@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useRef } from "react";
 import Modal from "../components/ui/Modal";
 import ModalForm from "../components/ui/ModalForm";
-import { Exercise, Workout, WorkoutExercise } from "../../_types";
+import { Exercise, Workout, WorkoutExerciseDraft } from "../../_types";
 import TextField from "../components/forms/TextField";
 import { Trash2, Plus } from "lucide-react"
 import styles from "./WorkoutForm.module.scss";
@@ -11,13 +11,15 @@ type Props = {
     editWorkout?: Workout | null;
     workoutName: string;
     exercises: Exercise[];
-    workoutExercises: WorkoutExercise[];
+    workoutExercises: WorkoutExerciseDraft[];
     workoutExercisesError?: string;
     workoutNameError?: string;
+    workoutError: string,
+    submitDisabled: boolean,
     handleCancelForm: () => void;
     handleSubmit: (event: React.SubmitEvent<HTMLFormElement>) => void;
     setWorkoutName: (name: string) => void;
-    setWorkoutExercises: Dispatch<SetStateAction<WorkoutExercise[]>>;
+    setWorkoutExercises: Dispatch<SetStateAction<WorkoutExerciseDraft[]>>;
 }
 
 export default function WorkoutForm({
@@ -27,6 +29,8 @@ export default function WorkoutForm({
     workoutExercisesError,
     workoutNameError,
     workoutName,
+    workoutError,
+    submitDisabled,
     handleCancelForm,
     handleSubmit,
     setWorkoutName,
@@ -61,7 +65,7 @@ export default function WorkoutForm({
                 className={styles.newWorkout}
                 title={`${editWorkout ? "Edit" : "Create"} Workout`}
                 submitText={`${editWorkout ? "Edit" : "Add"} Workout`}
-                submitDisabled={activeExercises.length === 0}
+                submitDisabled={submitDisabled || activeExercises.length === 0}
                 onSubmit={handleSubmit}
                 onCancel={handleCancelForm}
             >
@@ -131,6 +135,7 @@ export default function WorkoutForm({
                                 </div>
                             </div>
                             {workoutExercisesError && <p className={styles.error}>{workoutExercisesError}</p>}
+                            {workoutError && <p className={styles.error}>{workoutError}</p>}
                             <button
                                 type="button"
                                 onClick={
@@ -138,9 +143,7 @@ export default function WorkoutForm({
                                         ...workoutExercises,
                                         {
                                             id: null,
-                                            workoutTemplateId: editWorkout?.id ?? null,
                                             exerciseId: 0,
-                                            isDeleted: false,
                                         }
                                     ])
                                 }

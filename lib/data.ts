@@ -1,15 +1,9 @@
-import { Exercise, MuscleGroup, PerformedExercise, PlannedExercise, PlannedSession, Workout, WorkoutExercise, PerformedSession } from "../_types";
-
-export function generateID<T extends { id: number | null }>(dataArr: T[]): number {
-    const maxId = dataArr.reduce((max, item) => {
-        if (item.id !== null && item.id > max) {
-            return item.id;
-        }
-        return max;
-    }, 0);
-
-    return maxId + 1;
-}
+import {
+    Exercise, MuscleGroup, PerformedExercise,
+    PlannedExercise, PlannedSession, Workout,
+    WorkoutExercise, PerformedSession, PlannedSessionDraft,
+    PerformedSessionDraft, SessionExerciseDraft
+} from "../_types";
 
 export function getExerciseById(exercises: Exercise[], id: number | null | undefined): Exercise | undefined {
     return exercises.find(exercise => exercise.id == id);
@@ -58,10 +52,10 @@ export function isPlannedSession(
     return "plannedExercises" in source;
 }
 
-export function getSourceExercises(session: PerformedSession | PlannedSession)
-    : PerformedExercise[] | PlannedExercise[] {
-    const sourceExercises: PerformedExercise[] | PlannedExercise[] =
-        isPerformedSession(session)
+export function getSourceExercises(session: PerformedSessionDraft | PlannedSessionDraft)
+    : SessionExerciseDraft[] {
+    const sourceExercises =
+        "performedExercises" in session
             ? session.performedExercises
             : session.plannedExercises;
     return sourceExercises;
@@ -78,7 +72,8 @@ export function getWorkoutExercise(id: WorkoutExercise["id"], workout: Workout):
 }
 export function getWorkoutExercises(workout: Workout, exercises: Exercise[]): Exercise[] {
     return workout.workoutExercises
-        .filter(we => !we.isDeleted)
+        // TODO - make sure I don't need the filter for deleted exercises
+        // .filter(we => !we.isDeleted)
         .map(we => getExerciseById(exercises, we.exerciseId))
         .filter((exercise): exercise is Exercise => exercise !== undefined && !exercise.isDeleted);
 }

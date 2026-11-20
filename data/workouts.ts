@@ -32,6 +32,7 @@ const NAME_CONFLICT = {
 };
 
 export type WorkoutDTO = Prisma.WorkoutGetPayload<{ select: typeof workoutSelect }>;
+export type WorkoutExerciseDTO = Prisma.WorkoutExerciseGetPayload<{ select: typeof workoutExerciseSelect }>;
 
 export async function getWorkouts(): Promise<WorkoutDTO[]> {
     return prisma.workout.findMany({

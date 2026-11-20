@@ -8,6 +8,9 @@ import { AppProviders } from "./providers";
 import { getCategories } from "@/data/categories";
 import { getMuscleGroups } from "@/data/muscleGroups";
 import { getExercises } from "@/data/exercises";
+import { getPerformedSessions } from "@/data/performedSessions";
+import { getPlannedSessions } from "@/data/plannedSessions";
+import { getWorkouts } from "@/data/workouts";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -29,10 +32,20 @@ export default async function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    const [categories, muscleGroups, exercises] = await Promise.all([
+    const [
+        categories,
+        muscleGroups,
+        exercises,
+        workouts,
+        performedSessions,
+        plannedSessions,
+    ] = await Promise.all([
         getCategories(),
         getMuscleGroups(),
         getExercises(),
+        getWorkouts(),
+        getPerformedSessions(),
+        getPlannedSessions(),
     ]);
 
     return (
@@ -47,6 +60,9 @@ export default async function RootLayout({
                     exercises={exercises}
                     categories={categories}
                     muscleGroups={muscleGroups}
+                    workouts={workouts}
+                    performedSessions={performedSessions}
+                    plannedSessions={plannedSessions}
                 >
                     {children}
                 </AppProviders>

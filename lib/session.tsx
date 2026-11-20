@@ -6,17 +6,12 @@ import {
     PlannedSession,
     PerformedSession,
     Exercise,
+    PerformedSessionDraft,
+    PlannedSessionDraft,
+    SessionExerciseDraft,
 } from "../_types";
-import { generateID, getExerciseById, getLastSession, getLatestPerformedExercise, getPlannedExercise, getLastPlan, isPlannedSession, isPerformedSession } from "./data";
+import { getExerciseById, getLastSession, getLatestPerformedExercise, getPlannedExercise, getLastPlan, isPlannedSession, isPerformedSession } from "./data";
 import { Clock, AlertCircle, Dumbbell } from "lucide-react";
-
-export function getAllPerformedExercises(sessions: PerformedSession[]): PerformedExercise[] {
-    return sessions.flatMap(session => session.performedExercises);
-}
-
-export function getAllPlannedExercises(plans: PlannedSession[]): PlannedExercise[] {
-    return plans.flatMap(plan => plan.plannedExercises);
-}
 
 export function getDefaultSessionSource(
     lastSession: PerformedSession | null,
@@ -37,16 +32,12 @@ export function getDefaultSessionSource(
 export function createSessionExercises(
     workout: Workout,
     sourceSession: PerformedSession | PlannedSession | null,
-    newSessionExerciseId: number,
     exercises: Exercise[],
     fallbackSession: PerformedSession | PlannedSession | null = null
-): PerformedExercise[] | PlannedExercise[] {
-    const sessionExercises: (PerformedExercise | PlannedExercise)[] = [];
+): SessionExerciseDraft[] {
+    const sessionExercises: SessionExerciseDraft[] = [];
 
-    workout.workoutExercises.forEach((workoutExercise, index) => {
-        if (workoutExercise.id === null || workoutExercise.isDeleted) {
-            return;
-        }
+    workout.workoutExercises.forEach((workoutExercise) => {
         // skip rows whose exercise was itself deleted from the catalog —
         // the WorkoutExercise row can still be active while its exercise isn't
         const exercise = getExerciseById(exercises, workoutExercise.exerciseId);
@@ -54,11 +45,11 @@ export function createSessionExercises(
             return;
         }
         sessionExercises.push(
-            createSessionExercise(sourceSession, newSessionExerciseId + index, workoutExercise.id, fallbackSession)
+            createSessionExercise(sourceSession, workoutExercise.id, fallbackSession)
         );
     });
 
-    return sessionExercises as PerformedExercise[] | PlannedExercise[];
+    return sessionExercises;
 }
 
 export function buildPerformedSession(
@@ -67,9 +58,7 @@ export function buildPerformedSession(
     plannedSessions: PlannedSession[],
     exercises: Exercise[],
     options?: { source?: SessionFormSource; date?: number }
-): { session: PerformedSession; sessionFormSource: SessionFormSource } {
-    const newPerformedExerciseId = generateID(getAllPerformedExercises(performedSessions));
-
+): { session: PerformedSessionDraft; sessionFormSource: SessionFormSource } {
     const lastSession = getLastSession(workout.id, performedSessions);
     const currentPlannedSession = getLastPlan(workout.id, plannedSessions);
 
@@ -88,12 +77,11 @@ export function buildPerformedSession(
     }
 
     const performedExercises = createSessionExercises(
-        workout, sessionSourceObj, newPerformedExerciseId, exercises
-    ) as PerformedExercise[];
+        workout, sessionSourceObj, exercises
+    );
 
     return {
         session: {
-            id: null,
             workoutId: workout.id,
             date: options?.date ?? Date.now(),
             performedExercises
@@ -107,9 +95,7 @@ export function buildPlannedSession(
     performedSessions: PerformedSession[],
     plannedSessions: PlannedSession[],
     exercises: Exercise[]
-): { plan: PlannedSession; sessionFormSource: SessionFormSource } {
-    const newPlannedExerciseId = generateID(getAllPlannedExercises(plannedSessions));
-
+): { plan: PlannedSessionDraft; sessionFormSource: SessionFormSource } {
     const lastSession = getLastSession(workout.id, performedSessions);
     const existingPlan = getLastPlan(workout.id, plannedSessions);
     const sessionFormSource = getDefaultSessionSource(lastSession);
@@ -118,9 +104,11 @@ export function buildPlannedSession(
     // the workout are dropped, newly added ones take values from the last session
     // (or defaults if the exercise was never performed)
     const plannedExercises = createSessionExercises(
-        workout, existingPlan ?? lastSession, newPlannedExerciseId, exercises,
+        workout,
+        existingPlan ?? lastSession,
+        exercises,
         existingPlan ? lastSession : null
-    ) as PlannedExercise[];
+    );
 
     return {
         plan: {
@@ -146,15 +134,13 @@ function findSourceExercise(
 
 export function createSessionExercise(
     source: PerformedSession | PlannedSession | null,
-    newObjectId: number,
     workoutExerciseId: number,
     fallback: PerformedSession | PlannedSession | null = null
-): PerformedExercise | PlannedExercise {
+): SessionExerciseDraft {
     const sourceExercise = findSourceExercise(source, workoutExerciseId)
         ?? findSourceExercise(fallback, workoutExerciseId);
 
     return {
-        id: newObjectId,
         workoutExerciseId,
         sets: sourceExercise?.sets ?? 1,
         target: sourceExercise?.target ?? 1,

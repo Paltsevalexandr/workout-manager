@@ -13,7 +13,7 @@ type Props = {
     plannedSessions: PlannedSession[];
     setSelectedWorkout: (workout: Workout) => void;
     openCreateWorkoutModal: () => void;
-    savePerformedSession: (workoutId: number) => void;
+    openPerformedSessionForm: (workoutId: number) => void;
 }
 
 export default function WorkoutsList({
@@ -22,12 +22,12 @@ export default function WorkoutsList({
     plannedSessions,
     setSelectedWorkout,
     openCreateWorkoutModal,
-    savePerformedSession
+    openPerformedSessionForm
 }: Props) {
     const { workouts } = useWorkoutsContext();
 
     function sortWorkouts(workouts: Workout[]) {
-        return workouts.filter(workout => workout.status !== "archived")
+        return workouts.filter(workout => workout.archivedAt === null)
             .sort((prev, current) => {
             const lastPrevSession = getLastSession(prev.id, performedSessions);
             const lastCurrentSession = getLastSession(current.id, performedSessions);
@@ -71,7 +71,7 @@ export default function WorkoutsList({
                                 selectedWorkout={selectedWorkout}
                                 setSelectedWorkout={() => setSelectedWorkout(workout)}
                                 lastSessionDate={getLastSessionDate(workout.id, performedSessions)}
-                                savePerformedSession={() => savePerformedSession(workout.id)}
+                                openPerformedSessionForm={() => openPerformedSessionForm(workout.id)}
                             />
                         })
                     }
