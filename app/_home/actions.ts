@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { ActionResult, idSchema, runMutation } from "@/lib/mutation";
+import { normalizeName } from "@/lib/string";
 import { archiveWorkout, createWorkout, softDeleteWorkout, unarchiveWorkout, updateWorkout, WorkoutDTO } from "@/data/workouts";
 
 const workoutExerciseSchema = z.object({
@@ -10,7 +11,7 @@ const workoutExerciseSchema = z.object({
 });
 
 const workoutSchema = z.object({
-    name: z.string().trim().min(2).max(191),
+    name: z.string().transform(normalizeName).pipe(z.string().min(2).max(191)),
     workoutExercises: z.array(
         workoutExerciseSchema
     ).min(1).max(100).refine(

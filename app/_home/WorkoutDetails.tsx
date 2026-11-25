@@ -179,7 +179,7 @@ export default function WorkoutDetails({
                             (lastSession || lastPlan)
                                 ?
                                 <p className={styles.detailsSource}>
-                                    Showing: {lastSession ? "Last Session" : "Last Plan"}
+                                    Showing: {lastSession ? "Last Session" : "Next Plan"}
                                 </p>
                                 : null
                     }

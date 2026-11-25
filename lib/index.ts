@@ -1,5 +1,6 @@
 export {
     capitalize,
+    normalizeName,
     getExercisesLabel,
 } from "./string"
 

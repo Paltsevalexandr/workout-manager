@@ -46,6 +46,7 @@ next-env.d.ts
 /.windsurf/skills/
 
 TODO.txt
+TODO.md
 
 /generated/prisma
 

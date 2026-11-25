@@ -4,9 +4,10 @@ import { z } from "zod";
 import { ExerciseTargetType } from "@/generated/prisma/enums";
 import { createExercise, deleteExercise, ExerciseDTO, updateExercise } from "@/data/exercises";
 import { ActionResult, idSchema, runMutation } from "@/lib/mutation";
+import { normalizeName } from "@/lib/string";
 
 const exerciseInputSchema = z.object({
-    name: z.string().trim().min(1).max(191),
+    name: z.string().transform(normalizeName).pipe(z.string().min(1).max(191)),
     targetType: z.enum(ExerciseTargetType),
     parentId: idSchema.nullable(),
     categoryIds: z.array(idSchema).min(1),

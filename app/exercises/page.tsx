@@ -12,7 +12,7 @@ import ExerciseForm from "./_components/ExerciseForm"
 import Modal from "../components/ui/Modal"
 import ModalForm from "../components/ui/ModalForm"
 import ConfirmDialog from "../components/ui/ConfirmDialog"
-import { getExerciseById } from "../../lib";
+import { getExerciseById, normalizeName } from "../../lib";
 import { Plus, Filter, ChevronDown, ChevronUp } from "lucide-react";
 import Dropdown from "../components/ui/Dropdown";
 import SearchableMultiSelect from "../components/forms/SearchableMultiSelect";
@@ -84,9 +84,9 @@ export default function Page() {
     // Names are compared case-insensitively among active exercises,
     // a soft-deleted exercise's name can be reused.
     // TODO - the backend must enforce this as well (unique index)
-    const normalizedName = exerciseDraft.name.trim().toLowerCase();
+    const normalizedName = normalizeName(exerciseDraft.name).toLowerCase();
     const isNameTaken = exercises.some(
-        e => !e.isDeleted && e.id !== editId && e.name.trim().toLowerCase() === normalizedName
+        e => !e.isDeleted && e.id !== editId && normalizeName(e.name).toLowerCase() === normalizedName
     );
     const nameError = showValidation && isNameTaken
         ? "An exercise with this name already exists"

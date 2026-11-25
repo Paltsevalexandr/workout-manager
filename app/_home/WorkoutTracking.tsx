@@ -22,6 +22,7 @@ import {
     buildPerformedSession,
     buildPlannedSession,
     getLastPlan,
+    normalizeName,
 } from "@/lib";
 import WorkoutDetails from "./WorkoutDetails";
 import WorkoutForm from "./WorkoutForm";
@@ -78,9 +79,9 @@ export default function WorkoutTracking() {
                 : undefined;
 
     // Names are compared case-insensitively; archived workouts count too.
-    const normalizedWorkoutName = workoutName.trim().toLowerCase();
+    const normalizedWorkoutName = normalizeName(workoutName).toLowerCase();
     const workoutWithSameName = workouts.find(
-        w => w.id !== workoutToEdit?.id && w.name.trim().toLowerCase() === normalizedWorkoutName
+        w => w.id !== workoutToEdit?.id && normalizeName(w.name).toLowerCase() === normalizedWorkoutName
     );
     const isWorkoutNameTaken = workoutWithSameName !== undefined;
     // TODO - link to the archive once it's shown in the UI
