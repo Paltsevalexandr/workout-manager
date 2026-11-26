@@ -1,4 +1,4 @@
-import { capitalize, formatRelativeDate, getExercisesLabel, getLastPlan, getLastSessionClass, getLastSessionIcon, getWorkoutExercises } from "@/lib";
+import { formatRelativeDate, getExercisesLabel, getLastPlan, getLastSessionClass, getLastSessionIcon, getWorkoutExercises } from "@/lib";
 import styles from "../page.module.scss";
 import { Workout, PlannedSession, } from "@/_types";
 import { CalendarCheck, ListChecks } from "lucide-react";
@@ -33,7 +33,7 @@ export default function WorkoutItem({
             <div className={styles.workoutTop}>
                 <div className={styles.workoutNameWrap}>
                     <h4 className={styles.workoutName}>
-                        {capitalize(workout.name)}
+                        {workout.name}
                     </h4>
                     {
                         hasPlan && <CalendarCheck size={16} />
